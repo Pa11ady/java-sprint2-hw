@@ -34,5 +34,9 @@ public class Main {
 
         System.out.println("=====");
         System.out.println("Subtask " + epic1.getListSubtaskId() );
+        System.out.println("=====");
+        System.out.println(new Task(task1));
+        System.out.println(new Subtask(subtask1));
+        System.out.println(new Epic(epic1));
     }
 }

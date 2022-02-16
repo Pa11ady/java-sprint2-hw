@@ -13,6 +13,10 @@ public class Task {
         this.status = status;
     }
 
+    public Task(Task task) {
+        this(task.id, task.name, task.description, task.status);
+    }
+
     public long getId() {
         return id;
     }

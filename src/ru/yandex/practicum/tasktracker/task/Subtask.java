@@ -8,6 +8,10 @@ public class Subtask extends Task {
         this.parentId = parentId;
     }
 
+    public Subtask(Subtask subtask) {
+        this(subtask.id, subtask.name, subtask.description, subtask.status, subtask.parentId);
+    }
+
     @Override
     public String toString() {
         return "Subtask{" +

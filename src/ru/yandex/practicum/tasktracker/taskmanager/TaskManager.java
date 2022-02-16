@@ -18,6 +18,36 @@ public class TaskManager {
     }
 
     //Получение списка всех задач
+    /*public List<Task> getList() {
+        return null;
+    }
+
+    //Удаление всех задач
+   //public  void removeALL() {
+
+    }
+
+    //Получение по идентификатору
+    //public Task getTask(Long id) {
+        return null;
+    }
+
+    //Создание. Сам объект должен передаваться в качестве параметра
+    public void create() {
+
+    }
+
+    //Обновление. Новая версия объекта
+    public void  update() {
+
+    }
+
+    //Удаление по идентификатору
+    public void  remove() {
+
+    }
+
+    //Получение списка всех задач
     public List<Task> getList() {
         return null;
     }
@@ -28,12 +58,54 @@ public class TaskManager {
     }
 
     //Получение по идентификатору
+    public Task getTask(Long id) {
+        return null;
+    }
 
     //Создание. Сам объект должен передаваться в качестве параметра
+    public void create() {
+
+    }
 
     //Обновление. Новая версия объекта
+    public void  update() {
+
+    }
 
     //Удаление по идентификатору
+    public void  remove() {
+
+    }
+
+    //Получение списка всех задач
+    public List<Task> getList() {
+        return null;
+    }
+
+    //Удаление всех задач
+    public  void removeALL() {
+
+    }
+
+    //Получение по идентификатору
+    public Task getTask(Long id) {
+        return null;
+    }
+
+    //Создание. Сам объект должен передаваться в качестве параметра
+    public void create() {
+
+    }
+
+    //Обновление. Новая версия объекта
+    public void  update() {
+
+    }
+
+    //Удаление по идентификатору
+    public void  remove() {
+
+    }*/
 
     //Получение списка всех подзадач определённого эпика
 
