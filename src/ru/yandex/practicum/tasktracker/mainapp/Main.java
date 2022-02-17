@@ -83,8 +83,8 @@ public class Main {
 
         TaskManager taskManager = new TaskManager();
         System.out.println("Создание Эпиков");
-        taskManager.createTask(epic1);
-        taskManager.createTask(epic1);
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic1);
         System.out.println(taskManager);
 
         System.out.println("Удаление эпика");
@@ -127,11 +127,88 @@ public class Main {
 
     private static void testCreateUpdate() {
         System.out.println("----testCreateUpdate-----");
+        Task task1 = new Task(TaskManager.calcNextTaskId(), "Задача1", "Важная задача 1", TaskStatus.NEW);
+        Task task2 = new Task(TaskManager.calcNextTaskId(), "Задача2", "Интересная задача 2", TaskStatus.NEW);
+        Epic epic1 = new Epic(TaskManager.calcNextTaskId(), "Эпик 1", "Супер эпик 1.2", TaskStatus.NEW);
+        Epic epic2 = new Epic(TaskManager.calcNextTaskId(), "Эпик 2", "Классный эпик 2.1", TaskStatus.NEW);
 
+        Subtask subtask1 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 1", "простая подзадача 1", TaskStatus.NEW, epic1.getId());
+        epic1.addSubTask(subtask1.getId());
+
+        Subtask subtask2 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 2", "просто подзадача 2", TaskStatus.NEW, epic1.getId());
+        epic1.addSubTask(subtask2.getId());
+
+        Subtask subtask3 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 2", "легкая подзадача 2", TaskStatus.NEW, epic2.getId());
+        epic2.addSubTask(subtask3.getId());
+
+        TaskManager taskManager = new TaskManager();
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic1);
+        System.out.println("Добавили Задачи и Эпики");
+        System.out.println(taskManager);
+
+        taskManager.createSubtask(subtask1);
+        System.out.println("Добавили подзадачу1");
+        System.out.println(taskManager);
+
+        taskManager.createSubtask(subtask2);
+        System.out.println("Добавили подзадачу2");
+        System.out.println(taskManager);
+
+        taskManager.createSubtask(subtask3);
+        System.out.println("Добавили подзадачу3");
+        System.out.println(taskManager);
+
+        taskManager.updateTask(task1);
+        System.out.println("Обновили задачу1");
+        System.out.println(taskManager);
+
+        taskManager.updateEpic(epic1);
+        System.out.println("Обновили эпик1");
+        System.out.println(taskManager);
+
+        System.out.println("Обновили подзадачи");
+        taskManager.updateSubtask(subtask1);
+        taskManager.updateTask(subtask2);
+        taskManager.updateTask(subtask3);
+        System.out.println(taskManager);
     }
 
     private static void testGetList() {
         System.out.println("----testGetList-----");
+        Task task1 = new Task(TaskManager.calcNextTaskId(), "Задача1", "Важная задача 1", TaskStatus.NEW);
+        Task task2 = new Task(TaskManager.calcNextTaskId(), "Задача2", "Интересная задача 2", TaskStatus.NEW);
+        Epic epic1 = new Epic(TaskManager.calcNextTaskId(), "Эпик 1", "Супер эпик 1.2", TaskStatus.NEW);
+        Epic epic2 = new Epic(TaskManager.calcNextTaskId(), "Эпик 2", "Классный эпик 2.1", TaskStatus.NEW);
+
+        Subtask subtask1 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 1", "простая подзадача 1", TaskStatus.NEW, epic1.getId());
+        epic1.addSubTask(subtask1.getId());
+
+        Subtask subtask2 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 2", "просто подзадача 2", TaskStatus.NEW, epic1.getId());
+        epic1.addSubTask(subtask2.getId());
+
+        Subtask subtask3 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 2", "легкая подзадача 2", TaskStatus.NEW, epic2.getId());
+        epic2.addSubTask(subtask3.getId());
+
+        TaskManager taskManager = new TaskManager();
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask3);
+
+        System.out.println("Все задачи");
+        System.out.println(taskManager.getListTask());
+        System.out.println("Все эпики");
+        System.out.println(taskManager.getListEpic());
+        System.out.println("Все подзадачи");
+        System.out.println(taskManager.getListSubtask());
+        System.out.println("Все подзадачи " + epic2.getId() + " " + epic2.getName());
+        System.out.println(taskManager.getListSubtaskFromEpic(epic2.getId()));
     }
 
     private static void testFinalSprint() {

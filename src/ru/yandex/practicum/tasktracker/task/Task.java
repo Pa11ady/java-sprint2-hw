@@ -21,6 +21,10 @@ public class Task {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public TaskStatus getStatus() {
         return status;
     }

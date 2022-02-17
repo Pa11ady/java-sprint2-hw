@@ -38,7 +38,7 @@ public class TaskManager {
     }
 
     //Обновление. Новая версия объекта
-    public void updateTask() {
+    public void updateTask(Task task) {
 
     }
 
@@ -63,12 +63,12 @@ public class TaskManager {
     }
 
     //Создание. Сам объект должен передаваться в качестве параметра
-    public void createEpic() {
+    public void createEpic(Epic epic) {
 
     }
 
     //Обновление. Новая версия объекта
-    public void updateEpic() {
+    public void updateEpic(Epic epic) {
 
     }
 
@@ -98,7 +98,7 @@ public class TaskManager {
     }
 
     //Обновление. Новая версия объекта
-    public void updateSubtask() {
+    public void updateSubtask(Subtask subtask) {
 
     }
 
