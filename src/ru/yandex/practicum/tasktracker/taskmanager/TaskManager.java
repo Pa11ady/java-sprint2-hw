@@ -4,6 +4,7 @@ import ru.yandex.practicum.tasktracker.task.Epic;
 import ru.yandex.practicum.tasktracker.task.Subtask;
 import ru.yandex.practicum.tasktracker.task.Task;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -17,37 +18,38 @@ public class TaskManager {
         return ++lastTaskId;
     }
 
-    //Получение списка всех задач
     public List<Task> getListTask() {
-        return null;
+        return new ArrayList<>(taskHashMap.values());
     }
 
-    //Удаление всех задач
    public void removeAllTask() {
-
+        taskHashMap.clear();
     }
 
-    //Получение по идентификатору
     public Task getTask(long id) {
-        return null;
+        return taskHashMap.get(id);
     }
 
-    //Создание. Сам объект должен передаваться в качестве параметра
     public void createTask(Task task) {
-
+        // локально копирум, чтобы не меняли снаружи
+        task = new Task(task);
+        if (task.getId() == 0) {
+            task.setId(calcNextTaskId());
+        }
+        taskHashMap.put(task.getId(), task);
     }
 
-    //Обновление. Новая версия объекта
     public void updateTask(Task task) {
-
+        if (taskHashMap.get(task.getId()) == null) {
+            return;
+        }
+        createTask(task);
     }
 
-    //Удаление по идентификатору
     public void removeTask(long id) {
-
+        taskHashMap.remove(id);
     }
 
-   //Получение списка всех задач
     public List<Epic> getListEpic() {
         return null;
     }
@@ -58,7 +60,7 @@ public class TaskManager {
     }
 
     //Получение по идентификатору
-    public Epic getTaskEpic(long id) {
+    public Epic getEpic(long id) {
         return null;
     }
 
@@ -88,7 +90,7 @@ public class TaskManager {
     }
 
     //Получение по идентификатору
-    public Subtask get(Long id) {
+    public Subtask getSubtask(Long id) {
         return null;
     }
 

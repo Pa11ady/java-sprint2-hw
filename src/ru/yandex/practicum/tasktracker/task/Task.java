@@ -1,7 +1,7 @@
 package ru.yandex.practicum.tasktracker.task;
 
 public class Task {
-    long id;
+    long id;    //передать 0 для генерации уникального id
     String name;
     String description;
     private TaskStatus status;
@@ -19,6 +19,10 @@ public class Task {
 
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public String getName() {

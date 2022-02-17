@@ -9,13 +9,14 @@ import ru.yandex.practicum.tasktracker.taskmanager.TaskManager;
 public class Main {
 
     public static void main(String[] args) {
+        //testTask();
         System.out.println("====Проверка Создания задач====");
-        testTaskEpicSubtask();
+        //testTaskEpicSubtask();
         System.out.println("===============================");
         System.out.println("====Проверка работы менеджера====");
-        testCreateDeleteTask();
-        testCreateDeleteEpic();
-        testCreateDeleteSubTask();
+        //testCreateDeleteTask();
+        //testCreateDeleteEpic();
+        //testCreateDeleteSubTask();
         testCreateUpdate();
         testGetList();
         System.out.println("-------------------------------");
@@ -148,6 +149,7 @@ public class Main {
         taskManager.createEpic(epic1);
         System.out.println("Добавили Задачи и Эпики");
         System.out.println(taskManager);
+        System.out.println(taskManager.getListTask());
 
         taskManager.createSubtask(subtask1);
         System.out.println("Добавили подзадачу1");
@@ -161,9 +163,16 @@ public class Main {
         System.out.println("Добавили подзадачу3");
         System.out.println(taskManager);
 
+        task1.setStatus(TaskStatus.DONE);
         taskManager.updateTask(task1);
         System.out.println("Обновили задачу1");
-        System.out.println(taskManager);
+        System.out.println(taskManager.getTask(task1.getId()));
+        //ничего не должно измениться
+        task1.setStatus(TaskStatus.IN_PROGRESS);
+        long lastId = task1.getId();
+        task1.setId(100500);
+        System.out.println("Не должно измениться");
+        System.out.println(taskManager.getTask(lastId));
 
         taskManager.updateEpic(epic1);
         System.out.println("Обновили эпик1");
@@ -203,6 +212,9 @@ public class Main {
 
         System.out.println("Все задачи");
         System.out.println(taskManager.getListTask());
+        System.out.println("Задачи 101 нет в списке " +taskManager.getTask(101));
+        System.out.println("ID= " + task2.getId() + " " + taskManager.getTask(task2.getId()));
+
         System.out.println("Все эпики");
         System.out.println(taskManager.getListEpic());
         System.out.println("Все подзадачи");
