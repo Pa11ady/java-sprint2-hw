@@ -4,7 +4,7 @@ public class Task {
     long id;
     String name;
     String description;
-    TaskStatus status;
+    private TaskStatus status;
 
     public Task(long id, String name, String description, TaskStatus status) {
         this.id = id;
@@ -19,6 +19,14 @@ public class Task {
 
     public long getId() {
         return id;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
     }
 
     @Override

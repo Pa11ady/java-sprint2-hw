@@ -18,95 +18,106 @@ public class TaskManager {
     }
 
     //Получение списка всех задач
-    /*public List<Task> getList() {
+    public List<Task> getListTask() {
         return null;
     }
 
     //Удаление всех задач
-   //public  void removeALL() {
+   public void removeAllTask() {
 
     }
 
     //Получение по идентификатору
-    //public Task getTask(Long id) {
+    public Task getTask(long id) {
         return null;
     }
 
     //Создание. Сам объект должен передаваться в качестве параметра
-    public void create() {
+    public void createTask(Task task) {
 
     }
 
     //Обновление. Новая версия объекта
-    public void  update() {
+    public void updateTask() {
 
     }
 
     //Удаление по идентификатору
-    public void  remove() {
+    public void removeTask(long id) {
+
+    }
+
+   //Получение списка всех задач
+    public List<Epic> getListEpic() {
+        return null;
+    }
+
+    //Удаление всех задач
+    public void removeAllEpic() {
+
+    }
+
+    //Получение по идентификатору
+    public Epic getTaskEpic(long id) {
+        return null;
+    }
+
+    //Создание. Сам объект должен передаваться в качестве параметра
+    public void createEpic() {
+
+    }
+
+    //Обновление. Новая версия объекта
+    public void updateEpic() {
+
+    }
+
+    //Удаление по идентификатору
+    public void  removeEpic() {
 
     }
 
     //Получение списка всех задач
-    public List<Task> getList() {
+    public List<Subtask> getListSubtask() {
         return null;
     }
 
     //Удаление всех задач
-    public  void removeALL() {
+    public void removeAllSubtask() {
 
     }
 
     //Получение по идентификатору
-    public Task getTask(Long id) {
+    public Subtask get(Long id) {
         return null;
     }
 
     //Создание. Сам объект должен передаваться в качестве параметра
-    public void create() {
+    public void createSubtask() {
 
     }
 
     //Обновление. Новая версия объекта
-    public void  update() {
+    public void updateSubtask() {
 
     }
 
     //Удаление по идентификатору
-    public void  remove() {
+    public void removeSubtask() {
 
     }
-
-    //Получение списка всех задач
-    public List<Task> getList() {
-        return null;
-    }
-
-    //Удаление всех задач
-    public  void removeALL() {
-
-    }
-
-    //Получение по идентификатору
-    public Task getTask(Long id) {
-        return null;
-    }
-
-    //Создание. Сам объект должен передаваться в качестве параметра
-    public void create() {
-
-    }
-
-    //Обновление. Новая версия объекта
-    public void  update() {
-
-    }
-
-    //Удаление по идентификатору
-    public void  remove() {
-
-    }*/
 
     //Получение списка всех подзадач определённого эпика
+    public List<Subtask> getListSubtaskFromEpic(long id) {
+        return null;
+    }
 
+    @Override
+    public String toString() {
+        return "TaskManager{" +
+                "taskHashMap=" + taskHashMap.keySet() +
+                ", epicHashMap=" + epicHashMap.keySet() +
+                ", subtaskHashMap=" + subtaskHashMap.keySet() +
+                '}';
+    }
 }
