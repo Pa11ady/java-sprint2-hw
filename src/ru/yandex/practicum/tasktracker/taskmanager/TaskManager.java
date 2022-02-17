@@ -73,7 +73,7 @@ public class TaskManager {
     }
 
     //Удаление по идентификатору
-    public void  removeEpic() {
+    public void  removeEpic(long id) {
 
     }
 
@@ -93,7 +93,7 @@ public class TaskManager {
     }
 
     //Создание. Сам объект должен передаваться в качестве параметра
-    public void createSubtask() {
+    public void createSubtask(Subtask subtask) {
 
     }
 
@@ -103,7 +103,7 @@ public class TaskManager {
     }
 
     //Удаление по идентификатору
-    public void removeSubtask() {
+    public void removeSubtask(long id) {
 
     }
 
