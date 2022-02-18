@@ -244,7 +244,7 @@ public class Main {
         taskManager.removeAllTask();
         System.out.println("Удали задачу, которой нет " + taskManager.removeTask(100500));
         System.out.println("Получили задачу, которой нет " + taskManager.getTask(100500));
-        System.out.println("Пустой списк задач " +taskManager.getListTask());
+        System.out.println("Пустой список задач " +taskManager.getListTask());
         System.out.println(taskManager);
 
         Task task1 = new Task(TaskManager.calcNextTaskId(), "Задача1", "Важная задача 1", TaskStatus.NEW);

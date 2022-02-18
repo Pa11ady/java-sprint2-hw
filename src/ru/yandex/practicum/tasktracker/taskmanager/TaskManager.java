@@ -94,9 +94,30 @@ public class TaskManager {
         return true;
     }
 
-    //Обновление. Новая версия объекта
-    public void updateEpic(Epic epic) {
-
+    public boolean updateEpic(Epic epic) {
+        //Если эпик не существует нечего обновлять. Возврат ложь.
+        if (epicHashMap.get(epic.getId()) == null) {
+            return false;
+        }
+        //Локально копируем, чтобы не меняли снаружи
+        epic = new Epic(epic);
+        //Синхронизируем подзадачи с хранилищем менеджера
+        List<Long> listSubtaskId = epic.getListSubtaskId();
+        for (long subtaskId : listSubtaskId) {
+            if (getSubtask(subtaskId) == null) {
+                epic.removeSubtask(subtaskId);
+            }
+        }
+        List<Subtask>  subtaskList = getListSubtaskFromEpic(epic.getId());
+        if (subtaskList.isEmpty() || AllSubtasksWithStatusNew(subtaskList)) {
+            epic.setStatus(TaskStatus.NEW); //нет подзадач или все они имеют статус NEW.
+        } else if (AllSubtasksWithStatusDone(subtaskList)) {
+            epic.setStatus(TaskStatus.DONE); //все подзадачи имеют статус DONE
+        } else {
+            epic.setStatus(TaskStatus.IN_PROGRESS);
+        }
+        epicHashMap.put(epic.getId(), epic);
+        return  true;
     }
 
     public boolean  removeEpic(long id) {
@@ -150,6 +171,23 @@ public class TaskManager {
     //Удаление по идентификатору
     public void removeSubtask(long id) {
 
+    }
+
+    private boolean AllSubtasksWithStatusNew(List<Subtask> subtaskList) {
+        for (Subtask subtask : subtaskList) {
+            if (subtask.getStatus() != TaskStatus.NEW) {
+                return false;
+            }
+        }
+        return true;
+    }
+    private boolean AllSubtasksWithStatusDone(List<Subtask> subtaskList) {
+        for (Subtask subtask : subtaskList) {
+            if (subtask.getStatus() != TaskStatus.DONE) {
+                return false;
+            }
+        }
+        return  true;
     }
 
     @Override
