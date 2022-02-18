@@ -9,12 +9,13 @@ import ru.yandex.practicum.tasktracker.taskmanager.TaskManager;
 public class Main {
 
     public static void main(String[] args) {
-        //testTask();
+        System.out.println("===============================");
+        testWrongTask();
         System.out.println("====Проверка Создания задач====");
-        //testTaskEpicSubtask();
+        testTaskEpicSubtask();
         System.out.println("===============================");
         System.out.println("====Проверка работы менеджера====");
-        //testCreateDeleteTask();
+        testCreateDeleteTask();
         //testCreateDeleteEpic();
         //testCreateDeleteSubTask();
         testCreateUpdate();
@@ -226,5 +227,27 @@ public class Main {
     private static void testFinalSprint() {
         System.out.println("Финальный тест из ТЗ");
 
+    }
+
+    private static void testWrongTask() {
+        System.out.println("Проверям устойчивость к ошибкам");
+        System.out.println("-------------------------------");
+        TaskManager taskManager = new TaskManager();
+        taskManager.removeAllTask();
+        System.out.println("Удали задачу, которой нет " + taskManager.removeTask(100500));
+        System.out.println("Получили задачу, которой нет " + taskManager.getTask(100500));
+        System.out.println("Пустой списк задач " +taskManager.getListTask());
+        System.out.println(taskManager);
+
+        Task task1 = new Task(TaskManager.calcNextTaskId(), "Задача1", "Важная задача 1", TaskStatus.NEW);
+        System.out.println("Обновили задачу = " + taskManager.updateTask(task1));
+        System.out.println("Создали задачу = " + taskManager.createTask(task1));
+        System.out.println("Создали задачу повторно = " + taskManager.createTask(task1));
+        task1.setStatus(TaskStatus.DONE);
+        System.out.println(taskManager.getListTask());
+        System.out.println("Обновили задачу = " + taskManager.updateTask(task1));
+        System.out.println(taskManager);
+        System.out.println(taskManager.getTask(task1.getId()));
+        System.out.println("Нет исключений");
     }
 }

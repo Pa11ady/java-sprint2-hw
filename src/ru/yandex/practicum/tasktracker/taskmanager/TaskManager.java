@@ -18,6 +18,7 @@ public class TaskManager {
         return ++lastTaskId;
     }
 
+    //Задачи---------------------------------------------------------
     public List<Task> getListTask() {
         return new ArrayList<>(taskHashMap.values());
     }
@@ -30,31 +31,43 @@ public class TaskManager {
         return taskHashMap.get(id);
     }
 
-    public void createTask(Task task) {
+    public boolean createTask(Task task) {
+        // Если задача существует нечего не создаем. Возврат ложь.
+        if (taskHashMap.get(task.getId()) != null)  {
+            return false;
+        }
         // локально копирум, чтобы не меняли снаружи
         task = new Task(task);
         if (task.getId() == 0) {
             task.setId(calcNextTaskId());
         }
         taskHashMap.put(task.getId(), task);
+        return true;
     }
 
-    public void updateTask(Task task) {
+    public boolean updateTask(Task task) {
+        // Если задача не существует нечего обновлять. Возврат ложь.
         if (taskHashMap.get(task.getId()) == null) {
-            return;
+            return false;
         }
-        createTask(task);
+        // локально копирум, чтобы не меняли снаружи
+        task = new Task(task);
+        taskHashMap.put(task.getId(), task);
+        return true;
     }
 
-    public void removeTask(long id) {
-        taskHashMap.remove(id);
+    public boolean removeTask(long id) {
+        if (taskHashMap.remove(id) == null) {
+            return false;
+        }
+        return  true;
     }
 
+    //Эпики----------------------------------------------------------
     public List<Epic> getListEpic() {
         return null;
     }
 
-    //Удаление всех задач
     public void removeAllEpic() {
 
     }
@@ -80,6 +93,7 @@ public class TaskManager {
     }
 
     //Получение списка всех задач
+    //Подзадачи------------------------------------------------------
     public List<Subtask> getListSubtask() {
         return null;
     }
