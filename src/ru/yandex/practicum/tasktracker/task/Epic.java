@@ -16,8 +16,12 @@ public class Epic extends Task {
         subtaskSet.addAll(epic.subtaskSet);
     }
 
-    public void addSubTask(Long id) {
+    public void addSubtask(Long id) {
         subtaskSet.add(id);
+    }
+
+    public void removeAllSubtask() {
+        subtaskSet.clear();
     }
 
     public List<Long> getListSubtaskId() {

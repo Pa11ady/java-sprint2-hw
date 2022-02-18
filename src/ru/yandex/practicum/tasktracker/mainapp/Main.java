@@ -10,13 +10,13 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("===============================");
-        testWrongTask();
+        //testWrongTask();
         System.out.println("====Проверка Создания задач====");
-        testTaskEpicSubtask();
+        //testTaskEpicSubtask();
         System.out.println("===============================");
         System.out.println("====Проверка работы менеджера====");
-        testCreateDeleteTask();
-        //testCreateDeleteEpic();
+        //testCreateDeleteTask();
+        testCreateDeleteEpic();
         //testCreateDeleteSubTask();
         testCreateUpdate();
         testGetList();
@@ -30,13 +30,13 @@ public class Main {
         Epic epic2 = new Epic(TaskManager.calcNextTaskId(), "Эпик 2", "Классный эпик 2.1", TaskStatus.NEW);
 
         Subtask subtask1 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 1", "простая подзадача 1", TaskStatus.NEW, epic1.getId());
-        epic1.addSubTask(subtask1.getId());
+        epic1.addSubtask(subtask1.getId());
 
         Subtask subtask2 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 2", "просто подзадача 2", TaskStatus.NEW, epic1.getId());
-        epic1.addSubTask(subtask2.getId());
+        epic1.addSubtask(subtask2.getId());
 
         Subtask subtask3 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 2", "легкая подзадача 2", TaskStatus.NEW, epic2.getId());
-        epic2.addSubTask(subtask3.getId());
+        epic2.addSubtask(subtask3.getId());
 
         System.out.println(task1);
         System.out.println(task2);
@@ -78,15 +78,15 @@ public class Main {
         Epic epic2 = new Epic(TaskManager.calcNextTaskId(), "Эпик 2", "Классный эпик 2.1", TaskStatus.NEW);
 
         Subtask subtask2 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 2", "просто подзадача 2", TaskStatus.NEW, epic1.getId());
-        epic1.addSubTask(subtask2.getId());
+        epic1.addSubtask(subtask2.getId());
 
         Subtask subtask3 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 2", "легкая подзадача 2", TaskStatus.NEW, epic2.getId());
-        epic2.addSubTask(subtask3.getId());
+        epic2.addSubtask(subtask3.getId());
 
         TaskManager taskManager = new TaskManager();
         System.out.println("Создание Эпиков");
         taskManager.createEpic(epic1);
-        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
         System.out.println(taskManager);
 
         System.out.println("Удаление эпика");
@@ -103,13 +103,13 @@ public class Main {
         Epic epic2 = new Epic(TaskManager.calcNextTaskId(), "Эпик 2", "Классный эпик 2.1", TaskStatus.NEW);
 
         Subtask subtask1 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 1", "простая подзадача 1", TaskStatus.NEW, epic1.getId());
-        epic1.addSubTask(subtask1.getId());
+        epic1.addSubtask(subtask1.getId());
 
         Subtask subtask2 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 2", "просто подзадача 2", TaskStatus.NEW, epic1.getId());
-        epic1.addSubTask(subtask2.getId());
+        epic1.addSubtask(subtask2.getId());
 
         Subtask subtask3 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 2", "легкая подзадача 2", TaskStatus.NEW, epic2.getId());
-        epic2.addSubTask(subtask3.getId());
+        epic2.addSubtask(subtask3.getId());
 
         TaskManager taskManager = new TaskManager();
         System.out.println("Создание подзадач");
@@ -135,13 +135,13 @@ public class Main {
         Epic epic2 = new Epic(TaskManager.calcNextTaskId(), "Эпик 2", "Классный эпик 2.1", TaskStatus.NEW);
 
         Subtask subtask1 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 1", "простая подзадача 1", TaskStatus.NEW, epic1.getId());
-        epic1.addSubTask(subtask1.getId());
+        epic1.addSubtask(subtask1.getId());
 
         Subtask subtask2 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 2", "просто подзадача 2", TaskStatus.NEW, epic1.getId());
-        epic1.addSubTask(subtask2.getId());
+        epic1.addSubtask(subtask2.getId());
 
         Subtask subtask3 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 2", "легкая подзадача 2", TaskStatus.NEW, epic2.getId());
-        epic2.addSubTask(subtask3.getId());
+        epic2.addSubtask(subtask3.getId());
 
         TaskManager taskManager = new TaskManager();
         taskManager.createTask(task1);
@@ -190,21 +190,26 @@ public class Main {
         System.out.println("----testGetList-----");
         Task task1 = new Task(TaskManager.calcNextTaskId(), "Задача1", "Важная задача 1", TaskStatus.NEW);
         Task task2 = new Task(TaskManager.calcNextTaskId(), "Задача2", "Интересная задача 2", TaskStatus.NEW);
+        Task task3 = new Task(TaskManager.calcNextTaskId(), "task3", "task3 done", TaskStatus.DONE);
+        Task task4 = new Task(TaskManager.calcNextTaskId(), "task4", "task4 prog", TaskStatus.IN_PROGRESS);
+
         Epic epic1 = new Epic(TaskManager.calcNextTaskId(), "Эпик 1", "Супер эпик 1.2", TaskStatus.NEW);
         Epic epic2 = new Epic(TaskManager.calcNextTaskId(), "Эпик 2", "Классный эпик 2.1", TaskStatus.NEW);
 
         Subtask subtask1 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 1", "простая подзадача 1", TaskStatus.NEW, epic1.getId());
-        epic1.addSubTask(subtask1.getId());
+        epic1.addSubtask(subtask1.getId());
 
         Subtask subtask2 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 2", "просто подзадача 2", TaskStatus.NEW, epic1.getId());
-        epic1.addSubTask(subtask2.getId());
+        epic1.addSubtask(subtask2.getId());
 
         Subtask subtask3 = new Subtask(TaskManager.calcNextTaskId(), "Подзадача 2", "легкая подзадача 2", TaskStatus.NEW, epic2.getId());
-        epic2.addSubTask(subtask3.getId());
+        epic2.addSubtask(subtask3.getId());
 
         TaskManager taskManager = new TaskManager();
         taskManager.createTask(task1);
         taskManager.createTask(task2);
+        taskManager.createTask(task3);
+        taskManager.createTask(task4);
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
         taskManager.createSubtask(subtask1);
@@ -215,9 +220,12 @@ public class Main {
         System.out.println(taskManager.getListTask());
         System.out.println("Задачи 101 нет в списке " +taskManager.getTask(101));
         System.out.println("ID= " + task2.getId() + " " + taskManager.getTask(task2.getId()));
+        System.out.println("Magic ID= " + 21 + " " + taskManager.getTask(21));
+        System.out.println("Magic ID= " + 22 + " " + taskManager.getTask(22));
 
         System.out.println("Все эпики");
         System.out.println(taskManager.getListEpic());
+        System.out.println("Эпик ID = " +epic2.getId() + " " + taskManager.getEpic(epic2.getId()));
         System.out.println("Все подзадачи");
         System.out.println(taskManager.getListSubtask());
         System.out.println("Все подзадачи " + epic2.getId() + " " + epic2.getName());
@@ -230,7 +238,7 @@ public class Main {
     }
 
     private static void testWrongTask() {
-        System.out.println("Проверям устойчивость к ошибкам");
+        System.out.println("Проверяем устойчивость к ошибкам");
         System.out.println("-------------------------------");
         TaskManager taskManager = new TaskManager();
         taskManager.removeAllTask();

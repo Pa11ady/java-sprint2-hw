@@ -3,6 +3,7 @@ package ru.yandex.practicum.tasktracker.taskmanager;
 import ru.yandex.practicum.tasktracker.task.Epic;
 import ru.yandex.practicum.tasktracker.task.Subtask;
 import ru.yandex.practicum.tasktracker.task.Task;
+import ru.yandex.practicum.tasktracker.task.TaskStatus;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +37,7 @@ public class TaskManager {
         if (taskHashMap.get(task.getId()) != null)  {
             return false;
         }
-        // локально копирум, чтобы не меняли снаружи
+        // локально копируем, чтобы не меняли снаружи
         task = new Task(task);
         if (task.getId() == 0) {
             task.setId(calcNextTaskId());
@@ -50,7 +51,7 @@ public class TaskManager {
         if (taskHashMap.get(task.getId()) == null) {
             return false;
         }
-        // локально копирум, чтобы не меняли снаружи
+        // локально копируем, чтобы не меняли снаружи
         task = new Task(task);
         taskHashMap.put(task.getId(), task);
         return true;
@@ -65,21 +66,32 @@ public class TaskManager {
 
     //Эпики----------------------------------------------------------
     public List<Epic> getListEpic() {
-        return null;
+        return new ArrayList<>(epicHashMap.values());
     }
 
     public void removeAllEpic() {
-
+        epicHashMap.clear();
     }
 
-    //Получение по идентификатору
     public Epic getEpic(long id) {
-        return null;
+        return epicHashMap.get(id);
     }
 
-    //Создание. Сам объект должен передаваться в качестве параметра
-    public void createEpic(Epic epic) {
-
+    public boolean createEpic(Epic epic) {
+        //Если Эпик существует нечего не создаем. Возврат ложь.
+        if (epicHashMap.get(epic.getId()) != null)  {
+            return false;
+        }
+        epic = new Epic(epic);
+        if (epic.getId() == 0) {
+            epic.setId(calcNextTaskId());
+        }
+        //Новый эпик не должен содержать подзадачи
+        epic.removeAllSubtask();
+        //Т. З. если у эпика нет подзадач или все они имеют статус NEW, то статус должен быть NEW
+        epic.setStatus(TaskStatus.NEW);
+        epicHashMap.put(epic.getId(), epic);
+        return true;
     }
 
     //Обновление. Новая версия объекта
@@ -87,9 +99,27 @@ public class TaskManager {
 
     }
 
-    //Удаление по идентификатору
-    public void  removeEpic(long id) {
+    public boolean  removeEpic(long id) {
+        if (epicHashMap.remove(id) == null) {
+            return false;
+        }
+        return  true;
+    }
 
+    public List<Subtask> getListSubtaskFromEpic(long id) {
+        List<Subtask> subtaskList = new ArrayList<>();
+        Epic epic = getEpic(id);
+        if (epic == null) {
+            return subtaskList; //возврат пустого списка
+        }
+        List<Long> listSubtaskId = epic.getListSubtaskId();
+        for (long  subtaskId : listSubtaskId) {
+            Subtask subtask = getSubtask(subtaskId);
+            if (subtask != null) {
+                subtaskList.add(subtask);
+            }
+        }
+        return subtaskList;
     }
 
     //Получение списка всех задач
@@ -103,9 +133,8 @@ public class TaskManager {
 
     }
 
-    //Получение по идентификатору
     public Subtask getSubtask(Long id) {
-        return null;
+        return subtaskHashMap.get(id);
     }
 
     //Создание. Сам объект должен передаваться в качестве параметра
@@ -121,11 +150,6 @@ public class TaskManager {
     //Удаление по идентификатору
     public void removeSubtask(long id) {
 
-    }
-
-    //Получение списка всех подзадач определённого эпика
-    public List<Subtask> getListSubtaskFromEpic(long id) {
-        return null;
     }
 
     @Override
