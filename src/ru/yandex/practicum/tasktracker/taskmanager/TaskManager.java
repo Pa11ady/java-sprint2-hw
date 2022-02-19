@@ -13,9 +13,9 @@ import java.util.List;
 //В ТЗ не сказан про это, так что решил не копировать ещё раз
 public class TaskManager {
     private static long lastTaskId = 0;
-    private HashMap<Long, Task> taskHashMap = new HashMap<>();
-    private HashMap<Long, Epic> epicHashMap = new HashMap<>();
-    private HashMap<Long, Subtask> subtaskHashMap = new HashMap<>();
+    private final HashMap<Long, Task> taskHashMap = new HashMap<>();
+    private final HashMap<Long, Epic> epicHashMap = new HashMap<>();
+    private final HashMap<Long, Subtask> subtaskHashMap = new HashMap<>();
 
     public static long calcNextTaskId() {
         return ++lastTaskId;
@@ -70,6 +70,7 @@ public class TaskManager {
 
     public void removeAllEpic() {
         epicHashMap.clear();
+        subtaskHashMap.clear();
     }
 
     public Epic getEpic(long id) {
@@ -120,6 +121,14 @@ public class TaskManager {
     }
 
     public boolean  removeEpic(long id) {
+        Epic epic = getEpic(id);
+        if (epic == null) {
+            return false;
+        }
+        List<Long> listSubtaskId = epic.getListSubtaskId();
+        for (long subtaskId : listSubtaskId) {
+            subtaskHashMap.remove(subtaskId);
+        }
         return epicHashMap.remove(id) != null;
     }
 
@@ -170,7 +179,7 @@ public class TaskManager {
             return false;
         }
         Epic epic = getEpic(subtask.getParentId());
-        //Если эпик не существует нечего обновлять. Возврат ложь.
+        //Если родитель не существует нечего создавать. Возврат ложь.
         if (epic == null) {
             return false;
         }
@@ -186,9 +195,23 @@ public class TaskManager {
         return true;
     }
 
-    //Обновление. Новая версия объекта
-    public void updateSubtask(Subtask subtask) {
-
+    public boolean updateSubtask(Subtask subtask) {
+        // Если подзадача не существует, нечего не обновляем. Возврат ложь.
+        if (getSubtask(subtask.getId()) == null)  {
+            return false;
+        }
+        Epic epic = getEpic(subtask.getParentId());
+        //Если родитель не существует нечего обновлять. Возврат ложь.
+        if (epic == null) {
+            return false;
+        }
+        //Локально копируем, чтобы не меняли снаружи
+        subtask = new Subtask(subtask);
+        epic.addSubtask(subtask.getId());
+        subtaskHashMap.put(subtask.getId(), subtask);
+        //обновляем родителя
+        updateEpic(epic);
+        return true;
     }
 
     public boolean removeSubtask(long id) {
