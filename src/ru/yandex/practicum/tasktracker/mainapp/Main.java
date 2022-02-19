@@ -10,14 +10,14 @@ public class Main {
 
     public static void main(String[] args) {
         System.out.println("===============================");
-        //testWrongTask();
+        testWrongTask();
         System.out.println("====Проверка Создания задач====");
-        //testTaskEpicSubtask();
+        testTaskEpicSubtask();
         System.out.println("===============================");
         System.out.println("====Проверка работы менеджера====");
-        //testCreateDeleteTask();
+        testCreateDeleteTask();
         testCreateDeleteEpic();
-        //testCreateDeleteSubTask();
+        testCreateDeleteSubTask();
         testCreateUpdate();
         testGetList();
         System.out.println("-------------------------------");
@@ -117,6 +117,8 @@ public class Main {
         taskManager.createSubtask(subtask2);
         taskManager.createSubtask(subtask3);
         System.out.println(taskManager);
+        System.out.println(taskManager.getListSubtaskFromEpic(epic1.getId()));
+
 
         System.out.println("Удаление подзадачи");
         taskManager.removeSubtask(subtask3.getId());
@@ -125,6 +127,8 @@ public class Main {
         System.out.println("Удаление подзадач");
         taskManager.removeAllSubtask();
         System.out.println(taskManager);
+        System.out.println(taskManager.getListEpic());
+        System.out.println(taskManager.getListSubtask());
     }
 
     private static void testCreateUpdate() {
@@ -191,7 +195,7 @@ public class Main {
         Task task1 = new Task(TaskManager.calcNextTaskId(), "Задача1", "Важная задача 1", TaskStatus.NEW);
         Task task2 = new Task(TaskManager.calcNextTaskId(), "Задача2", "Интересная задача 2", TaskStatus.NEW);
         Task task3 = new Task(TaskManager.calcNextTaskId(), "task3", "task3 done", TaskStatus.DONE);
-        Task task4 = new Task(TaskManager.calcNextTaskId(), "task4", "task4 prog", TaskStatus.IN_PROGRESS);
+        Task task4 = new Task(TaskManager.calcNextTaskId(), "task4", "task4 program", TaskStatus.IN_PROGRESS);
 
         Epic epic1 = new Epic(TaskManager.calcNextTaskId(), "Эпик 1", "Супер эпик 1.2", TaskStatus.NEW);
         Epic epic2 = new Epic(TaskManager.calcNextTaskId(), "Эпик 2", "Классный эпик 2.1", TaskStatus.NEW);
@@ -220,8 +224,8 @@ public class Main {
         System.out.println(taskManager.getListTask());
         System.out.println("Задачи 101 нет в списке " +taskManager.getTask(101));
         System.out.println("ID= " + task2.getId() + " " + taskManager.getTask(task2.getId()));
-        System.out.println("Magic ID= " + 21 + " " + taskManager.getTask(21));
-        System.out.println("Magic ID= " + 22 + " " + taskManager.getTask(22));
+        System.out.println("Magic ID= " + 29 + " " + taskManager.getTask(29));
+        System.out.println("Magic ID= " + 30 + " " + taskManager.getTask(30));
 
         System.out.println("Все эпики");
         System.out.println(taskManager.getListEpic());

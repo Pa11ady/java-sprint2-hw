@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+//Осторожно в геттерах утекают наружу ссылки task, epic, subtask
+//В ТЗ не сказан про это, так что решил не копировать ещё раз
 public class TaskManager {
     private static long lastTaskId = 0;
     private HashMap<Long, Task> taskHashMap = new HashMap<>();
@@ -34,7 +36,7 @@ public class TaskManager {
 
     public boolean createTask(Task task) {
         // Если задача существует нечего не создаем. Возврат ложь.
-        if (taskHashMap.get(task.getId()) != null)  {
+        if (getTask(task.getId()) != null)  {
             return false;
         }
         // локально копируем, чтобы не меняли снаружи
@@ -48,7 +50,7 @@ public class TaskManager {
 
     public boolean updateTask(Task task) {
         // Если задача не существует нечего обновлять. Возврат ложь.
-        if (taskHashMap.get(task.getId()) == null) {
+        if (getTask(task.getId()) == null) {
             return false;
         }
         // локально копируем, чтобы не меняли снаружи
@@ -58,10 +60,7 @@ public class TaskManager {
     }
 
     public boolean removeTask(long id) {
-        if (taskHashMap.remove(id) == null) {
-            return false;
-        }
-        return  true;
+        return taskHashMap.remove(id) != null;
     }
 
     //Эпики----------------------------------------------------------
@@ -79,7 +78,7 @@ public class TaskManager {
 
     public boolean createEpic(Epic epic) {
         //Если Эпик существует нечего не создаем. Возврат ложь.
-        if (epicHashMap.get(epic.getId()) != null)  {
+        if (getEpic(epic.getId()) != null)  {
             return false;
         }
         epic = new Epic(epic);
@@ -96,7 +95,7 @@ public class TaskManager {
 
     public boolean updateEpic(Epic epic) {
         //Если эпик не существует нечего обновлять. Возврат ложь.
-        if (epicHashMap.get(epic.getId()) == null) {
+        if (getEpic(epic.getId()) == null) {
             return false;
         }
         //Локально копируем, чтобы не меняли снаружи
@@ -121,10 +120,7 @@ public class TaskManager {
     }
 
     public boolean  removeEpic(long id) {
-        if (epicHashMap.remove(id) == null) {
-            return false;
-        }
-        return  true;
+        return epicHashMap.remove(id) != null;
     }
 
     public List<Subtask> getListSubtaskFromEpic(long id) {
@@ -134,7 +130,7 @@ public class TaskManager {
             return subtaskList; //возврат пустого списка
         }
         List<Long> listSubtaskId = epic.getListSubtaskId();
-        for (long  subtaskId : listSubtaskId) {
+        for (long subtaskId : listSubtaskId) {
             Subtask subtask = getSubtask(subtaskId);
             if (subtask != null) {
                 subtaskList.add(subtask);
@@ -143,24 +139,51 @@ public class TaskManager {
         return subtaskList;
     }
 
-    //Получение списка всех задач
     //Подзадачи------------------------------------------------------
     public List<Subtask> getListSubtask() {
-        return null;
+        return new ArrayList<>(subtaskHashMap.values());
     }
 
-    //Удаление всех задач
     public void removeAllSubtask() {
-
+        //более короткое решение удалить всё сразу и обновить все эпике в hashmap
+        //более правильное найти и обновить связанные эпики
+        List<Epic> epics = new ArrayList<>();
+        for (Subtask subtask : subtaskHashMap.values()) {
+            Epic epic = getEpic(subtask.getParentId());
+            if (epic != null) {
+                epics.add(epic);
+            }
+        }
+        subtaskHashMap.clear();
+        for (Epic epic : epics) {
+            updateEpic(epic);
+        }
     }
 
     public Subtask getSubtask(Long id) {
         return subtaskHashMap.get(id);
     }
 
-    //Создание. Сам объект должен передаваться в качестве параметра
-    public void createSubtask(Subtask subtask) {
-
+    public boolean createSubtask(Subtask subtask) {
+        // Если подзадача существует нечего не создаем. Возврат ложь.
+        if (getSubtask(subtask.getId()) != null)  {
+            return false;
+        }
+        Epic epic = getEpic(subtask.getParentId());
+        //Если эпик не существует нечего обновлять. Возврат ложь.
+        if (epic == null) {
+            return false;
+        }
+        //Локально копируем, чтобы не меняли снаружи
+        subtask = new Subtask(subtask);
+        if (subtask.getId() == 0) {
+            subtask.setId(TaskManager.calcNextTaskId());
+        }
+        epic.addSubtask(subtask.getId());
+        subtaskHashMap.put(subtask.getId(), subtask);
+        //обновляем родителя
+        updateEpic(epic);
+        return true;
     }
 
     //Обновление. Новая версия объекта
@@ -168,9 +191,20 @@ public class TaskManager {
 
     }
 
-    //Удаление по идентификатору
-    public void removeSubtask(long id) {
-
+    public boolean removeSubtask(long id) {
+        Subtask subtask = getSubtask(id);
+        if (subtask == null) {
+            return  false;
+        }
+        Epic epic = getEpic(subtask.getParentId());
+        //На всякий случай
+        if (subtaskHashMap.remove(id) == null) {
+            return false;
+        }
+        if (epic != null) {
+            updateEpic(epic);
+        }
+        return true;
     }
 
     private boolean AllSubtasksWithStatusNew(List<Subtask> subtaskList) {

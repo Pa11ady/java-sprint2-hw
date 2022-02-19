@@ -1,9 +1,10 @@
 package ru.yandex.practicum.tasktracker.task;
 
+//Решил максимально сузить область видимости, чтобы наследование не нарушало инкапсуляцию
 public class Task {
-    long id;    //передать 0 для генерации уникального id
-    String name;
-    String description;
+    private long id;    //передать 0 для генерации уникального id
+    private String name;
+    private String description;
     private TaskStatus status;
 
     public Task(long id, String name, String description, TaskStatus status) {
@@ -27,6 +28,10 @@ public class Task {
 
     public String getName() {
         return name;
+    }
+
+    public String getDescription() {
+        return description;
     }
 
     public TaskStatus getStatus() {

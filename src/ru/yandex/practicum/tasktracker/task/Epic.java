@@ -12,7 +12,7 @@ public class Epic extends Task {
     }
 
     public Epic(Epic epic) {
-        this(epic.id, epic.name, epic.description, epic.getStatus());
+        this(epic.getId(), epic.getName(), epic.getDescription(), epic.getStatus());
         subtaskSet.addAll(epic.subtaskSet);
     }
 
@@ -36,9 +36,9 @@ public class Epic extends Task {
     public String toString() {
         return "Epic{" +
                 "subtaskSet=" + subtaskSet +
-                ", id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
+                ", id=" + getId() +
+                ", name='" + getName() + '\'' +
+                ", description='" + getDescription() + '\'' +
                 ", status=" + getStatus() +
                 '}';
     }

@@ -9,16 +9,20 @@ public class Subtask extends Task {
     }
 
     public Subtask(Subtask subtask) {
-        this(subtask.id, subtask.name, subtask.description, subtask.getStatus(), subtask.parentId);
+        this(subtask.getId(), subtask.getName(), subtask.getDescription(), subtask.getStatus(), subtask.parentId);
+    }
+
+    public long getParentId() {
+        return parentId;
     }
 
     @Override
     public String toString() {
         return "Subtask{" +
                 "parentId=" + parentId +
-                ", id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
+                ", id=" + getId() +
+                ", name='" + getName() + '\'' +
+                ", description='" + getDescription() + '\'' +
                 ", status=" + getStatus() +
                 '}';
     }
