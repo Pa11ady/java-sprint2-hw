@@ -109,7 +109,7 @@ public class TaskManager {
             }
         }
         List<Subtask>  subtaskList = getListSubtaskFromEpic(epic.getId());
-        if (subtaskList.isEmpty() || AllSubtasksWithStatusNew(subtaskList)) {
+        if (subtaskList.isEmpty() || allSubtasksWithStatusNew(subtaskList)) {
             epic.setStatus(TaskStatus.NEW); //нет подзадач или все они имеют статус NEW.
         } else if (AllSubtasksWithStatusDone(subtaskList)) {
             epic.setStatus(TaskStatus.DONE); //все подзадачи имеют статус DONE
@@ -220,17 +220,15 @@ public class TaskManager {
             return  false;
         }
         Epic epic = getEpic(subtask.getParentId());
-        //На всякий случай
-        if (subtaskHashMap.remove(id) == null) {
-            return false;
-        }
+        //Смысла не было особого в проверке, но она была скорее код был боле похожий в проекте
+        subtaskHashMap.remove(id);
         if (epic != null) {
             updateEpic(epic);
         }
         return true;
     }
 
-    private boolean AllSubtasksWithStatusNew(List<Subtask> subtaskList) {
+    private boolean allSubtasksWithStatusNew(List<Subtask> subtaskList) {
         for (Subtask subtask : subtaskList) {
             if (subtask.getStatus() != TaskStatus.NEW) {
                 return false;

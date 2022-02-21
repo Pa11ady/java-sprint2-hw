@@ -1,11 +1,10 @@
 package ru.yandex.practicum.tasktracker.task;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 
 public class Epic extends Task {
-    private TreeSet<Long> subtaskSet = new TreeSet<>();
+    //Был TreeSet, чтобы была сортировка, может для отчётов, хотя в итоге больше использовал HashMap в TaskManager
+    private Set<Long> subtaskSet = new HashSet<>();
 
     public Epic(long id, String name, String description, TaskStatus status) {
         super(id, name, description, status);
