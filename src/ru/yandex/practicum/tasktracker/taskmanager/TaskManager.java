@@ -111,7 +111,7 @@ public class TaskManager {
         List<Subtask>  subtaskList = getListSubtaskFromEpic(epic.getId());
         if (subtaskList.isEmpty() || allSubtasksWithStatusNew(subtaskList)) {
             epic.setStatus(TaskStatus.NEW); //нет подзадач или все они имеют статус NEW.
-        } else if (AllSubtasksWithStatusDone(subtaskList)) {
+        } else if (allSubtasksWithStatusDone(subtaskList)) {
             epic.setStatus(TaskStatus.DONE); //все подзадачи имеют статус DONE
         } else {
             epic.setStatus(TaskStatus.IN_PROGRESS);
@@ -236,7 +236,7 @@ public class TaskManager {
         }
         return true;
     }
-    private boolean AllSubtasksWithStatusDone(List<Subtask> subtaskList) {
+    private boolean allSubtasksWithStatusDone(List<Subtask> subtaskList) {
         for (Subtask subtask : subtaskList) {
             if (subtask.getStatus() != TaskStatus.DONE) {
                 return false;
