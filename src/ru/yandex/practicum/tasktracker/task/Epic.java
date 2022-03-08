@@ -3,7 +3,7 @@ package ru.yandex.practicum.tasktracker.task;
 import java.util.*;
 
 public class Epic extends Task {
-    //Был TreeSet, чтобы была сортировка, может для отчётов, хотя в итоге больше использовал HashMap в TaskManager
+    //Был TreeSet, чтобы была сортировка, может для отчётов, хотя в итоге больше использовал HashMap в InMemoryTaskManager
     private Set<Long> subtaskSet = new HashSet<>();
 
     public Epic(long id, String name, String description, TaskStatus status) {

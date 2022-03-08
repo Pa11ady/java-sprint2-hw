@@ -1,4 +1,4 @@
-package ru.yandex.practicum.tasktracker.taskmanager;
+package ru.yandex.practicum.tasktracker.manager;
 
 import ru.yandex.practicum.tasktracker.task.Epic;
 import ru.yandex.practicum.tasktracker.task.Subtask;
@@ -11,7 +11,7 @@ import java.util.List;
 
 //Осторожно в геттерах утекают наружу ссылки task, epic, subtask
 //В ТЗ не сказан про это, так что решил не копировать ещё раз
-public class TaskManager {
+public class InMemoryTaskManager implements TaskManager {
     private static long lastTaskId = 0;
     private final HashMap<Long, Task> taskHashMap = new HashMap<>();
     private final HashMap<Long, Epic> epicHashMap = new HashMap<>();
@@ -22,18 +22,22 @@ public class TaskManager {
     }
 
     //Задачи---------------------------------------------------------
+    @Override
     public List<Task> getListTask() {
         return new ArrayList<>(taskHashMap.values());
     }
 
+    @Override
    public void removeAllTask() {
         taskHashMap.clear();
     }
 
+    @Override
     public Task getTask(long id) {
         return taskHashMap.get(id);
     }
 
+    @Override
     public boolean createTask(Task task) {
         // Если задача существует нечего не создаем. Возврат ложь.
         if (getTask(task.getId()) != null)  {
@@ -48,6 +52,7 @@ public class TaskManager {
         return true;
     }
 
+    @Override
     public boolean updateTask(Task task) {
         // Если задача не существует нечего обновлять. Возврат ложь.
         if (getTask(task.getId()) == null) {
@@ -59,24 +64,29 @@ public class TaskManager {
         return true;
     }
 
+    @Override
     public boolean removeTask(long id) {
         return taskHashMap.remove(id) != null;
     }
 
     //Эпики----------------------------------------------------------
+    @Override
     public List<Epic> getListEpic() {
         return new ArrayList<>(epicHashMap.values());
     }
 
+    @Override
     public void removeAllEpic() {
         epicHashMap.clear();
         subtaskHashMap.clear();
     }
 
+    @Override
     public Epic getEpic(long id) {
         return epicHashMap.get(id);
     }
 
+    @Override
     public boolean createEpic(Epic epic) {
         //Если Эпик существует нечего не создаем. Возврат ложь.
         if (getEpic(epic.getId()) != null)  {
@@ -94,6 +104,7 @@ public class TaskManager {
         return true;
     }
 
+    @Override
     public boolean updateEpic(Epic epic) {
         //Если эпик не существует нечего обновлять. Возврат ложь.
         if (getEpic(epic.getId()) == null) {
@@ -120,6 +131,7 @@ public class TaskManager {
         return  true;
     }
 
+    @Override
     public boolean  removeEpic(long id) {
         Epic epic = getEpic(id);
         if (epic == null) {
@@ -132,6 +144,7 @@ public class TaskManager {
         return epicHashMap.remove(id) != null;
     }
 
+    @Override
     public List<Subtask> getListSubtaskFromEpic(long id) {
         List<Subtask> subtaskList = new ArrayList<>();
         Epic epic = getEpic(id);
@@ -149,10 +162,12 @@ public class TaskManager {
     }
 
     //Подзадачи------------------------------------------------------
+    @Override
     public List<Subtask> getListSubtask() {
         return new ArrayList<>(subtaskHashMap.values());
     }
 
+    @Override
     public void removeAllSubtask() {
         //более короткое решение удалить всё сразу и обновить все эпике в hashmap
         //более правильное найти и обновить связанные эпики
@@ -169,10 +184,12 @@ public class TaskManager {
         }
     }
 
+    @Override
     public Subtask getSubtask(Long id) {
         return subtaskHashMap.get(id);
     }
 
+    @Override
     public boolean createSubtask(Subtask subtask) {
         // Если подзадача существует нечего не создаем. Возврат ложь.
         if (getSubtask(subtask.getId()) != null)  {
@@ -186,7 +203,7 @@ public class TaskManager {
         //Локально копируем, чтобы не меняли снаружи
         subtask = new Subtask(subtask);
         if (subtask.getId() == 0) {
-            subtask.setId(TaskManager.calcNextTaskId());
+            subtask.setId(InMemoryTaskManager.calcNextTaskId());
         }
         epic.addSubtask(subtask.getId());
         subtaskHashMap.put(subtask.getId(), subtask);
@@ -195,6 +212,7 @@ public class TaskManager {
         return true;
     }
 
+    @Override
     public boolean updateSubtask(Subtask subtask) {
         // Если подзадача не существует, нечего не обновляем. Возврат ложь.
         if (getSubtask(subtask.getId()) == null)  {
@@ -214,6 +232,7 @@ public class TaskManager {
         return true;
     }
 
+    @Override
     public boolean removeSubtask(long id) {
         Subtask subtask = getSubtask(id);
         if (subtask == null) {
@@ -236,6 +255,7 @@ public class TaskManager {
         }
         return true;
     }
+
     private boolean allSubtasksWithStatusDone(List<Subtask> subtaskList) {
         for (Subtask subtask : subtaskList) {
             if (subtask.getStatus() != TaskStatus.DONE) {
@@ -247,7 +267,7 @@ public class TaskManager {
 
     @Override
     public String toString() {
-        return "TaskManager{" +
+        return "InMemoryTaskManager{" +
                 "taskHashMap=" + taskHashMap.keySet() +
                 ", epicHashMap=" + epicHashMap.keySet() +
                 ", subtaskHashMap=" + subtaskHashMap.keySet() +
