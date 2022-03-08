@@ -16,6 +16,7 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Long, Task> taskHashMap = new HashMap<>();
     private final HashMap<Long, Epic> epicHashMap = new HashMap<>();
     private final HashMap<Long, Subtask> subtaskHashMap = new HashMap<>();
+    private final HistoryManager historyManager = Managers.getDefaultHistory();
 
     public static long calcNextTaskId() {
         return ++lastTaskId;
