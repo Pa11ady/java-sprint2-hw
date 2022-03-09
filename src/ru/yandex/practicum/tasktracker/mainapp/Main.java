@@ -103,6 +103,7 @@ public class Main {
         System.out.println("подзадача2 " + taskManager.getSubtask(subtask2.getId()));
         System.out.println("подзадача3 " + taskManager.getSubtask(subtask3.getId()));
     }
+
     private static void testFinalSprint3() {
         System.out.println("-------------------");
         System.out.println("Финальный тест из ТЗ 3");
@@ -111,9 +112,10 @@ public class Main {
         TaskManager taskManager = Managers.getDefault();
         HistoryManager historyManager = Managers.getDefaultHistory();
         historyManager.clearHistory(); //отладочный метод
-        printHistory(historyManager.getHistory());
         taskManager.removeAllEpic();
         taskManager.removeAllTask();
+        printHistory(historyManager.getHistory());
+
         Task task1 = new Task(0, "задача коробки", "Найти коробки", TaskStatus.NEW);
         Task task2 = new Task(0, "задача вещи", "Собрать вещи", TaskStatus.NEW);
         taskManager.createTask(task1);
@@ -124,6 +126,7 @@ public class Main {
         long idTask2 = tasks.get(1).getId();
         System.out.println("Задача1 " + taskManager.getTask(idTask1));
         System.out.println("Задача2 " + taskManager.getTask(idTask2));
+        printHistory(historyManager.getHistory());
 
         System.out.println("\nСоздание эпиков...");
         Epic epic1 = new Epic(0, "Эпик Спринт 1", "Завершить спринт 1", TaskStatus.NEW);
@@ -136,6 +139,7 @@ public class Main {
         System.out.println("Список эпиков: " + epics);
         System.out.println("Эпик 1 " + taskManager.getEpic(idEpic1));
         System.out.println("Эпик 2 " + taskManager.getEpic(idEpic2));
+        printHistory(historyManager.getHistory());
 
         System.out.println("\nСоздание подзадач...");
         Subtask subtask1 = new Subtask(0, "Подзадача 1.1", "Выучить теорию 1", TaskStatus.NEW, idEpic1);
@@ -155,35 +159,24 @@ public class Main {
         System.out.println("Эпики: ");
         System.out.println("Эпик 1 " + taskManager.getEpic(idEpic1));
         System.out.println("Эпик 2 " + taskManager.getEpic(idEpic2));
-
-        System.out.println("\nИзменение задач");
-        task1 = new Task(tasks.get(0));
-        task2 = new Task(tasks.get(1));
-        task1.setStatus(TaskStatus.DONE);
-        task2.setStatus(TaskStatus.IN_PROGRESS);
-        taskManager.updateTask(task1);
-        taskManager.updateTask(task2);
-        System.out.println("Задача1 " + taskManager.getTask(idTask1));
-        System.out.println("Задача2 " + taskManager.getTask(idTask2));
-
-        System.out.println("\nИзменение подзадач");
-        subtask1 = new Subtask(subtasks.get(0));
-        subtask2 = new Subtask(subtasks.get(1));
-        subtask3 = new Subtask(subtasks.get(2));
-        subtask2.setStatus(TaskStatus.DONE);
-        subtask3.setStatus(TaskStatus.IN_PROGRESS);
-        taskManager.updateSubtask(subtask2);
-        taskManager.updateSubtask(subtask3);
-        System.out.println("подзадача1 " + taskManager.getSubtask(subtask1.getId()));
-        System.out.println("подзадача2 " + taskManager.getSubtask(subtask2.getId()));
-        System.out.println("подзадача3 " + taskManager.getSubtask(subtask3.getId()));
         printHistory(historyManager.getHistory());
-
+        System.out.println("================");
+        taskManager.getSubtask(subtaskId1);
+        taskManager.getSubtask(subtaskId1);
+        printHistory(historyManager.getHistory());
+        for (int i = 0; i < 20; i++) {
+            taskManager.getEpic(idEpic1);
+        }
+        printHistory(historyManager.getHistory());
     }
     private static void printHistory(List<Task> history) {
+        int row = 0;
+        System.out.println("-------------------");
         System.out.println("История просмотров задач:");
         for (Task task : history) {
-            System.out.println(task.getId() + " " + task.getName());
+            row++;
+            System.out.println("row = " + row + " id=" + task.getId() + " name=" + task.getName());
         }
+        System.out.println("-------------------");
     }
 }
