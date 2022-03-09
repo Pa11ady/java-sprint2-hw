@@ -1,5 +1,6 @@
 package ru.yandex.practicum.tasktracker.mainapp;
 
+import ru.yandex.practicum.tasktracker.manager.HistoryManager;
 import ru.yandex.practicum.tasktracker.manager.Managers;
 import ru.yandex.practicum.tasktracker.manager.TaskManager;
 import ru.yandex.practicum.tasktracker.task.Epic;
@@ -108,6 +109,9 @@ public class Main {
         System.out.println("-------------------");
         System.out.println("\nСоздание задач...");
         TaskManager taskManager = Managers.getDefault();
+        HistoryManager historyManager = Managers.getDefaultHistory();
+        historyManager.clearHistory(); //отладочный метод
+        printHistory(historyManager.getHistory());
         taskManager.removeAllEpic();
         taskManager.removeAllTask();
         Task task1 = new Task(0, "задача коробки", "Найти коробки", TaskStatus.NEW);
@@ -173,20 +177,8 @@ public class Main {
         System.out.println("подзадача1 " + taskManager.getSubtask(subtask1.getId()));
         System.out.println("подзадача2 " + taskManager.getSubtask(subtask2.getId()));
         System.out.println("подзадача3 " + taskManager.getSubtask(subtask3.getId()));
+        printHistory(historyManager.getHistory());
 
-        System.out.println("\nУдалить задачу");
-        taskManager.removeTask(idTask1);
-        System.out.println("Задача1 " + taskManager.getTask(idTask1));
-        System.out.println("Задача2 " + taskManager.getTask(idTask2));
-
-        System.out.println("\nУдалить эпик");
-        taskManager.removeEpic(idEpic1);
-        System.out.println("Эпик 1 " + taskManager.getEpic(idEpic1));
-        System.out.println("Эпик 2 " + taskManager.getEpic(idEpic2));
-        System.out.println("Список подзадач: " + subtasks);
-        System.out.println("подзадача1 " + taskManager.getSubtask(subtask1.getId()));
-        System.out.println("подзадача2 " + taskManager.getSubtask(subtask2.getId()));
-        System.out.println("подзадача3 " + taskManager.getSubtask(subtask3.getId()));
     }
     private static void printHistory(List<Task> history) {
         System.out.println("История просмотров задач:");

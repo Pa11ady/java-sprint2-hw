@@ -22,4 +22,10 @@ public class InMemoryHistoryManager implements HistoryManager{
         // возврат неглубокой копии списка
         return new ArrayList<>(history);
     }
+
+    //отладочный метод для тестов
+    @Override
+    public  void clearHistory() {
+        history.clear();
+    }
 }

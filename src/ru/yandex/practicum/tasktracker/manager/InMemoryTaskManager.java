@@ -9,8 +9,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-//Осторожно в геттерах утекают наружу ссылки task, epic, subtask
-//В ТЗ не сказан про это, так что решил не копировать ещё раз
+//Осторожно в геттерах утекают наружу ссылки task, epic, subtask.
+//В ТЗ не сказан про это, так что решил не копировать ещё раз.
+//Пришлось добавить закрытые методы, для совместимости со прошлым кодом (getTaskLocal)
+//чтобы меньше исправлений делать
 public class InMemoryTaskManager implements TaskManager {
     private static long lastTaskId = 0;
     private final HashMap<Long, Task> taskHashMap = new HashMap<>();
@@ -45,7 +47,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTask(long id) {
-        Task task = taskHashMap.get(id);
+        Task task = getTaskLocal(id);
         if (task == null) {
             return null;
         }
@@ -53,10 +55,14 @@ public class InMemoryTaskManager implements TaskManager {
         return task;
     }
 
+    private Task getTaskLocal(long id) {
+        return taskHashMap.get(id);
+    }
+
     @Override
     public boolean createTask(Task task) {
         // Если задача существует нечего не создаем. Возврат ложь.
-        if (getTask(task.getId()) != null)  {
+        if (getTaskLocal(task.getId()) != null)  {
             return false;
         }
         // локально копируем, чтобы не меняли снаружи
@@ -71,7 +77,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public boolean updateTask(Task task) {
         // Если задача не существует нечего обновлять. Возврат ложь.
-        if (getTask(task.getId()) == null) {
+        if (getTaskLocal(task.getId()) == null) {
             return false;
         }
         // локально копируем, чтобы не меняли снаружи
@@ -99,7 +105,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic getEpic(long id) {
-        Epic epic = epicHashMap.get(id);
+        Epic epic = getEpicLocal(id);
         if (epic == null) {
             return null;
         }
@@ -107,10 +113,14 @@ public class InMemoryTaskManager implements TaskManager {
         return epic;
     }
 
+    private Epic getEpicLocal(long id) {
+       return epicHashMap.get(id);
+    }
+
     @Override
     public boolean createEpic(Epic epic) {
         //Если Эпик существует нечего не создаем. Возврат ложь.
-        if (getEpic(epic.getId()) != null)  {
+        if (getEpicLocal(epic.getId()) != null)  {
             return false;
         }
         epic = new Epic(epic);
@@ -128,7 +138,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public boolean updateEpic(Epic epic) {
         //Если эпик не существует нечего обновлять. Возврат ложь.
-        if (getEpic(epic.getId()) == null) {
+        if (getEpicLocal(epic.getId()) == null) {
             return false;
         }
         //Локально копируем, чтобы не меняли снаружи
@@ -136,7 +146,7 @@ public class InMemoryTaskManager implements TaskManager {
         //Синхронизируем подзадачи с хранилищем менеджера
         List<Long> listSubtaskId = epic.getListSubtaskId();
         for (long subtaskId : listSubtaskId) {
-            if (getSubtask(subtaskId) == null) {
+            if (getSubtaskLocal(subtaskId) == null) {
                 epic.removeSubtask(subtaskId);
             }
         }
@@ -154,7 +164,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public boolean  removeEpic(long id) {
-        Epic epic = getEpic(id);
+        Epic epic = getEpicLocal(id);
         if (epic == null) {
             return false;
         }
@@ -168,13 +178,13 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Subtask> getListSubtaskFromEpic(long id) {
         List<Subtask> subtaskList = new ArrayList<>();
-        Epic epic = getEpic(id);
+        Epic epic = getEpicLocal(id);
         if (epic == null) {
             return subtaskList; //возврат пустого списка
         }
         List<Long> listSubtaskId = epic.getListSubtaskId();
         for (long subtaskId : listSubtaskId) {
-            Subtask subtask = getSubtask(subtaskId);
+            Subtask subtask = getSubtaskLocal(subtaskId);
             if (subtask != null) {
                 subtaskList.add(subtask);
             }
@@ -194,7 +204,7 @@ public class InMemoryTaskManager implements TaskManager {
         //более правильное найти и обновить связанные эпики
         List<Epic> epics = new ArrayList<>();
         for (Subtask subtask : subtaskHashMap.values()) {
-            Epic epic = getEpic(subtask.getParentId());
+            Epic epic = getEpicLocal(subtask.getParentId());
             if (epic != null) {
                 epics.add(epic);
             }
@@ -207,21 +217,24 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Subtask getSubtask(Long id) {
-        Subtask subtask = subtaskHashMap.get(id);
+        Subtask subtask = getSubtaskLocal(id);
         if (subtask == null) {
             return null;
         }
         historyManager.add(subtask);
         return subtask;
     }
+    private Subtask getSubtaskLocal(Long id) {
+        return subtaskHashMap.get(id);
+    }
 
     @Override
     public boolean createSubtask(Subtask subtask) {
         // Если подзадача существует нечего не создаем. Возврат ложь.
-        if (getSubtask(subtask.getId()) != null)  {
+        if (getSubtaskLocal(subtask.getId()) != null)  {
             return false;
         }
-        Epic epic = getEpic(subtask.getParentId());
+        Epic epic = getEpicLocal(subtask.getParentId());
         //Если родитель не существует нечего создавать. Возврат ложь.
         if (epic == null) {
             return false;
@@ -241,10 +254,10 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public boolean updateSubtask(Subtask subtask) {
         // Если подзадача не существует, нечего не обновляем. Возврат ложь.
-        if (getSubtask(subtask.getId()) == null)  {
+        if (getSubtaskLocal(subtask.getId()) == null)  {
             return false;
         }
-        Epic epic = getEpic(subtask.getParentId());
+        Epic epic = getEpicLocal(subtask.getParentId());
         //Если родитель не существует нечего обновлять. Возврат ложь.
         if (epic == null) {
             return false;
@@ -260,11 +273,11 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public boolean removeSubtask(long id) {
-        Subtask subtask = getSubtask(id);
+        Subtask subtask = getSubtaskLocal(id);
         if (subtask == null) {
             return  false;
         }
-        Epic epic = getEpic(subtask.getParentId());
+        Epic epic = getEpicLocal(subtask.getParentId());
         //Смысла не было особого в проверке, но она была скорее код был боле похожий в проекте
         subtaskHashMap.remove(id);
         if (epic != null) {
