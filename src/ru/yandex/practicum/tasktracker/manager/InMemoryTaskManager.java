@@ -16,10 +16,20 @@ public class InMemoryTaskManager implements TaskManager {
     private final HashMap<Long, Task> taskHashMap = new HashMap<>();
     private final HashMap<Long, Epic> epicHashMap = new HashMap<>();
     private final HashMap<Long, Subtask> subtaskHashMap = new HashMap<>();
-    private final HistoryManager historyManager = Managers.getDefaultHistory();
+    private final HistoryManager historyManager;
 
     public static long calcNextTaskId() {
         return ++lastTaskId;
+    }
+
+    public InMemoryTaskManager() {
+        //для совместимости со старыми тестами или кодом
+        historyManager = Managers.getDefaultHistory();
+    }
+
+    public InMemoryTaskManager(HistoryManager historyManager) {
+        //для гибкости, чтобы снаружи можно было связать классы
+        this.historyManager = historyManager;
     }
 
     //Задачи---------------------------------------------------------
@@ -35,7 +45,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTask(long id) {
-        return taskHashMap.get(id);
+        Task task = taskHashMap.get(id);
+        if (task == null) {
+            return null;
+        }
+        historyManager.add(task);
+        return task;
     }
 
     @Override
@@ -84,7 +99,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic getEpic(long id) {
-        return epicHashMap.get(id);
+        Epic epic = epicHashMap.get(id);
+        if (epic == null) {
+            return null;
+        }
+        historyManager.add(epic);
+        return epic;
     }
 
     @Override
@@ -187,7 +207,12 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Subtask getSubtask(Long id) {
-        return subtaskHashMap.get(id);
+        Subtask subtask = subtaskHashMap.get(id);
+        if (subtask == null) {
+            return null;
+        }
+        historyManager.add(subtask);
+        return subtask;
     }
 
     @Override
