@@ -25,8 +25,8 @@ public class Main {
         TaskManager taskManager = Managers.getDefault();
         taskManager.removeAllEpic();
         taskManager.removeAllTask();
-        Task task1 = new Task(0, "задача коробки", "Найти коробки", TaskStatus.NEW);
-        Task task2 = new Task(0, "задача вещи", "Собрать вещи", TaskStatus.NEW);
+        Task task1 = new Task(null, "задача коробки", "Найти коробки", TaskStatus.NEW);
+        Task task2 = new Task(null, "задача вещи", "Собрать вещи", TaskStatus.NEW);
         taskManager.createTask(task1);
         taskManager.createTask(task2);
         List<Task> tasks = taskManager.getListTask();
@@ -37,8 +37,8 @@ public class Main {
         System.out.println("Задача2 " + taskManager.getTask(idTask2));
 
         System.out.println("\nСоздание эпиков...");
-        Epic epic1 = new Epic(0, "Эпик Спринт 1", "Завершить спринт 1", TaskStatus.NEW);
-        Epic epic2 = new Epic(0, "Эпик Спринт 2", "Доделать спринт 2", TaskStatus.NEW);
+        Epic epic1 = new Epic(null, "Эпик Спринт 1", "Завершить спринт 1", TaskStatus.NEW);
+        Epic epic2 = new Epic(null, "Эпик Спринт 2", "Доделать спринт 2", TaskStatus.NEW);
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
         List<Epic> epics = taskManager.getListEpic();
@@ -48,10 +48,17 @@ public class Main {
         System.out.println("Эпик 1 " + taskManager.getEpic(idEpic1));
         System.out.println("Эпик 2 " + taskManager.getEpic(idEpic2));
 
+        System.out.println("\nИзменить эпик...");
+        Epic tmpEpic = taskManager.getEpic(idEpic2);
+        tmpEpic.setName("Новый эпик 2");
+        tmpEpic.setDescription("Описание эпика 2");
+        taskManager.updateEpic(tmpEpic);
+        System.out.println("Эпик 2 " + taskManager.getEpic(idEpic2));
+
         System.out.println("\nСоздание подзадач...");
-        Subtask subtask1 = new Subtask(0, "Подзадача 1.1", "Выучить теорию 1", TaskStatus.NEW, idEpic1);
-        Subtask subtask2 = new Subtask(0, "Подзадача 2.1", "просто подзадача 2.1", TaskStatus.NEW, idEpic2);
-        Subtask subtask3 = new Subtask(0, "Подзадача 2.2", "Сдать проект 2.2", TaskStatus.NEW, idEpic2);
+        Subtask subtask1 = new Subtask(null, "Подзадача 1.1", "Выучить теорию 1", TaskStatus.NEW, idEpic1);
+        Subtask subtask2 = new Subtask(null, "Подзадача 2.1", "просто подзадача 2.1", TaskStatus.NEW, idEpic2);
+        Subtask subtask3 = new Subtask(null, "Подзадача 2.2", "Сдать проект 2.2", TaskStatus.NEW, idEpic2);
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.createSubtask(subtask3);
@@ -82,7 +89,8 @@ public class Main {
         subtask2 = new Subtask(subtasks.get(1));
         subtask3 = new Subtask(subtasks.get(2));
         subtask2.setStatus(TaskStatus.DONE);
-        subtask3.setStatus(TaskStatus.IN_PROGRESS);
+        subtask3.setStatus(TaskStatus.DONE);
+        subtask1.setStatus(TaskStatus.DONE);
         taskManager.updateSubtask(subtask2);
         taskManager.updateSubtask(subtask3);
         System.out.println("подзадача1 " + taskManager.getSubtask(subtask1.getId()));
@@ -116,8 +124,8 @@ public class Main {
         taskManager.removeAllTask();
         printHistory(historyManager.getHistory());
 
-        Task task1 = new Task(0, "задача коробки", "Найти коробки", TaskStatus.NEW);
-        Task task2 = new Task(0, "задача вещи", "Собрать вещи", TaskStatus.NEW);
+        Task task1 = new Task(null, "задача коробки", "Найти коробки", TaskStatus.NEW);
+        Task task2 = new Task(null, "задача вещи", "Собрать вещи", TaskStatus.NEW);
         taskManager.createTask(task1);
         taskManager.createTask(task2);
         List<Task> tasks = taskManager.getListTask();
@@ -129,8 +137,8 @@ public class Main {
         printHistory(historyManager.getHistory());
 
         System.out.println("\nСоздание эпиков...");
-        Epic epic1 = new Epic(0, "Эпик Спринт 1", "Завершить спринт 1", TaskStatus.NEW);
-        Epic epic2 = new Epic(0, "Эпик Спринт 2", "Доделать спринт 2", TaskStatus.NEW);
+        Epic epic1 = new Epic(null, "Эпик Спринт 1", "Завершить спринт 1", TaskStatus.NEW);
+        Epic epic2 = new Epic(null, "Эпик Спринт 2", "Доделать спринт 2", TaskStatus.NEW);
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
         List<Epic> epics = taskManager.getListEpic();
@@ -142,9 +150,9 @@ public class Main {
         printHistory(historyManager.getHistory());
 
         System.out.println("\nСоздание подзадач...");
-        Subtask subtask1 = new Subtask(0, "Подзадача 1.1", "Выучить теорию 1", TaskStatus.NEW, idEpic1);
-        Subtask subtask2 = new Subtask(0, "Подзадача 2.1", "просто подзадача 2.1", TaskStatus.NEW, idEpic2);
-        Subtask subtask3 = new Subtask(0, "Подзадача 2.2", "Сдать проект 2.2", TaskStatus.NEW, idEpic2);
+        Subtask subtask1 = new Subtask(null, "Подзадача 1.1", "Выучить теорию 1", TaskStatus.NEW, idEpic1);
+        Subtask subtask2 = new Subtask(null, "Подзадача 2.1", "просто подзадача 2.1", TaskStatus.NEW, idEpic2);
+        Subtask subtask3 = new Subtask(null, "Подзадача 2.2", "Сдать проект 2.2", TaskStatus.NEW, idEpic2);
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.createSubtask(subtask3);
@@ -167,7 +175,7 @@ public class Main {
         for (int i = 0; i < 20; i++) {
             taskManager.getEpic(idEpic1);
         }
-        printHistory(historyManager.getHistory());
+        printHistory(taskManager.getHistory());
     }
     private static void printHistory(List<Task> history) {
         int row = 0;

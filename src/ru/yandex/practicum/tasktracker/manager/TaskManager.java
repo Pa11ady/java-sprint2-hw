@@ -13,28 +13,28 @@ public interface TaskManager {
 
     void removeAllTask();
 
-    Task getTask(long id);
+    Task getTask(Long id);
 
     boolean createTask(Task task);
 
     boolean updateTask(Task task);
 
-    boolean removeTask(long id);
+    boolean removeTask(Long id);
 
     //Эпики----------------------------------------------------------
     List<Epic> getListEpic();
 
     void removeAllEpic();
 
-    Epic getEpic(long id);
+    Epic getEpic(Long id);
 
     boolean createEpic(Epic epic);
 
     boolean updateEpic(Epic epic);
 
-    boolean  removeEpic(long id);
+    boolean  removeEpic(Long id);
 
-    List<Subtask> getListSubtaskFromEpic(long id);
+    List<Subtask> getListSubtaskFromEpic(Long id);
 
     //Подзадачи------------------------------------------------------
     List<Subtask> getListSubtask();
@@ -47,5 +47,8 @@ public interface TaskManager {
 
     boolean updateSubtask(Subtask subtask);
 
-    boolean removeSubtask(long id);
+    boolean removeSubtask(Long id);
+
+    //История--------------------------------------------------------
+    List<Task> getHistory();
 }

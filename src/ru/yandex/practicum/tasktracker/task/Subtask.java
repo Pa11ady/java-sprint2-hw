@@ -1,9 +1,9 @@
 package ru.yandex.practicum.tasktracker.task;
 
 public class Subtask extends Task {
-    private final long parentId;
+    private final Long parentId;
 
-    public Subtask(long id, String name, String description, TaskStatus status, long parentId) {
+    public Subtask(Long id, String name, String description, TaskStatus status, Long parentId) {
         super(id, name, description, status);
         this.parentId = parentId;
     }
@@ -12,7 +12,7 @@ public class Subtask extends Task {
         this(subtask.getId(), subtask.getName(), subtask.getDescription(), subtask.getStatus(), subtask.parentId);
     }
 
-    public long getParentId() {
+    public Long getParentId() {
         return parentId;
     }
 
