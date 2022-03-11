@@ -145,6 +145,7 @@ public class InMemoryTaskManager implements TaskManager {
        epicHashMap.put(epic.getId(), epic);
        return  true;
    }
+
     private boolean updateEpicLocal(Epic epic) {
         //Если эпик не существует нечего обновлять. Возврат ложь.
         if (getEpicLocal(epic.getId()) == null) {
