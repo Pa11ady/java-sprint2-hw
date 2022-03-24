@@ -122,7 +122,7 @@ public class Main {
         historyManager.clearHistory(); //отладочный метод
         taskManager.removeAllEpic();
         taskManager.removeAllTask();
-        printHistory(historyManager.getHistory());
+        printHistory(historyManager.getHistoryOld());
 
         Task task1 = new Task(null, "задача коробки", "Найти коробки", TaskStatus.NEW);
         Task task2 = new Task(null, "задача вещи", "Собрать вещи", TaskStatus.NEW);
@@ -134,7 +134,7 @@ public class Main {
         long idTask2 = tasks.get(1).getId();
         System.out.println("Задача1 " + taskManager.getTask(idTask1));
         System.out.println("Задача2 " + taskManager.getTask(idTask2));
-        printHistory(historyManager.getHistory());
+        printHistory(historyManager.getHistoryOld());
 
         System.out.println("\nСоздание эпиков...");
         Epic epic1 = new Epic(null, "Эпик Спринт 1", "Завершить спринт 1", TaskStatus.NEW);
@@ -147,7 +147,7 @@ public class Main {
         System.out.println("Список эпиков: " + epics);
         System.out.println("Эпик 1 " + taskManager.getEpic(idEpic1));
         System.out.println("Эпик 2 " + taskManager.getEpic(idEpic2));
-        printHistory(historyManager.getHistory());
+        printHistory(historyManager.getHistoryOld());
 
         System.out.println("\nСоздание подзадач...");
         Subtask subtask1 = new Subtask(null, "Подзадача 1.1", "Выучить теорию 1", TaskStatus.NEW, idEpic1);
@@ -167,11 +167,11 @@ public class Main {
         System.out.println("Эпики: ");
         System.out.println("Эпик 1 " + taskManager.getEpic(idEpic1));
         System.out.println("Эпик 2 " + taskManager.getEpic(idEpic2));
-        printHistory(historyManager.getHistory());
+        printHistory(historyManager.getHistoryOld());
         System.out.println("================");
         taskManager.getSubtask(subtaskId1);
         taskManager.getSubtask(subtaskId1);
-        printHistory(historyManager.getHistory());
+        printHistory(historyManager.getHistoryOld());
         for (int i = 0; i < 20; i++) {
             taskManager.getEpic(idEpic1);
         }
