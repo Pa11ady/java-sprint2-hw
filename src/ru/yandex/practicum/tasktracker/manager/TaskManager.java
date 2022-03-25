@@ -32,7 +32,7 @@ public interface TaskManager {
 
     boolean updateEpic(Epic epic);
 
-    boolean  removeEpic(Long id);
+    boolean removeEpic(Long id);
 
     List<Subtask> getListSubtaskFromEpic(Long id);
 

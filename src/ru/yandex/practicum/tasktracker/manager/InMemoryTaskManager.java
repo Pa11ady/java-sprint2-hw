@@ -8,6 +8,7 @@ import ru.yandex.practicum.tasktracker.task.TaskStatus;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 //Осторожно в геттерах утекают наружу ссылки task, epic, subtask.
 //В ТЗ не сказан про это, так что решил не копировать ещё раз.
@@ -42,6 +43,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
    public void removeAllTask() {
+        removeHistory(taskHashMap);
         taskHashMap.clear();
     }
 
@@ -88,6 +90,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public boolean removeTask(Long id) {
+        historyManager.remove(id);
         return taskHashMap.remove(id) != null;
     }
 
@@ -99,7 +102,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeAllEpic() {
+        removeHistory(epicHashMap);
         epicHashMap.clear();
+        removeHistory(subtaskHashMap);
         subtaskHashMap.clear();
     }
 
@@ -172,15 +177,17 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public boolean  removeEpic(Long id) {
+    public boolean removeEpic(Long id) {
         Epic epic = getEpicLocal(id);
         if (epic == null) {
             return false;
         }
         List<Long> listSubtaskId = epic.getListSubtaskId();
         for (Long subtaskId : listSubtaskId) {
+            historyManager.remove(subtaskId);
             subtaskHashMap.remove(subtaskId);
         }
+        historyManager.remove(id);
         return epicHashMap.remove(id) != null;
     }
 
@@ -218,6 +225,7 @@ public class InMemoryTaskManager implements TaskManager {
                 epics.add(epic);
             }
         }
+        removeHistory(subtaskHashMap);
         subtaskHashMap.clear();
         for (Epic epic : epics) {
             updateEpicLocal(epic);
@@ -287,6 +295,7 @@ public class InMemoryTaskManager implements TaskManager {
             return  false;
         }
         Epic epic = getEpicLocal(subtask.getParentId());
+        historyManager.remove(id);
         subtaskHashMap.remove(id);
         if (epic != null) {
             updateEpicLocal(epic);
@@ -315,6 +324,16 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
         return  true;
+    }
+
+    private void removeHistory(Map<Long, ? extends Task> map) {
+        if (map == null) {
+            return;
+        }
+        for (Task task : map.values()) {
+            historyManager.remove(task.getId());
+        }
+
     }
 
     @Override
