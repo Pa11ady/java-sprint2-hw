@@ -7,9 +7,9 @@ import java.util.List;
 public interface HistoryManager {
     void add(Task task);
 
-    List<Task> getHistoryOld();
+    List<Task> getHistory();
 
-    void remove(int id);
+    void remove(Long id);
 
     //отладочный метод
     void clearHistory();

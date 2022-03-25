@@ -296,7 +296,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getHistory() {
-        return historyManager.getHistoryOld();
+        return historyManager.getHistory();
     }
 
     private boolean allSubtasksWithStatusNew(List<Subtask> subtaskList) {
