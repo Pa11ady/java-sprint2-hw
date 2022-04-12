@@ -5,6 +5,7 @@ public class Managers {
     // мне кажется каждый раз создавать новый объект HistoryManager нелогично
     private static final HistoryManager historyManager = new InMemoryHistoryManager();
     private static final TaskManager taskManager = new InMemoryTaskManager(historyManager);
+
     public static TaskManager getDefault() {
         return taskManager;
     }

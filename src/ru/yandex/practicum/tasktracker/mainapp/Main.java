@@ -13,10 +13,10 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        testRemoveALL();
-        testFinalSprint2();  // Тест из Т. З. спринт 2
-        testFinalSprint3();  // Тест из Т. З. спринт 3
-        testFinalSprint4();  // Тест из Т. З. спринт 4
+        //testRemoveALL();
+        //testFinalSprint2();  // Тест из Т. З. спринт 2
+        testFinalSprint3(Managers.getDefault());  // Тест из Т. З. спринт 3
+        testFinalSprint4(Managers.getDefault());  // Тест из Т. З. спринт 4
     }
 
     private static void testFinalSprint2() {
@@ -114,12 +114,12 @@ public class Main {
         System.out.println("подзадача3 " + taskManager.getSubtask(subtask3.getId()));
     }
 
-    private static void testFinalSprint3() {
+    public static void testFinalSprint3(TaskManager taskManager) {
         System.out.println("-------------------");
         System.out.println("Финальный тест из ТЗ 3");
         System.out.println("-------------------");
         System.out.println("\nСоздание задач...");
-        TaskManager taskManager = Managers.getDefault();
+        //TaskManager taskManager = Managers.getDefault();
         HistoryManager historyManager = Managers.getDefaultHistory();
         historyManager.clearHistory(); //отладочный метод
         taskManager.removeAllEpic();
@@ -180,11 +180,11 @@ public class Main {
         printHistory(taskManager.getHistory());
     }
 
-    private static void testFinalSprint4() {
+    public static void testFinalSprint4(TaskManager taskManager) {
         System.out.println("-------------------");
         System.out.println("Финальный тест из ТЗ 4");
         System.out.println("-------------------");
-        TaskManager taskManager = Managers.getDefault();
+        //TaskManager taskManager = Managers.getDefault();
         HistoryManager historyManager = Managers.getDefaultHistory();
         historyManager.clearHistory(); //отладочный метод
         taskManager.removeAllEpic();
