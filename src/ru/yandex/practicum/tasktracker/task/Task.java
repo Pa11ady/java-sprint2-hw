@@ -54,6 +54,10 @@ public class Task {
         return TaskType.TASK;
     }
 
+    public String toStringCSV() {
+        return String.join(",", id.toString(), getType().toString(), name, status.toString(), description);
+    }
+
     @Override
     public String toString() {
         return  getType() +

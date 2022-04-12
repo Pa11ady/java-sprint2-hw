@@ -22,6 +22,11 @@ public class Subtask extends Task {
     }
 
     @Override
+    public String toStringCSV() {
+        return String.join(",", super.toStringCSV(), parentId.toString());
+    }
+
+    @Override
     public String toString() {
         return  getType() +
                 "{" +

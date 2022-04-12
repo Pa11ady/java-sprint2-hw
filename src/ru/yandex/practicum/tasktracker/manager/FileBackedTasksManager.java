@@ -6,6 +6,10 @@ import ru.yandex.practicum.tasktracker.task.Subtask;
 import ru.yandex.practicum.tasktracker.task.Task;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,14 +25,20 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void save() {
-        System.out.println("**************");
-        List<String> list1 = convertToCSV(super.getListTask());
-        System.out.println(list1);
-        List<String> list2 = convertToCSV(super.getListEpic());
-        System.out.println(list2);
-        List<String> list3 = convertToCSV(super.getListSubtask());
-        System.out.println(list3);
-        System.out.println("**************");
+        final String header = "id,type,name,status,description,epic";
+        Path path = file.toPath();
+        List<String> lines = new ArrayList<>();
+        lines.add(header);
+        lines.addAll(convertToCSV(super.getListTask()));
+        lines.addAll(convertToCSV(super.getListEpic()));
+        lines.addAll(convertToCSV(super.getListSubtask()));
+        lines.add("");
+        lines.add(historyToStringCSV());
+        try {
+            Files.write(path, lines, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            System.out.println("Невозможно прочитать файл " + path);
+        }
     }
 
     @Override
@@ -136,15 +146,26 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     private List<String> convertToCSV(List<? extends Task> tasks) {
         List<String> list = new ArrayList<>();
         for (var task : tasks) {
-            list.add(task.toString());
+            list.add(task.toStringCSV());
         }
         return  list;
     }
 
+    private String historyToStringCSV() {
+        List<Task> taskList = super.getHistory();
+        List<String> list = new ArrayList<>();
+        for (var task : taskList) {
+            list.add(task.getId().toString());
+        }
+        return String.join(",", list);
+    }
+
     public static void main(String[] args) {
+        final String PATH = "resources" + File.separator + "tasks.csv";
+        final File file = new File(PATH);
         System.out.println("File");
         //Main.testFinalSprint3(loadFromFile(null));
-        Main.testFinalSprint4(loadFromFile(null));
+        Main.testFinalSprint4(loadFromFile(file));
 
     }
 
