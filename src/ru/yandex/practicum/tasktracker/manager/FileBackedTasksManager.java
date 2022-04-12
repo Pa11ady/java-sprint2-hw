@@ -6,6 +6,7 @@ import ru.yandex.practicum.tasktracker.task.Subtask;
 import ru.yandex.practicum.tasktracker.task.Task;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
@@ -20,7 +21,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private void save() {
-
+        System.out.println("**************");
+        List<String> list1 = convertToCSV(super.getListTask());
+        System.out.println(list1);
+        List<String> list2 = convertToCSV(super.getListEpic());
+        System.out.println(list2);
+        List<String> list3 = convertToCSV(super.getListSubtask());
+        System.out.println(list3);
+        System.out.println("**************");
     }
 
     @Override
@@ -125,10 +133,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return result;
     }
 
+    private List<String> convertToCSV(List<? extends Task> tasks) {
+        List<String> list = new ArrayList<>();
+        for (var task : tasks) {
+            list.add(task.toString());
+        }
+        return  list;
+    }
+
     public static void main(String[] args) {
         System.out.println("File");
-        Main.testFinalSprint3(loadFromFile(null));
+        //Main.testFinalSprint3(loadFromFile(null));
         Main.testFinalSprint4(loadFromFile(null));
+
     }
 
 

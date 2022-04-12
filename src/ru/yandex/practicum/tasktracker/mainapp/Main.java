@@ -13,8 +13,8 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        //testRemoveALL();
-        //testFinalSprint2();  // Тест из Т. З. спринт 2
+        testRemoveALL();
+        testFinalSprint2();  // Тест из Т. З. спринт 2
         testFinalSprint3(Managers.getDefault());  // Тест из Т. З. спринт 3
         testFinalSprint4(Managers.getDefault());  // Тест из Т. З. спринт 4
     }
@@ -119,7 +119,6 @@ public class Main {
         System.out.println("Финальный тест из ТЗ 3");
         System.out.println("-------------------");
         System.out.println("\nСоздание задач...");
-        //TaskManager taskManager = Managers.getDefault();
         HistoryManager historyManager = Managers.getDefaultHistory();
         historyManager.clearHistory(); //отладочный метод
         taskManager.removeAllEpic();
@@ -184,7 +183,6 @@ public class Main {
         System.out.println("-------------------");
         System.out.println("Финальный тест из ТЗ 4");
         System.out.println("-------------------");
-        //TaskManager taskManager = Managers.getDefault();
         HistoryManager historyManager = Managers.getDefaultHistory();
         historyManager.clearHistory(); //отладочный метод
         taskManager.removeAllEpic();

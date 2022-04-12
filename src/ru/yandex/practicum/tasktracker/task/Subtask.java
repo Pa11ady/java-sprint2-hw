@@ -17,8 +17,14 @@ public class Subtask extends Task {
     }
 
     @Override
+    public TaskType getType() {
+        return TaskType.SUBTASK;
+    }
+
+    @Override
     public String toString() {
-        return "Subtask{" +
+        return  getType() +
+                "{" +
                 "parentId=" + parentId +
                 ", id=" + getId() +
                 ", name='" + getName() + '\'' +
