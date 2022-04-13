@@ -13,10 +13,10 @@ import java.util.List;
 public class Main {
 
     public static void main(String[] args) {
-        testRemoveALL();
-        testFinalSprint2();  // Тест из Т. З. спринт 2
-        testFinalSprint3(Managers.getDefault());  // Тест из Т. З. спринт 3
-        testFinalSprint4(Managers.getDefault());  // Тест из Т. З. спринт 4
+        testRemoveALL(Managers.getDefault());
+        //testFinalSprint2();  // Тест из Т. З. спринт 2
+        //testFinalSprint3(Managers.getDefault());  // Тест из Т. З. спринт 3
+        //testFinalSprint4(Managers.getDefault());  // Тест из Т. З. спринт 4
     }
 
     private static void testFinalSprint2() {
@@ -240,11 +240,10 @@ public class Main {
         printHistory(taskManager.getHistory());
     }
 
-    private static void testRemoveALL() {
+    public static void testRemoveALL(TaskManager taskManager) {
         System.out.println("-------------------");
         System.out.println("Тест удаления");
         System.out.println("-------------------");
-        TaskManager taskManager = Managers.getDefault();
         HistoryManager historyManager = Managers.getDefaultHistory();
         historyManager.clearHistory(); //отладочный метод
         taskManager.removeAllEpic();

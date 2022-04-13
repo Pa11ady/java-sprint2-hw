@@ -1,0 +1,6 @@
+id,type,name,status,description,epic
+1,TASK,задача коробки,NEW,Найти коробки
+2,TASK,задача вещи,NEW,Собрать вещи
+4,EPIC,Эпик Спринт 2,NEW,Доделать спринт 2
+
+2,1,4

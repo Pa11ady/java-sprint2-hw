@@ -1,5 +1,6 @@
 package ru.yandex.practicum.tasktracker.manager;
 
+import ru.yandex.practicum.tasktracker.exception.ManagerSaveException;
 import ru.yandex.practicum.tasktracker.mainapp.Main;
 import ru.yandex.practicum.tasktracker.task.Epic;
 import ru.yandex.practicum.tasktracker.task.Subtask;
@@ -21,7 +22,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public static FileBackedTasksManager loadFromFile(File file) {
-        return new FileBackedTasksManager(file);
+        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
+        List<String> lines = fileBackedTasksManager.loadLinesFromFile();
+        for (var el : lines) {
+            System.out.println(el);
+        }
+        return fileBackedTasksManager;
     }
 
     private void save() {
@@ -37,8 +43,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         try {
             Files.write(path, lines, StandardCharsets.UTF_8);
         } catch (IOException e) {
-            System.out.println("Невозможно прочитать файл " + path);
+            throw new ManagerSaveException("Невозможно записать файл " + path);
         }
+    }
+
+    private List<String> loadLinesFromFile() {
+        List<String> lines = new ArrayList<>();
+        Path path = file.toPath();
+        try {
+            lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new ManagerSaveException("Невозможно прочитать файл " + path);
+        }
+        return lines;
     }
 
     @Override
@@ -161,11 +178,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     public static void main(String[] args) {
-        final String PATH = "resources" + File.separator + "tasks.csv";
+        final String PATH = "resources" + File.separator + "tasks1.csv";
         final File file = new File(PATH);
-        System.out.println("File");
-        //Main.testFinalSprint3(loadFromFile(null));
-        Main.testFinalSprint4(loadFromFile(file));
+        loadFromFile(file);
+        //Main.testFinalSprint4(loadFromFile(file));
+        //Main.testRemoveALL(loadFromFile(file));
 
     }
 
