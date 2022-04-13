@@ -5,4 +5,4 @@ id,type,name,status,description,epic
 5,SUBTASK,Подзадача 1.1,DONE,Выучить теорию 1,3
 6,SUBTASK,Подзадача 1.2,IN_PROGRESS,просто подзадача 1.1,3
 
-
+1,2,3,5,6

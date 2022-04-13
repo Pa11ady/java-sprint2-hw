@@ -14,27 +14,26 @@ import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private final File file;
-    private final HistoryManager localHistoryManager;
 
     public FileBackedTasksManager(File file, HistoryManager historyManager) {
         super(historyManager);
         this.file = file;
-        this.localHistoryManager = historyManager;
     }
 
     public static FileBackedTasksManager loadFromFile(File file) {
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file, new InMemoryHistoryManager());
         List<String> lines = fileBackedTasksManager.loadLinesFromFile();
-        List<Subtask> subtasks = new ArrayList<>();
         boolean hasHistory = false;
         //пропускаем заголовок
+        int historyIndex = 0;
         for (int i = 1; i < lines.size(); i++) {
-            if (lines.get(i).isEmpty()) {
+            String line = lines.get(i);
+            if (line.isBlank()) {
                 hasHistory = true;
-                System.out.println("!!!!!!!!!!!!");
+                historyIndex = i + 1;
                 break;
             }
-            Task task = fromStringCSV(lines.get(i));
+            Task task = fromStringCSV(line);
             switch (task.getType()) {
                 case TASK:
                     fileBackedTasksManager.createTask(task);
@@ -45,11 +44,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 case SUBTASK:
                     fileBackedTasksManager.createSubtask((Subtask) task);
             }
-            //если есть история не может быть число строк меньше 3, а индекс 2
-            int maxIndex = lines.size() - 1;
-            if (hasHistory && maxIndex >= 2) {
-                System.out.println(lines.get(maxIndex));
-            }
+        }
+        if (hasHistory && historyIndex < lines.size()) {
+            loadHistoryFromStringCSV(fileBackedTasksManager, lines.get(historyIndex));
         }
         return fileBackedTasksManager;
     }
@@ -72,7 +69,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     }
 
     private List<String> loadLinesFromFile() {
-        List<String> lines = new ArrayList<>();
+        List<String> lines;
         Path path = file.toPath();
         try {
             lines = Files.readAllLines(path, StandardCharsets.UTF_8);
@@ -107,6 +104,19 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return task;
     }
 
+    private static void loadHistoryFromStringCSV(FileBackedTasksManager fileBackedTasksManager, String value) {
+        if (value == null || value.isEmpty()) {
+            return;
+        }
+        String[] split = value.split(",");
+        for (String element : split) {
+            Long id = Long.parseLong(element);
+            fileBackedTasksManager.getTask(id);
+            fileBackedTasksManager.getEpic(id);
+            fileBackedTasksManager.getSubtask(id);
+        }
+    }
+
     @Override
     public void removeAllTask() {
         super.removeAllTask();
@@ -116,28 +126,36 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public Task getTask(Long id) {
         Task task = super.getTask(id);
-        save();
+        if (task != null) {
+            save();
+        }
         return task;
     }
 
     @Override
     public boolean createTask(Task task) {
         boolean result = super.createTask(task);
-        save();
+        if (result) {
+            save();
+        }
         return result;
     }
 
     @Override
     public boolean updateTask(Task task) {
         boolean result = super.updateTask(task);
-        save();
+        if (result) {
+            save();
+        }
         return result;
     }
 
     @Override
     public boolean removeTask(Long id) {
         boolean result = super.removeTask(id);
-        save();
+        if (result) {
+            save();
+        }
         return result;
     }
 
@@ -150,28 +168,36 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public Epic getEpic(Long id) {
         Epic epic = super.getEpic(id);
-        save();
+        if (epic != null) {
+            save();
+        }
         return epic;
     }
 
     @Override
     public boolean createEpic(Epic epic) {
         boolean result = super.createEpic(epic);
-        save();
+        if (result) {
+            save();
+        }
         return result;
     }
 
     @Override
     public boolean updateEpic(Epic epic) {
         boolean result = super.updateEpic(epic);
-        save();
+        if (result) {
+            save();
+        }
         return result;
     }
 
     @Override
     public boolean removeEpic(Long id) {
         boolean result = super.removeEpic(id);
-        save();
+        if (result) {
+            save();
+        }
         return result;
     }
 
@@ -184,28 +210,36 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
     @Override
     public Subtask getSubtask(Long id) {
         Subtask subtask = super.getSubtask(id);
-        save();
+        if (subtask != null) {
+            save();
+        }
         return subtask;
     }
 
     @Override
     public boolean createSubtask(Subtask subtask) {
         boolean result = super.createSubtask(subtask);
-        save();
+        if (result) {
+            save();
+        }
         return result;
     }
 
     @Override
     public boolean updateSubtask(Subtask subtask) {
         boolean result = super.updateSubtask(subtask);
-        save();
+        if (result) {
+            save();
+        }
         return result;
     }
 
     @Override
     public boolean removeSubtask(Long id) {
         boolean result = super.removeSubtask(id);
-        save();
+        if (result) {
+            save();
+        }
         return result;
     }
 
@@ -239,8 +273,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println("-------------------");
         System.out.println("Финальный тест из ТЗ 5.1");
         System.out.println("-------------------");
-        HistoryManager historyManager = Managers.getDefaultHistory();
-        historyManager.clearHistory(); //отладочный метод
         taskManager.removeAllEpic();
         taskManager.removeAllTask();
 
@@ -288,7 +320,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println("Задачи: " + taskManager.getListTask());
         System.out.println("Подзадачи: " + taskManager.getListSubtask());
         System.out.println("Эпики: " + taskManager.getListEpic());
-        System.out.println(taskManager.localHistoryManager.getHistory());
     }
 
     private static void testFinalSprint5_2(TaskManager taskManager) {
