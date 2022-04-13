@@ -2,10 +2,7 @@ package ru.yandex.practicum.tasktracker.manager;
 
 import ru.yandex.practicum.tasktracker.exception.ManagerSaveException;
 import ru.yandex.practicum.tasktracker.mainapp.Main;
-import ru.yandex.practicum.tasktracker.task.Epic;
-import ru.yandex.practicum.tasktracker.task.Subtask;
-import ru.yandex.practicum.tasktracker.task.Task;
-import ru.yandex.practicum.tasktracker.task.TaskStatus;
+import ru.yandex.practicum.tasktracker.task.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,16 +14,42 @@ import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager {
     private final File file;
+    private final HistoryManager localHistoryManager;
 
-    public FileBackedTasksManager(File file) {
+    public FileBackedTasksManager(File file, HistoryManager historyManager) {
+        super(historyManager);
         this.file = file;
+        this.localHistoryManager = historyManager;
     }
 
     public static FileBackedTasksManager loadFromFile(File file) {
-        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file);
+        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file, new InMemoryHistoryManager());
         List<String> lines = fileBackedTasksManager.loadLinesFromFile();
-        for (var el : lines) {
-            System.out.println(el);
+        List<Subtask> subtasks = new ArrayList<>();
+        boolean hasHistory = false;
+        //пропускаем заголовок
+        for (int i = 1; i < lines.size(); i++) {
+            if (lines.get(i).isEmpty()) {
+                hasHistory = true;
+                System.out.println("!!!!!!!!!!!!");
+                break;
+            }
+            Task task = fromStringCSV(lines.get(i));
+            switch (task.getType()) {
+                case TASK:
+                    fileBackedTasksManager.createTask(task);
+                    break;
+                case EPIC:
+                    fileBackedTasksManager.createEpic((Epic)task);
+                    break;
+                case SUBTASK:
+                    fileBackedTasksManager.createSubtask((Subtask) task);
+            }
+            //если есть история не может быть число строк меньше 3, а индекс 2
+            int maxIndex = lines.size() - 1;
+            if (hasHistory && maxIndex >= 2) {
+                System.out.println(lines.get(maxIndex));
+            }
         }
         return fileBackedTasksManager;
     }
@@ -57,6 +80,31 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
             throw new ManagerSaveException("Невозможно прочитать файл " + path);
         }
         return lines;
+    }
+
+    private static Task fromStringCSV(String value) {
+        if (value == null || value.isEmpty()) {
+            return null;
+        }
+        Task task = null;
+        String[] split = value.split(",");
+        Long id = Long.parseLong(split[0]);
+        TaskType type = TaskType.valueOf(split[1]);
+        String name = split[2];
+        TaskStatus status = TaskStatus.valueOf(split[3]);
+        String description = split[4];
+        switch (type) {
+            case TASK:
+                task = new Task(id, name, description,status);
+                break;
+            case EPIC:
+                task = new Epic(id, name, description, status);
+                break;
+            case SUBTASK:
+                Long parentId = Long.parseLong(split[5]);
+                task = new Subtask(id, name,description, status, parentId);
+        }
+        return task;
     }
 
     @Override
@@ -182,12 +230,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         final String PATH = "resources" + File.separator + "tasks.csv";
         final File file = new File(PATH);
         //Заполняем файл
-        testFinalSprint5_1(new FileBackedTasksManager(file));
+        testFinalSprint5_1(new FileBackedTasksManager(file, new InMemoryHistoryManager()));
         //Читаем файл
         testFinalSprint5_2(loadFromFile(file));
     }
 
-    private static void testFinalSprint5_1(TaskManager taskManager) {
+    private static void testFinalSprint5_1(FileBackedTasksManager taskManager) {
         System.out.println("-------------------");
         System.out.println("Финальный тест из ТЗ 5.1");
         System.out.println("-------------------");
@@ -235,11 +283,12 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println("подзадача1 " + taskManager.getSubtask(subtaskId1));
         System.out.println("подзадача2 " + taskManager.getSubtask(subtaskId2));
         taskManager.removeEpic(idEpic2);
-        System.out.println("\n========ИТОГ========");
+        System.out.println("\n========В ФАЙЛ========");
         Main.printHistory(taskManager.getHistory());
-        System.out.println("Задачи: " + tasks);
-        System.out.println("Подзадачи: " + subtasks);
-        System.out.println("Эпики: " + epics);
+        System.out.println("Задачи: " + taskManager.getListTask());
+        System.out.println("Подзадачи: " + taskManager.getListSubtask());
+        System.out.println("Эпики: " + taskManager.getListEpic());
+        System.out.println(taskManager.localHistoryManager.getHistory());
     }
 
     private static void testFinalSprint5_2(TaskManager taskManager) {

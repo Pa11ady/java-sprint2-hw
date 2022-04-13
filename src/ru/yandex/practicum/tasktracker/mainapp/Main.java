@@ -240,7 +240,7 @@ public class Main {
         printHistory(taskManager.getHistory());
     }
 
-    public static void testRemoveALL(TaskManager taskManager) {
+    private static void testRemoveALL(TaskManager taskManager) {
         System.out.println("-------------------");
         System.out.println("Тест удаления");
         System.out.println("-------------------");
