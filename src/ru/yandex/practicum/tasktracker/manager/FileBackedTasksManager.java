@@ -22,7 +22,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
 
     public static FileBackedTasksManager loadFromFile(File file) {
         FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(file, new InMemoryHistoryManager());
-        List<String> lines = fileBackedTasksManager.loadLinesFromFile();
+        List<String> lines = fileBackedTasksManager.loadLines();
         boolean hasHistory = false;
         //пропускаем заголовок
         int historyIndex = 0;
@@ -68,7 +68,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         }
     }
 
-    private List<String> loadLinesFromFile() {
+    private List<String> loadLines() {
         List<String> lines;
         Path path = file.toPath();
         try {
