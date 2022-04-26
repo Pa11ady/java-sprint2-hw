@@ -9,6 +9,10 @@ import java.util.Set;
 public class Epic extends Task {
     private final Set<Long> subtaskSet = new HashSet<>();
 
+    public Epic(Long id, String name, String description) {
+        super(id, name, description, TaskStatus.NEW);
+    }
+
     public Epic(Long id, String name, String description, TaskStatus status) {
         super(id, name, description, status);
     }

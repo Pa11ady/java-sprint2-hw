@@ -247,6 +247,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public boolean createSubtask(Subtask subtask) {
+        if (subtask == null) return false;
         // Если подзадача существует нечего не создаем. Возврат ложь.
         if (getSubtaskLocal(subtask.getId()) != null)  {
             return false;
