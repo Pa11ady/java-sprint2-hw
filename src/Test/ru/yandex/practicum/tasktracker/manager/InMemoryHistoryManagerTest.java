@@ -27,7 +27,7 @@ class InMemoryHistoryManagerTest {
         historyManager.add(task1);
         historyManager.add(task2);
         List<Task> tasks = historyManager.getHistory();
-        assertTrue(!tasks.isEmpty(), "История не должна быть пустой");
+        assertFalse(tasks.isEmpty(), "История не должна быть пустой");
         assertEquals(2, tasks.size(), "Неверное количество задач");
         assertEquals(TASK_ID1, tasks.get(0).getId(), "Задачи не совпадают");
         assertEquals(TASK_ID2, tasks.get(1).getId(), "Задачи не совпадают");
@@ -67,11 +67,11 @@ class InMemoryHistoryManagerTest {
         Task task1 = new Task(TASK_ID1, "задача 1", "описание 1", TaskStatus.IN_PROGRESS);
         Task task2 = new Task(TASK_ID2, "задача 2", "описание 2", TaskStatus.IN_PROGRESS);
         Task task3 = new Task(TASK_ID3, "задача 3", "описание 3", TaskStatus.IN_PROGRESS);
-        List<Task> task;
+        List<Task> tasks;
 
         //Тест на пустые значения
         historyManager.remove(null);
-        List<Task> tasks = historyManager.getHistory();
+        tasks = historyManager.getHistory();
         assertTrue(tasks.isEmpty(), "История должна быть пустой.");
 
         //удаление плюс дублирование
