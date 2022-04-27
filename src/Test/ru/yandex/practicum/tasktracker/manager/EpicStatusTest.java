@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class EpicStatusTest {
     final Long EPIC_ID1 = 10L;
+    final String MSG = "Неверный статус";
 
     //Пустой список подзадач.
     @Test
@@ -18,7 +19,8 @@ class EpicStatusTest {
         Subtask subtask1 = null;
         taskManager.createEpic(epic1);
         taskManager.createSubtask(subtask1);
-        assertEquals(TaskStatus.NEW, taskManager.getEpic(EPIC_ID1).getStatus());
+
+        assertEquals(TaskStatus.NEW, taskManager.getEpic(EPIC_ID1).getStatus(), MSG);
     }
 
     //Все подзадачи со статусом NEW.
@@ -33,7 +35,7 @@ class EpicStatusTest {
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.createSubtask(subtask3);
-        assertEquals(TaskStatus.NEW, taskManager.getEpic(EPIC_ID1).getStatus());
+        assertEquals(TaskStatus.NEW, taskManager.getEpic(EPIC_ID1).getStatus(), MSG);
     }
 
     //Все подзадачи со статусом DONE.
@@ -48,7 +50,7 @@ class EpicStatusTest {
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.createSubtask(subtask3);
-        assertEquals(TaskStatus.DONE, taskManager.getEpic(EPIC_ID1).getStatus());
+        assertEquals(TaskStatus.DONE, taskManager.getEpic(EPIC_ID1).getStatus(), MSG);
     }
 
     //Подзадачи со статусами NEW и DONE.
@@ -63,7 +65,7 @@ class EpicStatusTest {
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.createSubtask(subtask3);
-        assertEquals(TaskStatus.IN_PROGRESS, taskManager.getEpic(EPIC_ID1).getStatus());
+        assertEquals(TaskStatus.IN_PROGRESS, taskManager.getEpic(EPIC_ID1).getStatus(), MSG);
     }
 
     //Подзадачи со статусом IN_PROGRESS.
@@ -78,6 +80,6 @@ class EpicStatusTest {
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.createSubtask(subtask3);
-        assertEquals(TaskStatus.IN_PROGRESS, taskManager.getEpic(EPIC_ID1).getStatus());
+        assertEquals(TaskStatus.IN_PROGRESS, taskManager.getEpic(EPIC_ID1).getStatus(), MSG);
     }
 }
