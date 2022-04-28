@@ -81,6 +81,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public boolean updateTask(Task task) {
+        if (task == null) {
+            return false;
+        }
         // Если задача не существует нечего обновлять. Возврат ложь.
         if (getTaskLocal(task.getId()) == null) {
             return false;

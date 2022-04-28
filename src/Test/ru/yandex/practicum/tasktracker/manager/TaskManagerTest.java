@@ -10,10 +10,14 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 abstract  class TaskManagerTest <T extends TaskManager> {
-    private T taskManager;
+    protected T taskManager;
+
     final Long TASK_ID1 = 10L;
     final Long TASK_ID2 = 20L;
     final Long TASK_ID3 = 30L;
+
+    final Task task1 = new Task(TASK_ID1, "задача коробки", "Найти коробки", TaskStatus.NEW);
+    final Task task2 = new Task(TASK_ID2, "задача вещи", "Собрать вещи", TaskStatus.NEW);
 
     public TaskManagerTest(T taskManager) {
         this.taskManager = taskManager;
@@ -21,12 +25,13 @@ abstract  class TaskManagerTest <T extends TaskManager> {
 
     @BeforeEach
     void setUp() {
-        taskManager.removeAllTask();
-        taskManager.removeAllEpic();
+
     }
 
     @Test
     void getListTask() {
+        assertTrue(taskManager.createTask(task1));
+        assertTrue(taskManager.createTask(task2));
 
         assertTrue(true);
     }
@@ -41,8 +46,6 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         assertNull(taskManager.getTask(TASK_ID1));
 
         //Стандартное поведение
-        Task task1 = new Task(TASK_ID1, "задача коробки", "Найти коробки", TaskStatus.NEW);
-        Task task2 = new Task(TASK_ID2, "задача вещи", "Собрать вещи", TaskStatus.NEW);
         assertTrue(taskManager.createTask(task1));
         assertTrue(taskManager.createTask(task2));
         Task task1Res = taskManager.getTask(TASK_ID1);
@@ -72,8 +75,6 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         assertTrue(tasks.isEmpty(), "Список задач должен быть пустой");
 
         //Стандартное поведение
-        Task task1 = new Task(TASK_ID1, "задача коробки", "Найти коробки", TaskStatus.NEW);
-        Task task2 = new Task(TASK_ID2, "задача вещи", "Собрать вещи", TaskStatus.NEW);
         assertTrue(taskManager.createTask(task1));
         assertTrue(taskManager.createTask(task2));
         tasks = taskManager.getListTask();
@@ -102,15 +103,47 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         assertFalse(taskManager.createTask(null));
         tasks = taskManager.getListTask();
         assertEquals(2, tasks.size(), "Неверное количество задач");
-
     }
 
     @Test
     void updateTask() {
+        Task task1_1 = new Task(TASK_ID1, "задача 3", "Описание 3", TaskStatus.DONE);
+        List<Task> tasks;
+
+        //Пустой список задач
+        assertFalse(taskManager.updateTask(task1_1));
+        tasks = taskManager.getListTask();
+        assertTrue(tasks.isEmpty(), "Список задач должен быть пустой");
+
+        //Стандартное поведение
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+        assertTrue(taskManager.updateTask(task1_1));
+        tasks = taskManager.getListTask();
+        assertEquals(2, tasks.size(), "Неверное количество задач");
+        Task task1Res = taskManager.getTask(TASK_ID1);
+        assertAll(
+                () -> assertEquals(task1_1.getId(), task1Res.getId()),
+                () -> assertEquals(task1_1.getName(), task1Res.getName()),
+                () -> assertEquals(task1_1.getDescription(), task1Res.getDescription()),
+                () -> assertEquals(task1_1.getStatus(), task1Res.getStatus())
+        );
+        Task task2Res =  taskManager.getTask(TASK_ID2);
+        assertAll(
+                () -> assertEquals(task2.getId(), task2Res.getId()),
+                () -> assertEquals(task2.getName(), task2Res.getName()),
+                () -> assertEquals(task2.getDescription(), task2Res.getDescription()),
+                () -> assertEquals(task2.getStatus(), task2Res.getStatus())
+        );
+        //Неверные значения
+        assertFalse(taskManager.updateTask(null));
     }
 
     @Test
     void removeTask() {
+        //Пустой список задач
+        //Стандартное поведение
+        //Неверные значения
     }
 
     @Test
@@ -119,53 +152,91 @@ abstract  class TaskManagerTest <T extends TaskManager> {
 
     @Test
     void removeAllEpic() {
+        //Пустой список задач
+        //Стандартное поведение
+        //Неверные значения
     }
 
     @Test
     void getEpic() {
+        //Пустой список
+        //Стандартное поведение
+        //Неверные значения
     }
 
     @Test
     void createEpic() {
+        //Пустой список задач
+        //Стандартное поведение
+        //Неверные значения
     }
 
     @Test
     void updateEpic() {
+        //Пустой список
+        //Стандартное поведение
+        //Неверные значения
     }
 
     @Test
     void removeEpic() {
+        //Пустой список
+        //Стандартное поведение
+        //Неверные значения
     }
 
     @Test
     void getListSubtaskFromEpic() {
+        //Пустой список
+        //Стандартное поведение
+        //Неверные значения
     }
 
     @Test
     void getListSubtask() {
+        //Пустой список
+        //Стандартное поведение
+        //Неверные значения
     }
 
     @Test
     void removeAllSubtask() {
+        //Пустой список
+        //Стандартное поведение
+        //Неверные значения
     }
 
     @Test
     void getSubtask() {
+        //Пустой список
+        //Стандартное поведение
+        //Неверные значения
     }
 
     @Test
     void createSubtask() {
+        //Пустой список
+        //Стандартное поведение
+        //Неверные значения
     }
 
     @Test
     void updateSubtask() {
+        //Пустой список
+        //Стандартное поведение
+        //Неверные значения
     }
 
     @Test
     void removeSubtask() {
+        //Пустой список
+        //Стандартное поведение
+        //Неверные значения
     }
 
     @Test
     void getHistory() {
+        //Пустой список
+        //Стандартное поведение
     }
 }

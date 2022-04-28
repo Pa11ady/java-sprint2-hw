@@ -1,5 +1,7 @@
 package ru.yandex.practicum.tasktracker.task;
 
+import java.util.Objects;
+
 //Решил максимально сузить область видимости, чтобы наследование не нарушало инкапсуляцию
 public class Task {
     private Long id;
@@ -56,6 +58,19 @@ public class Task {
 
     public String toStringCSV() {
         return String.join(",", id.toString(), getType().toString(), name, status.toString(), description);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return Objects.equals(id, task.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     @Override
