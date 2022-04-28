@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.tasktracker.task.Task;
 import ru.yandex.practicum.tasktracker.task.TaskStatus;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,6 +19,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
 
     final Task task1 = new Task(TASK_ID1, "задача коробки", "Найти коробки", TaskStatus.NEW);
     final Task task2 = new Task(TASK_ID2, "задача вещи", "Собрать вещи", TaskStatus.NEW);
+    final Task task3 = new Task(TASK_ID3, "задача прочитать главу", "Прочитать главу книги", TaskStatus.NEW);
 
     public TaskManagerTest(T taskManager) {
         this.taskManager = taskManager;
@@ -40,14 +42,40 @@ abstract  class TaskManagerTest <T extends TaskManager> {
 
     @Test
     void getListTask() {
-        assertTrue(taskManager.createTask(task1));
-        assertTrue(taskManager.createTask(task2));
+        List<Task> tasks;
 
-        assertTrue(true);
+        //Пустой список задач
+        tasks = taskManager.getListTask();
+        assertTrue(tasks.isEmpty(), "Список задач должен быть пустой");
+
+        //Стандартное поведение
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+        taskManager.createTask(task3);
+        tasks = taskManager.getListTask();
+        assertEquals(3, tasks.size(), "Неверное количество задач");
+        tasks.sort(Comparator.comparing(Task::getId));
+        testAllFieldsTask(task1, tasks.get(0));
+        testAllFieldsTask(task2, tasks.get(1));
+        testAllFieldsTask(task3, tasks.get(2));
     }
 
     @Test
     void removeAllTask() {
+        List<Task> tasks;
+
+        //пустой список
+        assertDoesNotThrow(taskManager::removeAllTask, "Не должно быть исключений");
+        tasks = taskManager.getListTask();
+        assertTrue(tasks.isEmpty(), "Список задач должен быть пустой");
+
+        //Стандартное поведение
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+        taskManager.createTask(task3);
+        taskManager.removeAllTask();
+        tasks = taskManager.getListTask();
+        assertTrue(tasks.isEmpty(), "Список задач должен быть пустой");
     }
 
     @Test
@@ -55,9 +83,9 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         //Пустой список задач
         assertNull(taskManager.getTask(TASK_ID1));
 
-        //Стандартное поведение
-        assertTrue(taskManager.createTask(task1));
-        assertTrue(taskManager.createTask(task2));
+        //List<Task> tasks
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
         testAllFieldsTask(task1, taskManager.getTask(TASK_ID1));
         testAllFieldsTask(task2, taskManager.getTask(TASK_ID2));
 
@@ -107,18 +135,37 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         assertTrue(taskManager.updateTask(task1_1));
         tasks = taskManager.getListTask();
         assertEquals(2, tasks.size(), "Неверное количество задач");
-        testAllFieldsTask(task1, taskManager.getTask(TASK_ID1));
+        testAllFieldsTask(task1_1, taskManager.getTask(TASK_ID1));
         testAllFieldsTask(task2, taskManager.getTask(TASK_ID2));
 
         //Неверные значения
         assertFalse(taskManager.updateTask(null));
+        assertFalse(taskManager.updateTask(task3));
     }
 
     @Test
     void removeTask() {
-        //Пустой список задач
+        List<Task> tasks;
+
+        //Пустой список
+        assertFalse(taskManager.removeTask(TASK_ID1));
+        tasks = taskManager.getListTask();
+        assertTrue(tasks.isEmpty(), "Список задач должен быть пустой");
+
         //Стандартное поведение
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+        taskManager.createTask(task3);
+        taskManager.removeTask(TASK_ID2);
+        tasks = taskManager.getListTask();
+        assertEquals(2, tasks.size(), "Неверное количество задач");
+        assertNull(taskManager.getTask(TASK_ID2));
+        assertEquals(task1, taskManager.getTask(TASK_ID1));
+        assertEquals(task3,  taskManager.getTask(TASK_ID3));
+
         //Неверные значения
+        assertFalse(taskManager.removeTask(null));
+        assertFalse(taskManager.removeTask(TASK_ID2));
     }
 
     @Test
