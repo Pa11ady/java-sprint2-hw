@@ -28,6 +28,16 @@ abstract  class TaskManagerTest <T extends TaskManager> {
 
     }
 
+    private void testAllFieldsTask(Task taskA, Task taskB) {
+        String message = "Задачи не совпадают";
+        assertAll(
+                () -> assertEquals(taskA.getId(), taskB.getId(), message),
+                () -> assertEquals(taskA.getName(), taskB.getName(), message),
+                () -> assertEquals(taskA.getDescription(), taskB.getDescription(), message),
+                () -> assertEquals(taskA.getStatus(), taskB.getStatus(), message)
+        );
+    }
+
     @Test
     void getListTask() {
         assertTrue(taskManager.createTask(task1));
@@ -48,20 +58,8 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         //Стандартное поведение
         assertTrue(taskManager.createTask(task1));
         assertTrue(taskManager.createTask(task2));
-        Task task1Res = taskManager.getTask(TASK_ID1);
-        assertAll(
-                () -> assertEquals(task1.getId(), task1Res.getId()),
-                () -> assertEquals(task1.getName(), task1Res.getName()),
-                () -> assertEquals(task1.getDescription(), task1Res.getDescription()),
-                () -> assertEquals(task1.getStatus(), task1Res.getStatus())
-        );
-        Task task2Res =  taskManager.getTask(TASK_ID2);
-        assertAll(
-                () -> assertEquals(task2.getId(), task2Res.getId()),
-                () -> assertEquals(task2.getName(), task2Res.getName()),
-                () -> assertEquals(task2.getDescription(), task2Res.getDescription()),
-                () -> assertEquals(task2.getStatus(), task2Res.getStatus())
-        );
+        testAllFieldsTask(task1, taskManager.getTask(TASK_ID1));
+        testAllFieldsTask(task2, taskManager.getTask(TASK_ID2));
 
         //Неверные значения
         assertNull(taskManager.getTask(100500L));
@@ -79,20 +77,8 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         assertTrue(taskManager.createTask(task2));
         tasks = taskManager.getListTask();
         assertEquals(2, tasks.size(), "Неверное количество задач");
-        Task task1Res = taskManager.getTask(TASK_ID1);
-        assertAll(
-                () -> assertEquals(task1.getId(), task1Res.getId()),
-                () -> assertEquals(task1.getName(), task1Res.getName()),
-                () -> assertEquals(task1.getDescription(), task1Res.getDescription()),
-                () -> assertEquals(task1.getStatus(), task1Res.getStatus())
-        );
-        Task task2Res =  taskManager.getTask(TASK_ID2);
-        assertAll(
-                () -> assertEquals(task2.getId(), task2Res.getId()),
-                () -> assertEquals(task2.getName(), task2Res.getName()),
-                () -> assertEquals(task2.getDescription(), task2Res.getDescription()),
-                () -> assertEquals(task2.getStatus(), task2Res.getStatus())
-        );
+        testAllFieldsTask(task1, taskManager.getTask(TASK_ID1));
+        testAllFieldsTask(task2, taskManager.getTask(TASK_ID2));
 
         //Дубликат
         assertFalse(taskManager.createTask(task1));
@@ -121,20 +107,9 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         assertTrue(taskManager.updateTask(task1_1));
         tasks = taskManager.getListTask();
         assertEquals(2, tasks.size(), "Неверное количество задач");
-        Task task1Res = taskManager.getTask(TASK_ID1);
-        assertAll(
-                () -> assertEquals(task1_1.getId(), task1Res.getId()),
-                () -> assertEquals(task1_1.getName(), task1Res.getName()),
-                () -> assertEquals(task1_1.getDescription(), task1Res.getDescription()),
-                () -> assertEquals(task1_1.getStatus(), task1Res.getStatus())
-        );
-        Task task2Res =  taskManager.getTask(TASK_ID2);
-        assertAll(
-                () -> assertEquals(task2.getId(), task2Res.getId()),
-                () -> assertEquals(task2.getName(), task2Res.getName()),
-                () -> assertEquals(task2.getDescription(), task2Res.getDescription()),
-                () -> assertEquals(task2.getStatus(), task2Res.getStatus())
-        );
+        testAllFieldsTask(task1, taskManager.getTask(TASK_ID1));
+        testAllFieldsTask(task2, taskManager.getTask(TASK_ID2));
+
         //Неверные значения
         assertFalse(taskManager.updateTask(null));
     }
