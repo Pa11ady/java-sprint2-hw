@@ -2,11 +2,12 @@ package ru.yandex.practicum.tasktracker.manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.tasktracker.task.Epic;
+import ru.yandex.practicum.tasktracker.task.Subtask;
 import ru.yandex.practicum.tasktracker.task.Task;
 import ru.yandex.practicum.tasktracker.task.TaskStatus;
 
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -17,12 +18,35 @@ abstract  class TaskManagerTest <T extends TaskManager> {
     final Long TASK_ID2 = 20L;
     final Long TASK_ID3 = 30L;
 
+    final long EPIC_ID1 = 40L;
+    final long EPIC_ID2 = 50L;
+    final long EPIC_ID3 = 60L;
+
+    final Long SUBTASK_ID1 = 100L;
+    final Long SUBTASK_ID2 = 200L;
+    final Long SUBTASK_ID3 = 300L;
+
+
     final Task task1 = new Task(TASK_ID1, "задача коробки", "Найти коробки", TaskStatus.NEW);
-    final Task task2 = new Task(TASK_ID2, "задача вещи", "Собрать вещи", TaskStatus.NEW);
-    final Task task3 = new Task(TASK_ID3, "задача прочитать главу", "Прочитать главу книги", TaskStatus.NEW);
+    final Task task2 = new Task(TASK_ID2, "задача вещи", "Собрать вещи", TaskStatus.DONE);
+    final Task task3 = new Task(TASK_ID3, "задача прочитать главу", "Прочитать главу книги", TaskStatus.IN_PROGRESS);
+
+    final Epic epic1 = new Epic(EPIC_ID1, "Эпик1", "Эпик 1 описание");
+    final Epic epic2 = new Epic(EPIC_ID2, "Эпик2", "Эпик 2 описание");
+    final Epic epic3 = new Epic(EPIC_ID3, "Эпик2", "Эпик 3 описание");
+
+    Subtask subtask1 = new Subtask(SUBTASK_ID1, "Подзадача 1.1", "описание 1", TaskStatus.NEW, EPIC_ID1);
+    Subtask subtask2 = new Subtask(SUBTASK_ID2, "Подзадача 2.1", "описание 2.1", TaskStatus.NEW, EPIC_ID2);
+    Subtask subtask3 = new Subtask(SUBTASK_ID3, "Подзадача 2.2", "просто 2.2", TaskStatus.NEW, EPIC_ID2);
+
 
     public TaskManagerTest(T taskManager) {
         this.taskManager = taskManager;
+
+        epic1.addSubtask(SUBTASK_ID1);
+        epic2.addSubtask(SUBTASK_ID2);
+        epic2.addSubtask(SUBTASK_ID3);
+
     }
 
     @BeforeEach
@@ -31,13 +55,22 @@ abstract  class TaskManagerTest <T extends TaskManager> {
     }
 
     private void testAllFieldsTask(Task taskA, Task taskB) {
-        String message = "Задачи не совпадают";
+        String message = taskA.getClass().getSimpleName() + " не совпадают";
+        assertEquals(taskA, taskB, message); //быстрая проверка
         assertAll(
                 () -> assertEquals(taskA.getId(), taskB.getId(), message),
                 () -> assertEquals(taskA.getName(), taskB.getName(), message),
                 () -> assertEquals(taskA.getDescription(), taskB.getDescription(), message),
                 () -> assertEquals(taskA.getStatus(), taskB.getStatus(), message)
         );
+
+        if (taskA instanceof Epic && taskB instanceof Epic) {
+            List<Long> listA = ((Epic) taskA).getListSubtaskId();
+            List<Long> listB = ((Epic) taskB).getListSubtaskId();
+            Collections.sort(listA);
+            Collections.sort(listB);
+            assertEquals(listA, listB);
+        }
     }
 
     @Test
@@ -83,7 +116,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         //Пустой список задач
         assertNull(taskManager.getTask(TASK_ID1));
 
-        //List<Task> tasks
+        //Стандартное поведение
         taskManager.createTask(task1);
         taskManager.createTask(task2);
         testAllFieldsTask(task1, taskManager.getTask(TASK_ID1));
@@ -170,41 +203,136 @@ abstract  class TaskManagerTest <T extends TaskManager> {
 
     @Test
     void getListEpic() {
+        List<Epic> epics;
+        //Пустой список
+        epics =taskManager.getListEpic();
+        assertTrue(epics.isEmpty(), "Список Эпиков должен быть пустой");
+
+        //Стандартное поведение
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        taskManager.createEpic(epic3);
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask3);
+        epics = taskManager.getListEpic();
+        assertEquals(3, epics.size(), "Неверное количество Эпиков");
+        epics.sort(Comparator.comparing(Epic::getId));
+        List<Epic> expectedEpics = List.of(epic1, epic2, epic3);
+        assertEquals(expectedEpics, epics, "Эпики не совпадают");
     }
 
     @Test
     void removeAllEpic() {
-        //Пустой список задач
+        List<Epic> epics;
+        //пустой список
+        assertDoesNotThrow(taskManager::removeAllEpic, "Не должно быть исключений");
+        epics = taskManager.getListEpic();
+        assertTrue(epics.isEmpty(), "Список эпиков должен быть пустой");
+
         //Стандартное поведение
-        //Неверные значения
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        taskManager.createEpic(epic3);
+        taskManager.removeAllEpic();
+        epics = taskManager.getListEpic();
+        assertTrue(epics.isEmpty(), "Список эпиков должен быть пустой");
     }
 
     @Test
     void getEpic() {
-        //Пустой список
+        //Пустой список задач
+        assertNull(taskManager.getEpic(EPIC_ID1));
+
         //Стандартное поведение
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        assertEquals(epic1, taskManager.getEpic(EPIC_ID1));
+        assertEquals(epic2, taskManager.getEpic(EPIC_ID2));
+
         //Неверные значения
+        assertNull(taskManager.getEpic(100500L));
+        assertNull(taskManager.getEpic(null));
     }
 
     @Test
     void createEpic() {
-        //Пустой список задач
+        //Пустой список
+        List<Epic> epics = taskManager.getListEpic();
+        assertTrue(epics.isEmpty(), "Список эпиков должен быть пустой");
+
         //Стандартное поведение
-        //Неверные значения
+        assertTrue(taskManager.createEpic(epic1));
+        assertTrue(taskManager.createEpic(epic2));
+        assertTrue(taskManager.createEpic(epic3));
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask3);
+        epics = taskManager.getListEpic();
+        assertEquals(3, epics.size(), "Неверное количество эпиков");
+        testAllFieldsTask(epic1, taskManager.getEpic(EPIC_ID1));
+        testAllFieldsTask(epic2, taskManager.getEpic(EPIC_ID2));
+        testAllFieldsTask(epic3, taskManager.getEpic(EPIC_ID3));
+
+        //Дубликат
+        assertFalse(taskManager.createEpic(epic1));
+        epics = taskManager.getListEpic();
+        assertEquals(3, epics.size(), "Неверное количество эпиков");
+
+        //Неверное значение
+        assertFalse(taskManager.createEpic(null));
+        epics = taskManager.getListEpic();
+        assertEquals(3, epics.size(), "Неверное количество эпиков");
     }
 
     @Test
     void updateEpic() {
-        //Пустой список
+        Epic epic1_1 = new Epic(EPIC_ID1, "Эпик 4", "Описание 4");
+        List<Epic> epics;
+
+        //Пустой список задач
+        assertFalse(taskManager.updateEpic(epic1_1));
+        epics = taskManager.getListEpic();
+        assertTrue(epics.isEmpty(), "Список должен быть пустой");
+
         //Стандартное поведение
+        taskManager.createEpic(epic1);
+        epic1_1.addSubtask(SUBTASK_ID1);
+        taskManager.createEpic(epic3);
+        assertTrue(taskManager.updateEpic(epic1_1));
+        epics = taskManager.getListEpic();
+        assertEquals(2, epics.size(), "Неверное количество");
+        testAllFieldsTask(epic1_1, taskManager.getEpic(EPIC_ID1));
+        testAllFieldsTask(epic3, taskManager.getEpic(EPIC_ID3));
+
         //Неверные значения
+        assertFalse(taskManager.updateEpic(null));
+        assertFalse(taskManager.updateEpic(epic2));
     }
 
     @Test
     void removeEpic() {
+        List<Epic> epics;
+
         //Пустой список
+        assertFalse(taskManager.removeEpic(EPIC_ID1));
+        epics = taskManager.getListEpic();
+        assertTrue(epics.isEmpty(), "Список задач должен быть пустой");
+
         //Стандартное поведение
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        taskManager.createEpic(epic3);
+        taskManager.removeEpic(EPIC_ID2);
+        epics = taskManager.getListEpic();
+        assertEquals(2, epics.size(), "Неверное количество задач");
+        assertNull(taskManager.getEpic(EPIC_ID2));
+        assertEquals(epic1, taskManager.getEpic(EPIC_ID1));
+        assertEquals(epic3,  taskManager.getEpic(EPIC_ID3));
+
         //Неверные значения
+        assertFalse(taskManager.removeEpic(null));
+        assertFalse(taskManager.removeEpic(EPIC_ID2));
     }
 
     @Test

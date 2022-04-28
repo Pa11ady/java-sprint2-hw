@@ -36,6 +36,7 @@ public class Epic extends Task {
 
     public List<Long> getListSubtaskId() {
         return new ArrayList<>(subtaskSet);
+
     }
 
     @Override

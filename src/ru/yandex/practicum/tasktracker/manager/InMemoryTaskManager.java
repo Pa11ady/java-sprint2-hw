@@ -130,6 +130,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public boolean createEpic(Epic epic) {
+        if (epic == null) {
+            return false;
+        }
         //Если Эпик существует нечего не создаем. Возврат ложь.
         if (getEpicLocal(epic.getId()) != null)  {
             return false;
@@ -148,6 +151,9 @@ public class InMemoryTaskManager implements TaskManager {
 
    @Override
    public boolean updateEpic(Epic epic) {
+        if (epic == null) {
+            return false;
+        }
        //Если эпик не существует нечего обновлять. Возврат ложь.
        if (getEpicLocal(epic.getId()) == null) {
            return false;
