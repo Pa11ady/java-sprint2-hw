@@ -283,6 +283,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public boolean updateSubtask(Subtask subtask) {
+        if (subtask == null) {
+            return false;
+        }
         // Если подзадача не существует, нечего не обновляем. Возврат ложь.
         if (getSubtaskLocal(subtask.getId()) == null)  {
             return false;

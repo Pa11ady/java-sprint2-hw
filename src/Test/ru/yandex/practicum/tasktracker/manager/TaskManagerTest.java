@@ -69,6 +69,8 @@ abstract  class TaskManagerTest <T extends TaskManager> {
             Collections.sort(listA);
             Collections.sort(listB);
             assertEquals(listA, listB);
+        } else if (taskA instanceof Subtask && taskB instanceof Subtask) {
+            assertEquals(((Subtask) taskA).getParentId(), ((Subtask) taskB).getParentId(), message);
         }
     }
 
@@ -240,14 +242,15 @@ abstract  class TaskManagerTest <T extends TaskManager> {
 
     @Test
     void getEpic() {
-        //Пустой список задач
+        //Пустой список
         assertNull(taskManager.getEpic(EPIC_ID1));
 
         //Стандартное поведение
         taskManager.createEpic(epic1);
-        taskManager.createEpic(epic2);
+        taskManager.createEpic(epic3);
+        taskManager.createSubtask(subtask1);
         assertEquals(epic1, taskManager.getEpic(EPIC_ID1));
-        assertEquals(epic2, taskManager.getEpic(EPIC_ID2));
+        assertEquals(epic3, taskManager.getEpic(EPIC_ID3));
 
         //Неверные значения
         assertNull(taskManager.getEpic(100500L));
@@ -302,7 +305,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         Epic epic1_1 = new Epic(EPIC_ID1, "Эпик 4", "Описание 4");
         List<Epic> epics;
 
-        //Пустой список задач
+        //Пустой список
         assertFalse(taskManager.updateEpic(epic1_1));
         epics = taskManager.getListEpic();
         assertTrue(epics.isEmpty(), "Список должен быть пустой");
@@ -358,7 +361,6 @@ abstract  class TaskManagerTest <T extends TaskManager> {
 
         //Стандартное поведение
         taskManager.createEpic(epic2);
-        taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.createSubtask(subtask3);
         subtasks = taskManager.getListSubtaskFromEpic(EPIC_ID2);
@@ -377,46 +379,158 @@ abstract  class TaskManagerTest <T extends TaskManager> {
 
     @Test
     void getListSubtask() {
+        List<Subtask> subtasks;
+        //Пустой список
+        subtasks = taskManager.getListSubtask();
+        assertTrue(subtasks.isEmpty(), "Список Подзадач должен быть пустой");
+        taskManager.createEpic(epic3);
+        subtasks = taskManager.getListSubtask();
+        assertTrue(subtasks.isEmpty(), "Список Подзадач должен быть пустой");
 
+        //Стандартное поведение
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask3);
+
+        subtasks = taskManager.getListSubtask();
+        assertEquals(3, subtasks.size(), "Неверное количество Подзадач");
+        subtasks.sort(Comparator.comparing(Subtask::getId));
+        List<Subtask> expectedsubtasks = List.of(subtask1, subtask2, subtask3);
+        assertEquals(expectedsubtasks, subtasks, "Подзадач	не совпадают");
     }
 
     @Test
     void removeAllSubtask() {
-
-
-        //Пустой список
-
+        List<Subtask> subtask;
+        //пустой список
+        assertDoesNotThrow(taskManager::removeAllSubtask, "Не должно быть исключений");
+        subtask = taskManager.getListSubtask();
+        assertTrue(subtask.isEmpty(), "Список Подзадач должен быть пустой");
 
         //Стандартное поведение
-        //Неверные значения
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        taskManager.createEpic(epic3);
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask3);
+        taskManager.removeAllSubtask();
+        subtask = taskManager.getListSubtask();
+        assertTrue(subtask.isEmpty(), "Список Подзадач должен быть пустой");
     }
 
     @Test
     void getSubtask() {
         //Пустой список
+        assertNull(taskManager.getSubtask(SUBTASK_ID1));
+
         //Стандартное поведение
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask3);
+
+        assertEquals(subtask1, taskManager.getSubtask(SUBTASK_ID1));
+        assertEquals(subtask2, taskManager.getSubtask(SUBTASK_ID2));
+        assertEquals(subtask3, taskManager.getSubtask(SUBTASK_ID3));
+
         //Неверные значения
+        assertNull(taskManager.getSubtask(100500L));
+        assertNull(taskManager.getSubtask(null));
     }
 
     @Test
     void createSubtask() {
+        List<Subtask> subtasks;
+
         //Пустой список
+        subtasks = taskManager.getListSubtask();
+        assertTrue(subtasks.isEmpty(), "Список должен быть пустой");
+
         //Стандартное поведение
-        //Неверные значения
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        taskManager.createEpic(epic3);
+        assertTrue(taskManager.createSubtask(subtask1));
+        assertTrue(taskManager.createSubtask(subtask2));
+        assertTrue(taskManager.createSubtask(subtask3));
+
+        subtasks = taskManager.getListSubtask();
+        assertEquals(3, subtasks.size(), "Неверное количество Подзадач");
+        testAllFieldsTask(subtask1, taskManager.getSubtask(SUBTASK_ID1));
+        testAllFieldsTask(subtask2, taskManager.getSubtask(SUBTASK_ID2));
+        testAllFieldsTask(subtask3, taskManager.getSubtask(SUBTASK_ID3));
+
+        subtasks =  taskManager.getListSubtaskFromEpic(EPIC_ID1);
+        assertEquals(1, subtasks.size(), "Неверное количество подзадач");
+        assertEquals(subtask1, subtasks.get(0), "Подзадачи не совпадают");
+        subtasks =  taskManager.getListSubtaskFromEpic(EPIC_ID2);
+        assertEquals(2, subtasks.size(), "Неверное количество подзадач");
+        List<Subtask> expectedSubtask = List.of(subtask2, subtask3);
+        assertEquals(expectedSubtask, subtasks, "Подзадачи не совпадают");
+        subtasks = taskManager.getListSubtaskFromEpic(EPIC_ID3);
+        assertTrue(subtasks.isEmpty(), "Список подзадач должен быть пустой");
+
+        //Дубликат
+        assertFalse(taskManager.createSubtask(subtask1));
+        subtasks = taskManager.getListSubtask();
+        assertEquals(3, subtasks.size(), "Неверное количество Подзадач");
+
+        //Неверное значение
+        assertFalse(taskManager.createSubtask(null));
+        subtasks = taskManager.getListSubtask();
+        assertEquals(3, subtasks.size(), "Неверное количество Подзадач");
     }
 
     @Test
     void updateSubtask() {
+        Subtask subtask1_1 = new Subtask(SUBTASK_ID1, "Подзадача 100", "описание 100", TaskStatus.DONE, EPIC_ID1);
+        List<Subtask> subtasks;
+
         //Пустой список
+        assertFalse(taskManager.updateSubtask(subtask1_1));
+        subtasks = taskManager.getListSubtask();
+        assertTrue(subtasks.isEmpty(), "Список должен быть пустой");
+
         //Стандартное поведение
+        taskManager.createEpic(epic1);
+        taskManager.createSubtask(subtask1);
+        assertTrue(taskManager.updateSubtask(subtask1_1));
+        subtasks = taskManager.getListSubtask();
+        assertEquals(1, subtasks.size(), "Неверное количество");
+        testAllFieldsTask(subtask1_1, taskManager.getSubtask(SUBTASK_ID1));
+        assertEquals(TaskStatus.DONE, taskManager.getEpic(EPIC_ID1).getStatus());
+
         //Неверные значения
+        assertFalse(taskManager.updateSubtask(null));
+        assertFalse(taskManager.updateSubtask(subtask3));
     }
 
     @Test
     void removeSubtask() {
+        List<Subtask> subtasks;
+
         //Пустой список
+        assertFalse(taskManager.removeSubtask(SUBTASK_ID1));
+        subtasks = taskManager.getListSubtask();
+        assertTrue(subtasks.isEmpty(), "Список  должен быть пустой");
+
         //Стандартное поведение
+        taskManager.createEpic(epic1);
+        taskManager.createSubtask(subtask1);
+
+        assertTrue(taskManager.removeSubtask(SUBTASK_ID1));
+        subtasks = taskManager.getListSubtask();
+        assertTrue(subtasks.isEmpty(), "Список  должен быть пустой");
+        List<Long> idSubtasks = taskManager.getEpic(EPIC_ID1).getListSubtaskId();
+        assertTrue(idSubtasks.isEmpty(), "Список  должен быть пустой");
+
         //Неверные значения
+        assertFalse(taskManager.removeSubtask(null));
+        assertFalse(taskManager.removeSubtask(SUBTASK_ID1));
     }
 
     @Test
