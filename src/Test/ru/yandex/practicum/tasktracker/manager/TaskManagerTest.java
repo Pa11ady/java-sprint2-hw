@@ -588,6 +588,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
 
     @Test
     void testGenerateID() {
+        Long startID = InMemoryTaskManager.calcNextTaskId();
         final String MSG = "ID не совпадают";
         final Task task01 = new Task("44", "44", TaskStatus.NEW);
         final Task task02 = new Task("55", "55", TaskStatus.NEW);
@@ -595,8 +596,8 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         taskManager.createTask(task02);
         List<Task> tasks = taskManager.getListTask();
         tasks.sort(Comparator.comparing(Task::getId));
-        assertEquals(1, tasks.get(0).getId(), MSG);
-        assertEquals(2, tasks.get(1).getId(), MSG);
+        assertEquals(startID + 1, tasks.get(0).getId(), MSG);
+        assertEquals(startID + 2, tasks.get(1).getId(), MSG);
 
         final Epic epic03 = new Epic("66", "66");
         final Epic epic04 = new Epic("77", "77");
@@ -606,8 +607,8 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         epics.sort(Comparator.comparing(Epic::getId));
         Long epicID_03 = epics.get(0).getId();
         Long epicID_04 = epics.get(1).getId();
-        assertEquals(3, epicID_03, MSG);
-        assertEquals(4, epicID_04, MSG);
+        assertEquals(startID + 3, epicID_03, MSG);
+        assertEquals(startID + 4, epicID_04, MSG);
 
         final Subtask subtask05 = new Subtask("88", "88", TaskStatus.NEW, epicID_03);
         final Subtask subtask06 = new Subtask( "99", "99", TaskStatus.NEW, epicID_04);
@@ -615,7 +616,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         taskManager.createSubtask(subtask06);
         List<Subtask> subtasks = taskManager.getListSubtask();
         subtasks.sort(Comparator.comparing(Subtask::getId));
-        assertEquals(5, subtasks.get(0).getId(), MSG);
-        assertEquals(6, subtasks.get(1).getId(), MSG);
+        assertEquals(startID + 5, subtasks.get(0).getId(), MSG);
+        assertEquals(startID + 6, subtasks.get(1).getId(), MSG);
     }
 }

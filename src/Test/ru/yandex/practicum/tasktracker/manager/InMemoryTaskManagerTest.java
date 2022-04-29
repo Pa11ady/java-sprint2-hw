@@ -11,6 +11,10 @@ class InMemoryTaskManagerTest extends TaskManagerTest<InMemoryTaskManager>  {
 
     @Test
     void calcNextTaskId() {
+        final String MSG = "ID не совпадают";
+        Long startID = InMemoryTaskManager.calcNextTaskId();
+        for (int i = 1; i <= 10; i++) {
+            assertEquals(startID + i, InMemoryTaskManager.calcNextTaskId(), MSG);
+        }
     }
-
 }
