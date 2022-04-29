@@ -27,7 +27,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     public InMemoryTaskManager() {
         //для совместимости со старыми тестами или кодом
-        historyManager = Managers.getDefaultHistory();
+        historyManager = new InMemoryHistoryManager();
     }
 
     public InMemoryTaskManager(HistoryManager historyManager) {

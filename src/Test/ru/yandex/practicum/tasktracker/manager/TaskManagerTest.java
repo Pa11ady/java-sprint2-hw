@@ -50,7 +50,6 @@ abstract  class TaskManagerTest <T extends TaskManager> {
 
     @BeforeEach
     void setUp() {
-
     }
 
     private void testAllFieldsTask(Task taskA, Task taskB) {
@@ -535,7 +534,57 @@ abstract  class TaskManagerTest <T extends TaskManager> {
 
     @Test
     void getHistory() {
+        List<Task> tasks;
+
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask3);
         //Пустой список
+        tasks = taskManager.getHistory();
+        assertTrue(tasks.isEmpty(), "Список  должен быть пустой");
+
         //Стандартное поведение
+        taskManager.getTask(task1.getId());
+        taskManager.getTask(task2.getId());
+        taskManager.getEpic(epic1.getId());
+        taskManager.getEpic(epic2.getId());
+        taskManager.getSubtask(subtask1.getId());
+        taskManager.getSubtask(subtask2.getId());
+        taskManager.getSubtask(subtask3.getId());
+        tasks = taskManager.getHistory();
+        List<Task> expectedTasks = List.of( task1, task2, epic1, epic2, subtask1, subtask2, subtask3);
+        assertEquals(expectedTasks, tasks);
+
+        //дубликаты
+        taskManager.getTask(task1.getId());
+        taskManager.getEpic(epic2.getId());
+        taskManager.getSubtask(subtask3.getId());
+        taskManager.getSubtask(subtask3.getId());
+        taskManager.getSubtask(subtask3.getId());
+        tasks = taskManager.getHistory();
+        expectedTasks = List.of(task2, epic1,  subtask1, subtask2, task1, epic2, subtask3);
+        assertEquals(expectedTasks, tasks);
+
+        //удаление
+        taskManager.removeTask(task2.getId());
+        taskManager.removeEpic(epic1.getId());
+        taskManager.removeSubtask(subtask3.getId());
+        tasks = taskManager.getHistory();
+        expectedTasks = List.of(subtask2, task1, epic2);
+        assertEquals(expectedTasks, tasks);
+
+        //Неверные значения
+        taskManager.getTask(null);
+        taskManager.getEpic(null);
+        taskManager.getSubtask(null);
+        taskManager.getTask(task2.getId());
+        taskManager.getEpic(epic1.getId());
+        taskManager.getSubtask(subtask3.getId());
+        tasks = taskManager.getHistory();
+        assertEquals(expectedTasks, tasks);
     }
 }
