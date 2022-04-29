@@ -1,7 +1,6 @@
 package ru.yandex.practicum.tasktracker.manager;
 
 import ru.yandex.practicum.tasktracker.exception.ManagerSaveException;
-import ru.yandex.practicum.tasktracker.mainapp.Main;
 import ru.yandex.practicum.tasktracker.task.*;
 
 import java.io.File;
@@ -316,7 +315,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println("подзадача2 " + taskManager.getSubtask(subtaskId2));
         taskManager.removeEpic(idEpic2);
         System.out.println("\n========В ФАЙЛ========");
-        Main.printHistory(taskManager.getHistory());
+
         System.out.println("Задачи: " + taskManager.getListTask());
         System.out.println("Подзадачи: " + taskManager.getListSubtask());
         System.out.println("Эпики: " + taskManager.getListEpic());
@@ -328,7 +327,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println("-------------------");
 
         System.out.println("\n========ИЗ ФАЙЛА========");
-        Main.printHistory(taskManager.getHistory());
+
         System.out.println("Задачи: " + taskManager.getListTask());
         System.out.println("Подзадачи: " + taskManager.getListSubtask());
         System.out.println("Эпики: " + taskManager.getListEpic());

@@ -9,6 +9,10 @@ public class Task {
     private String description;
     private TaskStatus status;
 
+    public Task(String name, String description, TaskStatus status) {
+        this(null, name, description, status);
+    }
+
     public Task(Long id, String name, String description, TaskStatus status) {
         this.id = id;
         this.name = name;

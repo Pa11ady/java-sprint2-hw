@@ -34,10 +34,9 @@ abstract  class TaskManagerTest <T extends TaskManager> {
     final Epic epic2 = new Epic(EPIC_ID2, "Эпик2", "Эпик 2 описание");
     final Epic epic3 = new Epic(EPIC_ID3, "Эпик2", "Эпик 3 описание");
 
-    Subtask subtask1 = new Subtask(SUBTASK_ID1, "Подзадача 1.1", "описание 1", TaskStatus.NEW, EPIC_ID1);
-    Subtask subtask2 = new Subtask(SUBTASK_ID2, "Подзадача 2.1", "описание 2.1", TaskStatus.NEW, EPIC_ID2);
-    Subtask subtask3 = new Subtask(SUBTASK_ID3, "Подзадача 2.2", "просто 2.2", TaskStatus.NEW, EPIC_ID2);
-
+    final Subtask subtask1 = new Subtask(SUBTASK_ID1, "Подзадача 1.1", "описание 1", TaskStatus.NEW, EPIC_ID1);
+    final Subtask subtask2 = new Subtask(SUBTASK_ID2, "Подзадача 2.1", "описание 2.1", TaskStatus.NEW, EPIC_ID2);
+    final Subtask subtask3 = new Subtask(SUBTASK_ID3, "Подзадача 2.2", "просто 2.2", TaskStatus.NEW, EPIC_ID2);
 
     public TaskManagerTest(T taskManager) {
         this.taskManager = taskManager;
@@ -45,7 +44,6 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         epic1.addSubtask(SUBTASK_ID1);
         epic2.addSubtask(SUBTASK_ID2);
         epic2.addSubtask(SUBTASK_ID3);
-
     }
 
     @BeforeEach
@@ -586,5 +584,38 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         taskManager.getSubtask(subtask3.getId());
         tasks = taskManager.getHistory();
         assertEquals(expectedTasks, tasks);
+    }
+
+    @Test
+    void testGenerateID() {
+        final String MSG = "ID не совпадают";
+        final Task task01 = new Task("44", "44", TaskStatus.NEW);
+        final Task task02 = new Task("55", "55", TaskStatus.NEW);
+        taskManager.createTask(task01);
+        taskManager.createTask(task02);
+        List<Task> tasks = taskManager.getListTask();
+        tasks.sort(Comparator.comparing(Task::getId));
+        assertEquals(1, tasks.get(0).getId(), MSG);
+        assertEquals(2, tasks.get(1).getId(), MSG);
+
+        final Epic epic03 = new Epic("66", "66");
+        final Epic epic04 = new Epic("77", "77");
+        taskManager.createEpic(epic03);
+        taskManager.createEpic(epic04);
+        List<Epic> epics = taskManager.getListEpic();
+        epics.sort(Comparator.comparing(Epic::getId));
+        Long epicID_03 = epics.get(0).getId();
+        Long epicID_04 = epics.get(1).getId();
+        assertEquals(3, epicID_03, MSG);
+        assertEquals(4, epicID_04, MSG);
+
+        final Subtask subtask05 = new Subtask("88", "88", TaskStatus.NEW, epicID_03);
+        final Subtask subtask06 = new Subtask( "99", "99", TaskStatus.NEW, epicID_04);
+        taskManager.createSubtask(subtask05);
+        taskManager.createSubtask(subtask06);
+        List<Subtask> subtasks = taskManager.getListSubtask();
+        subtasks.sort(Comparator.comparing(Subtask::getId));
+        assertEquals(5, subtasks.get(0).getId(), MSG);
+        assertEquals(6, subtasks.get(1).getId(), MSG);
     }
 }
