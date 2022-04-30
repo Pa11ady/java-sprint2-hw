@@ -14,29 +14,29 @@ import static org.junit.jupiter.api.Assertions.*;
 abstract  class TaskManagerTest <T extends TaskManager> {
     protected T taskManager;
 
-    final Long TASK_ID1 = 10L;
-    final Long TASK_ID2 = 20L;
-    final Long TASK_ID3 = 30L;
+    protected final Long TASK_ID1 = 10L;
+    protected final Long TASK_ID2 = 20L;
+    protected final Long TASK_ID3 = 30L;
 
-    final long EPIC_ID1 = 40L;
-    final long EPIC_ID2 = 50L;
-    final long EPIC_ID3 = 60L;
+    protected final long EPIC_ID1 = 40L;
+    protected final long EPIC_ID2 = 50L;
+    protected final long EPIC_ID3 = 60L;
 
-    final Long SUBTASK_ID1 = 100L;
-    final Long SUBTASK_ID2 = 200L;
-    final Long SUBTASK_ID3 = 300L;
+    protected final Long SUBTASK_ID1 = 100L;
+    protected final Long SUBTASK_ID2 = 200L;
+    protected final Long SUBTASK_ID3 = 300L;
 
-    final Task task1 = new Task(TASK_ID1, "задача коробки", "Найти коробки", TaskStatus.NEW);
-    final Task task2 = new Task(TASK_ID2, "задача вещи", "Собрать вещи", TaskStatus.DONE);
-    final Task task3 = new Task(TASK_ID3, "задача прочитать главу", "Прочитать главу книги", TaskStatus.IN_PROGRESS);
+    protected final Task task1 = new Task(TASK_ID1, "задача коробки", "Найти коробки", TaskStatus.NEW);
+    protected final Task task2 = new Task(TASK_ID2, "задача вещи", "Собрать вещи", TaskStatus.DONE);
+    protected final Task task3 = new Task(TASK_ID3, "задача прочитать главу", "Прочитать главу книги", TaskStatus.IN_PROGRESS);
 
-    final Epic epic1 = new Epic(EPIC_ID1, "Эпик1", "Эпик 1 описание");
-    final Epic epic2 = new Epic(EPIC_ID2, "Эпик2", "Эпик 2 описание");
-    final Epic epic3 = new Epic(EPIC_ID3, "Эпик2", "Эпик 3 описание");
+    protected final Epic epic1 = new Epic(EPIC_ID1, "Эпик1", "Эпик 1 описание");
+    protected final Epic epic2 = new Epic(EPIC_ID2, "Эпик2", "Эпик 2 описание");
+    protected final Epic epic3 = new Epic(EPIC_ID3, "Эпик2", "Эпик 3 описание");
 
-    final Subtask subtask1 = new Subtask(SUBTASK_ID1, "Подзадача 1.1", "описание 1", TaskStatus.NEW, EPIC_ID1);
-    final Subtask subtask2 = new Subtask(SUBTASK_ID2, "Подзадача 2.1", "описание 2.1", TaskStatus.NEW, EPIC_ID2);
-    final Subtask subtask3 = new Subtask(SUBTASK_ID3, "Подзадача 2.2", "просто 2.2", TaskStatus.NEW, EPIC_ID2);
+    protected final Subtask subtask1 = new Subtask(SUBTASK_ID1, "Подзадача 1.1", "описание 1", TaskStatus.NEW, EPIC_ID1);
+    protected final Subtask subtask2 = new Subtask(SUBTASK_ID2, "Подзадача 2.1", "описание 2.1", TaskStatus.NEW, EPIC_ID2);
+    protected final Subtask subtask3 = new Subtask(SUBTASK_ID3, "Подзадача 2.2", "просто 2.2", TaskStatus.NEW, EPIC_ID2);
 
     public TaskManagerTest(T taskManager) {
         this.taskManager = taskManager;
@@ -50,7 +50,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
     void setUp() {
     }
 
-    private void testAllFieldsTask(Task taskA, Task taskB) {
+    protected void testAllFieldsTask(Task taskA, Task taskB) {
         String message = taskA.getClass().getSimpleName() + " не совпадают";
         assertEquals(taskA, taskB, message); //быстрая проверка
         assertAll(
@@ -555,7 +555,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         taskManager.getSubtask(subtask3.getId());
         tasks = taskManager.getHistory();
         List<Task> expectedTasks = List.of( task1, task2, epic1, epic2, subtask1, subtask2, subtask3);
-        assertEquals(expectedTasks, tasks);
+        assertEquals(expectedTasks, tasks, "История не совпадает");
 
         //дубликаты
         taskManager.getTask(task1.getId());
@@ -565,7 +565,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         taskManager.getSubtask(subtask3.getId());
         tasks = taskManager.getHistory();
         expectedTasks = List.of(task2, epic1,  subtask1, subtask2, task1, epic2, subtask3);
-        assertEquals(expectedTasks, tasks);
+        assertEquals(expectedTasks, tasks, "История не совпадает");
 
         //удаление
         taskManager.removeTask(task2.getId());
@@ -573,7 +573,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         taskManager.removeSubtask(subtask3.getId());
         tasks = taskManager.getHistory();
         expectedTasks = List.of(subtask2, task1, epic2);
-        assertEquals(expectedTasks, tasks);
+        assertEquals(expectedTasks, tasks, "История не совпадает");
 
         //Неверные значения
         taskManager.getTask(null);
@@ -583,7 +583,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         taskManager.getEpic(epic1.getId());
         taskManager.getSubtask(subtask3.getId());
         tasks = taskManager.getHistory();
-        assertEquals(expectedTasks, tasks);
+        assertEquals(expectedTasks, tasks, "История не совпадает");
     }
 
     @Test
