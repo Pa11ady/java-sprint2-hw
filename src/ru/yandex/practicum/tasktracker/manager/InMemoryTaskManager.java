@@ -25,6 +25,12 @@ public class InMemoryTaskManager implements TaskManager {
         return ++lastTaskId;
     }
 
+    private void updateLastTaskId(long lastTaskId ) {
+        if (InMemoryTaskManager.lastTaskId < lastTaskId ) {
+            InMemoryTaskManager.lastTaskId = lastTaskId;
+        }
+    }
+
     public InMemoryTaskManager() {
         //для совместимости со старыми тестами или кодом
         historyManager = new InMemoryHistoryManager();
@@ -74,6 +80,8 @@ public class InMemoryTaskManager implements TaskManager {
         task = new Task(task);
         if (task.getId() == null) {
             task.setId(calcNextTaskId());
+        } else {
+            updateLastTaskId(task.getId());
         }
         taskMap.put(task.getId(), task);
         return true;
@@ -140,6 +148,8 @@ public class InMemoryTaskManager implements TaskManager {
         epic = new Epic(epic);
         if (epic.getId() == null) {
             epic.setId(calcNextTaskId());
+        } else {
+            updateLastTaskId(epic.getId());
         }
         //Новый эпик не должен содержать подзадачи
         epic.removeAllSubtask();
@@ -272,7 +282,9 @@ public class InMemoryTaskManager implements TaskManager {
         //Локально копируем, чтобы не меняли снаружи
         subtask = new Subtask(subtask);
         if (subtask.getId() == null) {
-            subtask.setId(InMemoryTaskManager.calcNextTaskId());
+            subtask.setId(calcNextTaskId());
+        } else {
+            updateLastTaskId(subtask.getId());
         }
         epic.addSubtask(subtask.getId());
         subtaskMap.put(subtask.getId(), subtask);

@@ -7,6 +7,6 @@ id,type,name,status,description,epic
 60,EPIC,Эпик2,NEW,Эпик 3 описание
 100,SUBTASK,Подзадача 1.1,NEW,описание 1,40
 200,SUBTASK,Подзадача 2.1,NEW,описание 2.1,50
-300,SUBTASK,Подзадача 2.2,NEW,просто 2.2,50
+3000,SUBTASK,Подзадача 2.2,NEW,просто 2.2,50
 
 

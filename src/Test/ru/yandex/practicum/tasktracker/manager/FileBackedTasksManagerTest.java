@@ -137,6 +137,8 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
         tasks = readFileBackedTasksManager.getHistory();
         List<Task> expectedTasks = List.of(task1, epic1, epic3, subtask1);
         assertEquals(expectedTasks, tasks, "История не совпадает");
+
+        assertTrue(InMemoryTaskManager.calcNextTaskId()>= SUBTASK_ID3, "Внутренний счётчик не обновился");
     }
 
     private void testEpicWithoutSubtasks(FileBackedTasksManager readFileBackedTasksManager) {

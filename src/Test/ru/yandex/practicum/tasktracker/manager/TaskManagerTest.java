@@ -24,7 +24,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
 
     protected final Long SUBTASK_ID1 = 100L;
     protected final Long SUBTASK_ID2 = 200L;
-    protected final Long SUBTASK_ID3 = 300L;
+    protected final Long SUBTASK_ID3 = 3000L;
 
     protected final Task task1 = new Task(TASK_ID1, "задача коробки", "Найти коробки", TaskStatus.NEW);
     protected final Task task2 = new Task(TASK_ID2, "задача вещи", "Собрать вещи", TaskStatus.DONE);

@@ -267,7 +267,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         final String PATH = "resources" + File.separator + "tasks.csv";
         final File file = new File(PATH);
         //Заполняем файл
-        testFinalSprint5_1(new FileBackedTasksManager(file, new InMemoryHistoryManager()));
+       // testFinalSprint5_1(new FileBackedTasksManager(file, new InMemoryHistoryManager()));
         //Читаем файл
         testFinalSprint5_2(loadFromFile(file));
     }
@@ -279,13 +279,13 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         taskManager.removeAllEpic();
         taskManager.removeAllTask();
 
-        Task task1 = new Task(null, "задача коробки", "Найти коробки", TaskStatus.IN_PROGRESS);
+        Task task1 = new Task(10L, "задача коробки", "Найти коробки", TaskStatus.IN_PROGRESS);
         Task task2 = new Task(null, "задача вещи", "Собрать вещи", TaskStatus.DONE);
         taskManager.createTask(task1);
         taskManager.createTask(task2);
 
         Epic epic1 = new Epic(null, "Эпик Спринт 4", "Завершить спринт 4", TaskStatus.NEW);
-        Epic epic2 = new Epic(null, "Эпик Спринт 5", "Доделать спринт 5", TaskStatus.NEW);
+        Epic epic2 = new Epic(100L, "Эпик Спринт 5", "Доделать спринт 5", TaskStatus.NEW);
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
         List<Epic> epics = taskManager.getListEpic();
@@ -335,6 +335,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         System.out.println("Задачи: " + taskManager.getListTask());
         System.out.println("Подзадачи: " + taskManager.getListSubtask());
         System.out.println("Эпики: " + taskManager.getListEpic());
+        System.out.println(InMemoryTaskManager.calcNextTaskId());
     }
 
 }
