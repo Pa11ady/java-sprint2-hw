@@ -1,8 +1,0 @@
-id,type,name,status,description,epic
-1,TASK,задача коробки,IN_PROGRESS,Найти коробки
-2,TASK,задача вещи,DONE,Собрать вещи
-3,EPIC,Эпик Спринт 4,IN_PROGRESS,Завершить спринт 4
-5,SUBTASK,Подзадача 1.1,DONE,Выучить теорию 1,3
-6,SUBTASK,Подзадача 1.2,IN_PROGRESS,просто подзадача 1.1,3
-
-1,2,3,5,6
