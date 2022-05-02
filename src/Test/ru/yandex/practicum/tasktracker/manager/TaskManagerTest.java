@@ -7,6 +7,8 @@ import ru.yandex.practicum.tasktracker.task.Subtask;
 import ru.yandex.practicum.tasktracker.task.Task;
 import ru.yandex.practicum.tasktracker.task.TaskStatus;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -26,9 +28,17 @@ abstract  class TaskManagerTest <T extends TaskManager> {
     protected final Long SUBTASK_ID2 = 200L;
     protected final Long SUBTASK_ID3 = 3000L;
 
+    protected final LocalDateTime taskDate2 = LocalDateTime.of(2020, 3, 3, 11, 0);
+    protected final LocalDateTime taskDate3 = LocalDateTime.of(2020, 3, 3, 3, 0);
+
+    protected final Duration taskDuration2 = Duration.ofHours(3);
+    protected final Duration taskDuration3 = Duration.ofMinutes(50);
+
     protected final Task task1 = new Task(TASK_ID1, "задача коробки", "Найти коробки", TaskStatus.NEW);
-    protected final Task task2 = new Task(TASK_ID2, "задача вещи", "Собрать вещи", TaskStatus.DONE);
-    protected final Task task3 = new Task(TASK_ID3, "задача прочитать главу", "Прочитать главу книги", TaskStatus.IN_PROGRESS);
+    protected final Task task2 = new Task(TASK_ID2, "задача вещи", "Собрать вещи", TaskStatus.DONE,
+            taskDuration2, taskDate2);
+    protected final Task task3 = new Task(TASK_ID3, "задача прочитать главу", "Прочитать главу книги",
+            TaskStatus.IN_PROGRESS, taskDuration3, taskDate3);
 
     protected final Epic epic1 = new Epic(EPIC_ID1, "Эпик1", "Эпик 1 описание");
     protected final Epic epic2 = new Epic(EPIC_ID2, "Эпик2", "Эпик 2 описание");
@@ -57,7 +67,9 @@ abstract  class TaskManagerTest <T extends TaskManager> {
                 () -> assertEquals(taskA.getId(), taskB.getId(), message),
                 () -> assertEquals(taskA.getName(), taskB.getName(), message),
                 () -> assertEquals(taskA.getDescription(), taskB.getDescription(), message),
-                () -> assertEquals(taskA.getStatus(), taskB.getStatus(), message)
+                () -> assertEquals(taskA.getStatus(), taskB.getStatus(), message),
+                () -> assertEquals(taskA.getDuration(), taskB.getDuration(), message),
+                () -> assertEquals(taskA.getStartTime(), taskB.getStartTime(), message)
         );
 
         if (taskA instanceof Epic && taskB instanceof Epic) {
@@ -134,20 +146,28 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         //Стандартное поведение
         assertTrue(taskManager.createTask(task1));
         assertTrue(taskManager.createTask(task2));
+        assertTrue(taskManager.createTask(task3));
         tasks = taskManager.getListTask();
-        assertEquals(2, tasks.size(), "Неверное количество задач");
+        assertEquals(3, tasks.size(), "Неверное количество задач");
         testAllFieldsTask(task1, taskManager.getTask(TASK_ID1));
         testAllFieldsTask(task2, taskManager.getTask(TASK_ID2));
+        testAllFieldsTask(task3, taskManager.getTask(TASK_ID3));
+
+        LocalDateTime endDate2 = LocalDateTime.of(2020, 3, 3, 14, 0);
+        LocalDateTime endDate3 = LocalDateTime.of(2020, 3, 3, 3, 50);
+        assertNull(task1.getEndTime());
+        assertEquals(endDate2, task2.getEndTime());
+        assertEquals(endDate3, task3.getEndTime());
 
         //Дубликат
         assertFalse(taskManager.createTask(task1));
         tasks = taskManager.getListTask();
-        assertEquals(2, tasks.size(), "Неверное количество задач");
+        assertEquals(3, tasks.size(), "Неверное количество задач");
 
         //Неверное значение
         assertFalse(taskManager.createTask(null));
         tasks = taskManager.getListTask();
-        assertEquals(2, tasks.size(), "Неверное количество задач");
+        assertEquals(3, tasks.size(), "Неверное количество задач");
     }
 
     @Test
@@ -394,8 +414,8 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         subtasks = taskManager.getListSubtask();
         assertEquals(3, subtasks.size(), "Неверное количество Подзадач");
         subtasks.sort(Comparator.comparing(Subtask::getId));
-        List<Subtask> expectedsubtasks = List.of(subtask1, subtask2, subtask3);
-        assertEquals(expectedsubtasks, subtasks, "Подзадач	не совпадают");
+        List<Subtask> expectedSubtasks = List.of(subtask1, subtask2, subtask3);
+        assertEquals(expectedSubtasks, subtasks, "Подзадач	не совпадают");
     }
 
     @Test

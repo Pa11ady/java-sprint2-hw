@@ -1,5 +1,7 @@
 package ru.yandex.practicum.tasktracker.task;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 //Решил максимально сузить область видимости, чтобы наследование не нарушало инкапсуляцию
@@ -9,19 +11,32 @@ public class Task {
     private String description;
     private TaskStatus status;
 
+    private Duration duration;
+    private LocalDateTime startTime;
+
     public Task(String name, String description, TaskStatus status) {
-        this(null, name, description, status);
+        this(null, name, description, status, null, null);
     }
 
     public Task(Long id, String name, String description, TaskStatus status) {
+        this(id, name, description, status, null, null);
+    }
+
+    public Task(String name, String description, TaskStatus status, Duration duration, LocalDateTime startTime) {
+        this(null, name, description, status, duration, startTime);
+    }
+
+    public Task(Long id, String name, String description, TaskStatus status, Duration duration, LocalDateTime startTime) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.status = status;
+        this.duration = duration;
+        this.startTime = startTime;
     }
 
     public Task(Task task) {
-        this(task.id, task.name, task.description, task.status);
+        this(task.id, task.name, task.description, task.status, task.duration, task.startTime);
     }
 
     public Long getId() {
@@ -60,8 +75,36 @@ public class Task {
         return TaskType.TASK;
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public  LocalDateTime getEndTime() {
+        if (startTime == null || duration == null) {
+            return  null;
+        }
+
+        return startTime.plus(duration);
+    }
+
     public String toStringCSV() {
-        return String.join(",", id.toString(), getType().toString(), name, status.toString(), description);
+        String duration = this.duration != null ? this.duration.toString() : " ";
+        String startTime = this.startTime != null ? this.startTime.toString() : " ";
+
+        return String.join(",", id.toString(), getType().toString(), name, status.toString(), description,
+                duration, startTime);
     }
 
     @Override

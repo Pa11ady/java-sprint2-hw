@@ -1,6 +1,8 @@
 package ru.yandex.practicum.tasktracker.task;
 
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -10,19 +12,29 @@ public class Epic extends Task {
     private final Set<Long> subtaskSet = new HashSet<>();
 
     public Epic(String name, String description) {
-        super(null, name, description, TaskStatus.NEW);
+        super(name, description, TaskStatus.NEW);
     }
 
     public Epic(Long id, String name, String description) {
         super(id, name, description, TaskStatus.NEW);
     }
 
-    public Epic(Long id, String name, String description, TaskStatus status) {
-        super(id, name, description, status);
+    public Epic(Long id, String name, String description, TaskStatus taskStatus) {
+        super(id, name, description, taskStatus);
+    }
+
+    public Epic(String name, String description, TaskStatus status, Duration duration, LocalDateTime startTime) {
+        super(name, description, status, duration, startTime);
+    }
+
+    public Epic(Long id, String name, String description, TaskStatus status, Duration duration,
+                LocalDateTime startTime) {
+        super(id, name, description, status, duration, startTime);
     }
 
     public Epic(Epic epic) {
-        this(epic.getId(), epic.getName(), epic.getDescription(), epic.getStatus());
+        this(epic.getId(), epic.getName(), epic.getDescription(), epic.getStatus(), epic.getDuration(),
+                epic.getStartTime());
         subtaskSet.addAll(epic.subtaskSet);
     }
 
