@@ -4,6 +4,8 @@ import ru.yandex.practicum.tasktracker.task.Epic;
 import ru.yandex.practicum.tasktracker.task.Subtask;
 import ru.yandex.practicum.tasktracker.task.Task;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public interface TaskManager {
@@ -48,6 +50,8 @@ public interface TaskManager {
     boolean updateSubtask(Subtask subtask);
 
     boolean removeSubtask(Long id);
+
+    Collection<Task> getPrioritizedTasks();
 
     //История--------------------------------------------------------
     List<Task> getHistory();

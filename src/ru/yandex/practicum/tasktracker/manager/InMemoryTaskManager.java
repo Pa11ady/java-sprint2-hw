@@ -20,6 +20,9 @@ public class InMemoryTaskManager implements TaskManager {
     private final Map<Long, Subtask> subtaskMap = new HashMap<>();
     private final HistoryManager historyManager;
 
+    private final SortedSet<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(Task::getStartTime,
+            Comparator.nullsLast(Comparator.naturalOrder())).thenComparing(Task::getId));
+
     public static Long calcNextTaskId() {
         return ++lastTaskId;
     }
@@ -48,6 +51,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
    public void removeAllTask() {
+        removePrioritizedTasks(taskMap);
         removeHistory(taskMap);
         taskMap.clear();
     }
@@ -82,6 +86,7 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             updateLastTaskId(task.getId());
         }
+        prioritizedTasks.add(task);
         taskMap.put(task.getId(), task);
         return true;
     }
@@ -91,20 +96,28 @@ public class InMemoryTaskManager implements TaskManager {
         if (task == null) {
             return false;
         }
+        Task oldTask = getTaskLocal(task.getId());
         // Если задача не существует нечего обновлять. Возврат ложь.
-        if (getTaskLocal(task.getId()) == null) {
+        if (oldTask == null) {
             return false;
         }
         // локально копируем, чтобы не меняли снаружи
         task = new Task(task);
+        prioritizedTasks.remove(oldTask);
+        prioritizedTasks.add(task);
         taskMap.put(task.getId(), task);
         return true;
     }
 
     @Override
     public boolean removeTask(Long id) {
-        historyManager.remove(id);
-        return taskMap.remove(id) != null;
+       Task task = getTaskLocal(id);
+       if (task == null) {
+           return false;
+       }
+       prioritizedTasks.remove(task);
+       historyManager.remove(id);
+       return taskMap.remove(id) != null;
     }
 
     //Эпики----------------------------------------------------------
@@ -115,6 +128,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeAllEpic() {
+        removePrioritizedTasks(epicMap);
         removeHistory(epicMap);
         epicMap.clear();
         removeHistory(subtaskMap);
@@ -154,6 +168,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.removeAllSubtask();
         //Т. З. если у эпика нет подзадач или все они имеют статус NEW, то статус должен быть NEW
         epic.setStatus(TaskStatus.NEW);
+        prioritizedTasks.add(epic);
         epicMap.put(epic.getId(), epic);
         return true;
     }
@@ -163,18 +178,22 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic == null) {
             return false;
         }
+        Epic oldEpic = getEpicLocal(epic.getId());
        //Если эпик не существует нечего обновлять. Возврат ложь.
-       if (getEpicLocal(epic.getId()) == null) {
+       if (oldEpic == null) {
            return false;
        }
        epic = new Epic(epic);
+       prioritizedTasks.remove(oldEpic);
+       prioritizedTasks.add(epic);
        epicMap.put(epic.getId(), epic);
        return  true;
    }
 
     private boolean updateEpicLocal(Epic epic) {
+        Epic oldEpic = getEpicLocal(epic.getId());
         //Если эпик не существует нечего обновлять. Возврат ложь.
-        if (getEpicLocal(epic.getId()) == null) {
+        if (oldEpic == null) {
             return false;
         }
 
@@ -197,6 +216,8 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             epic.setStatus(TaskStatus.IN_PROGRESS);
         }
+        prioritizedTasks.remove(oldEpic);
+        prioritizedTasks.add(epic);
         epicMap.put(epic.getId(), epic);
         return  true;
     }
@@ -207,11 +228,18 @@ public class InMemoryTaskManager implements TaskManager {
         if (epic == null) {
             return false;
         }
+
         List<Long> listSubtaskId = epic.getListSubtaskId();
         for (Long subtaskId : listSubtaskId) {
+            Task task = getTaskLocal(id);
+            if (task != null) {
+                prioritizedTasks.remove(task);
+            }
             historyManager.remove(subtaskId);
             subtaskMap.remove(subtaskId);
+
         }
+        prioritizedTasks.remove(epic);
         historyManager.remove(id);
         return epicMap.remove(id) != null;
     }
@@ -250,6 +278,7 @@ public class InMemoryTaskManager implements TaskManager {
                 epics.add(epic);
             }
         }
+        removePrioritizedTasks(subtaskMap);
         removeHistory(subtaskMap);
         subtaskMap.clear();
         for (Epic epic : epics) {
@@ -290,6 +319,7 @@ public class InMemoryTaskManager implements TaskManager {
             updateLastTaskId(subtask.getId());
         }
         epic.addSubtask(subtask.getId());
+        prioritizedTasks.add(subtask);
         subtaskMap.put(subtask.getId(), subtask);
         //обновляем родителя
         updateEpicLocal(epic);
@@ -301,8 +331,9 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask == null) {
             return false;
         }
+        Subtask oldSubtask = getSubtaskLocal(subtask.getId());
         // Если подзадача не существует, нечего не обновляем. Возврат ложь.
-        if (getSubtaskLocal(subtask.getId()) == null)  {
+        if (oldSubtask == null)  {
             return false;
         }
         Epic epic = getEpicLocal(subtask.getParentId());
@@ -313,6 +344,8 @@ public class InMemoryTaskManager implements TaskManager {
         //Локально копируем, чтобы не меняли снаружи
         subtask = new Subtask(subtask);
         epic.addSubtask(subtask.getId());
+        prioritizedTasks.remove(oldSubtask);
+        prioritizedTasks.add(subtask);
         subtaskMap.put(subtask.getId(), subtask);
         //обновляем родителя
         updateEpicLocal(epic);
@@ -326,6 +359,7 @@ public class InMemoryTaskManager implements TaskManager {
             return  false;
         }
         Epic epic = getEpicLocal(subtask.getParentId());
+        prioritizedTasks.remove(subtask);
         historyManager.remove(id);
         subtaskMap.remove(id);
         if (epic != null) {
@@ -364,8 +398,8 @@ public class InMemoryTaskManager implements TaskManager {
         for (Task task : map.values()) {
             historyManager.remove(task.getId());
         }
-
     }
+
     private Duration getSumDuration(List<Subtask> subtaskList) {
         if (subtaskList.isEmpty()) {
             return null;
@@ -409,6 +443,22 @@ public class InMemoryTaskManager implements TaskManager {
             return subtask.getStartTime();
         }
         return null;
+    }
+
+    @Override
+    public Collection <Task>  getPrioritizedTasks() {
+        return prioritizedTasks;
+    }
+
+
+
+    private void removePrioritizedTasks(Map<Long, ? extends Task> map) {
+        if (map == null) {
+            return;
+        }
+        for (Task task : map.values()) {
+            prioritizedTasks.remove(task);
+        }
     }
 
     @Override
