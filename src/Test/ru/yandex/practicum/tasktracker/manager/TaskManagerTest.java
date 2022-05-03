@@ -2,6 +2,7 @@ package ru.yandex.practicum.tasktracker.manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.tasktracker.exception.ManagerTaskValidationException;
 import ru.yandex.practicum.tasktracker.task.Epic;
 import ru.yandex.practicum.tasktracker.task.Subtask;
 import ru.yandex.practicum.tasktracker.task.Task;
@@ -50,7 +51,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
 
     protected final Epic epic1 = new Epic(EPIC_ID1, "Эпик1", "Эпик 1 описание");
     protected final Epic epic2 = new Epic(EPIC_ID2, "Эпик2", "Эпик 2 описание", epicDuration2, subtaskDate3);
-    protected final Epic epic3 = new Epic(EPIC_ID3, "Эпик2", "Эпик 3 описание");
+    protected final Epic epic3 = new Epic(EPIC_ID3, "Эпик3", "Эпик 3 описание");
 
     protected final Subtask subtask1 = new Subtask(SUBTASK_ID1, "Подзадача 1.1", "описание 1", TaskStatus.NEW, EPIC_ID1);
     protected final Subtask subtask2 = new Subtask(SUBTASK_ID2, "Подзадача 2.1", "описание 2.1",
@@ -178,6 +179,11 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         assertFalse(taskManager.createTask(null));
         tasks = taskManager.getListTask();
         assertEquals(3, tasks.size(), "Неверное количество задач");
+
+        final LocalDateTime taskDate4 = LocalDateTime.of(2020, 3, 3, 11, 0);
+        final Duration taskDuration4 = Duration.ofHours(1);
+        final Task task4 = new Task("Задача 4", "Задача 4", TaskStatus.NEW, taskDuration4, taskDate4);
+        assertThrows(ManagerTaskValidationException.class, () -> taskManager.createTask(task4));
     }
 
     @Test
@@ -202,6 +208,16 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         //Неверные значения
         assertFalse(taskManager.updateTask(null));
         assertFalse(taskManager.updateTask(task3));
+
+        //Проверка валидации
+        taskManager.removeAllTask();
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+        taskManager.createTask(task3);
+        final LocalDateTime taskDate4 =  LocalDateTime.of(2020, 3, 3, 3, 1);
+        final Duration taskDuration4 = Duration.ofHours(1);
+        final Task task4 = new Task(TASK_ID1,"Задача 4", "Задача 4", TaskStatus.NEW, taskDuration4, taskDate4);
+        assertThrows(ManagerTaskValidationException.class, () -> taskManager.updateTask(task4));
     }
 
     @Test
@@ -579,6 +595,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.createSubtask(subtask3);
+
         //Пустой список
         tasks = taskManager.getHistory();
         assertTrue(tasks.isEmpty(), "Список  должен быть пустой");
@@ -656,5 +673,36 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         subtasks.sort(Comparator.comparing(Subtask::getId));
         assertEquals(startID + 5, subtasks.get(0).getId(), MSG);
         assertEquals(startID + 6, subtasks.get(1).getId(), MSG);
+    }
+
+    @Test
+    void getPrioritizedTasks() {
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        taskManager.createEpic(epic3);
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask3);
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+        taskManager.createTask(task3);
+
+        Collection<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+        assertEquals(9, prioritizedTasks.size());
+        List<Long> expectedKeys = List.of(30L, 20L, 50L, 3000L, 200L, 10L, 40L, 60L, 100L);
+        List<Long> actualKeys = new ArrayList<>();
+        for (Task task : prioritizedTasks) {
+            actualKeys.add(task.getId());
+        }
+        assertEquals(expectedKeys, actualKeys, "Ключи не совпадают!");
+
+        taskManager.removeTask(30L);
+        prioritizedTasks = taskManager.getPrioritizedTasks();
+        actualKeys.clear();
+        for (Task task : prioritizedTasks) {
+            actualKeys.add(task.getId());
+        }
+        expectedKeys = List.of(20L, 50L, 3000L, 200L, 10L, 40L, 60L, 100L);
+        assertEquals(expectedKeys, actualKeys, "Ключи не совпадают!");
     }
 }

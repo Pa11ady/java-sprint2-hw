@@ -1,13 +1,12 @@
 package ru.yandex.practicum.tasktracker.manager;
 
-import ru.yandex.practicum.tasktracker.task.Epic;
-import ru.yandex.practicum.tasktracker.task.Subtask;
-import ru.yandex.practicum.tasktracker.task.Task;
-import ru.yandex.practicum.tasktracker.task.TaskStatus;
+import ru.yandex.practicum.tasktracker.exception.ManagerTaskValidationException;
+import ru.yandex.practicum.tasktracker.task.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
+
 
 //Осторожно в геттерах утекают наружу ссылки task, epic, subtask.
 //В ТЗ не сказан про это, так что решил не копировать ещё раз.
@@ -86,6 +85,7 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             updateLastTaskId(task.getId());
         }
+        validationTask(task);
         prioritizedTasks.add(task);
         taskMap.put(task.getId(), task);
         return true;
@@ -103,6 +103,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         // локально копируем, чтобы не меняли снаружи
         task = new Task(task);
+        validationTask(task);
         prioritizedTasks.remove(oldTask);
         prioritizedTasks.add(task);
         taskMap.put(task.getId(), task);
@@ -318,6 +319,7 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             updateLastTaskId(subtask.getId());
         }
+        validationTask(subtask);
         epic.addSubtask(subtask.getId());
         prioritizedTasks.add(subtask);
         subtaskMap.put(subtask.getId(), subtask);
@@ -343,6 +345,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
         //Локально копируем, чтобы не меняли снаружи
         subtask = new Subtask(subtask);
+        validationTask(subtask);
         epic.addSubtask(subtask.getId());
         prioritizedTasks.remove(oldSubtask);
         prioritizedTasks.add(subtask);
@@ -446,11 +449,9 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Collection <Task>  getPrioritizedTasks() {
+    public Collection <Task> getPrioritizedTasks() {
         return prioritizedTasks;
     }
-
-
 
     private void removePrioritizedTasks(Map<Long, ? extends Task> map) {
         if (map == null) {
@@ -458,6 +459,29 @@ public class InMemoryTaskManager implements TaskManager {
         }
         for (Task task : map.values()) {
             prioritizedTasks.remove(task);
+        }
+    }
+
+    private void validationTask(Task task) {
+        if (task.getStartTime() == null) {
+            return;
+        }
+        Collection<Task> tasks = getPrioritizedTasks();
+        for (Task element : tasks) {
+            LocalDateTime startDate = task.getStartTime();
+            LocalDateTime endDate = task.getEndTime();
+            LocalDateTime elementStartDate = element.getStartTime();
+            LocalDateTime elementEndDate = element.getEndTime();
+            if (elementStartDate == null || elementEndDate == null || element.getType() == TaskType.EPIC) {
+                continue; // Игнорируем если незакрытый интервал или Эпик
+            }
+
+            if (startDate.isAfter(elementStartDate) && startDate.isBefore(elementEndDate)) {
+                throw new ManagerTaskValidationException("Дата начала пересекается");
+            }
+            if (endDate.isAfter(elementStartDate) && endDate.isBefore(elementEndDate)) {
+                throw new ManagerTaskValidationException("Дата окончания пересекается");
+            }
         }
     }
 
