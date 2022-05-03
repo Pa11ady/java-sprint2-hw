@@ -31,8 +31,16 @@ abstract  class TaskManagerTest <T extends TaskManager> {
     protected final LocalDateTime taskDate2 = LocalDateTime.of(2020, 3, 3, 11, 0);
     protected final LocalDateTime taskDate3 = LocalDateTime.of(2020, 3, 3, 3, 0);
 
+    protected final LocalDateTime subtaskDate2 = LocalDateTime.of(2021, 3, 3, 11, 0);
+    protected final LocalDateTime subtaskDate3 = LocalDateTime.of(2021, 3, 3, 3, 0);
+
     protected final Duration taskDuration2 = Duration.ofHours(3);
     protected final Duration taskDuration3 = Duration.ofMinutes(50);
+
+    protected final Duration subtaskDuration2 = Duration.ofHours(3);
+    protected final Duration subtaskDuration3 = Duration.ofMinutes(50);
+
+    protected final Duration epicDuration2 = Duration.ofMinutes(50 + 3 * 60);
 
     protected final Task task1 = new Task(TASK_ID1, "задача коробки", "Найти коробки", TaskStatus.NEW);
     protected final Task task2 = new Task(TASK_ID2, "задача вещи", "Собрать вещи", TaskStatus.DONE,
@@ -41,12 +49,14 @@ abstract  class TaskManagerTest <T extends TaskManager> {
             TaskStatus.IN_PROGRESS, taskDuration3, taskDate3);
 
     protected final Epic epic1 = new Epic(EPIC_ID1, "Эпик1", "Эпик 1 описание");
-    protected final Epic epic2 = new Epic(EPIC_ID2, "Эпик2", "Эпик 2 описание");
+    protected final Epic epic2 = new Epic(EPIC_ID2, "Эпик2", "Эпик 2 описание", epicDuration2, subtaskDate3);
     protected final Epic epic3 = new Epic(EPIC_ID3, "Эпик2", "Эпик 3 описание");
 
     protected final Subtask subtask1 = new Subtask(SUBTASK_ID1, "Подзадача 1.1", "описание 1", TaskStatus.NEW, EPIC_ID1);
-    protected final Subtask subtask2 = new Subtask(SUBTASK_ID2, "Подзадача 2.1", "описание 2.1", TaskStatus.NEW, EPIC_ID2);
-    protected final Subtask subtask3 = new Subtask(SUBTASK_ID3, "Подзадача 2.2", "просто 2.2", TaskStatus.NEW, EPIC_ID2);
+    protected final Subtask subtask2 = new Subtask(SUBTASK_ID2, "Подзадача 2.1", "описание 2.1",
+            TaskStatus.NEW, EPIC_ID2, subtaskDuration2, subtaskDate2);
+    protected final Subtask subtask3 = new Subtask(SUBTASK_ID3, "Подзадача 2.2", "просто 2.2", TaskStatus.NEW, EPIC_ID2,
+            subtaskDuration3, subtaskDate3);
 
     public TaskManagerTest(T taskManager) {
         this.taskManager = taskManager;
@@ -305,6 +315,14 @@ abstract  class TaskManagerTest <T extends TaskManager> {
 
         subtasks = taskManager.getListSubtaskFromEpic(EPIC_ID3);
         assertTrue(subtasks.isEmpty(), "Список подзадач должен быть пустой");
+        LocalDateTime endTime1 = taskManager.getEpic(EPIC_ID1).getEndTime();
+        assertNull(endTime1);
+
+        LocalDateTime endTime2 = taskManager.getEpic(EPIC_ID2).getEndTime();
+        assertEquals(subtask2.getEndTime(),  endTime2);
+
+        LocalDateTime endTime3 = taskManager.getEpic(EPIC_ID3).getEndTime();
+        assertNull(endTime3);
 
         //Дубликат
         assertFalse(taskManager.createEpic(epic1));

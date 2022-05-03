@@ -106,7 +106,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
                 break;
             case SUBTASK:
                 Long parentId = Long.parseLong(split[7]);
-                task = new Subtask(id, name,description, status, parentId);
+                task = new Subtask(id, name, description, status, parentId, duration,  startTime);
         }
         return task;
     }

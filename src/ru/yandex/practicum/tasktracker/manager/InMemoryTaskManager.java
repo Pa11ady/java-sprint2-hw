@@ -5,10 +5,9 @@ import ru.yandex.practicum.tasktracker.task.Subtask;
 import ru.yandex.practicum.tasktracker.task.Task;
 import ru.yandex.practicum.tasktracker.task.TaskStatus;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.*;
 
 //Осторожно в геттерах утекают наружу ссылки task, epic, subtask.
 //В ТЗ не сказан про это, так что решил не копировать ещё раз.
@@ -186,7 +185,11 @@ public class InMemoryTaskManager implements TaskManager {
                 epic.removeSubtask(subtaskId);
             }
         }
+
         List<Subtask>  subtaskList = getListSubtaskFromEpic(epic.getId());
+        epic.setDuration(getSumDuration(subtaskList));
+        epic.setStartTime(getMinStartTime(subtaskList));
+        epic.setEndTime(getMaxEndTime(subtaskList));
         if (subtaskList.isEmpty() || allSubtasksWithStatusNew(subtaskList)) {
             epic.setStatus(TaskStatus.NEW); //нет подзадач или все они имеют статус NEW.
         } else if (allSubtasksWithStatusDone(subtaskList)) {
@@ -362,6 +365,50 @@ public class InMemoryTaskManager implements TaskManager {
             historyManager.remove(task.getId());
         }
 
+    }
+    private Duration getSumDuration(List<Subtask> subtaskList) {
+        if (subtaskList.isEmpty()) {
+            return null;
+        }
+        boolean notNull = false;
+        Duration sumDuration = Duration.ofMinutes(0);
+        for (Subtask subtask : subtaskList) {
+            Duration duration = subtask.getDuration();
+            if (duration != null) {
+                sumDuration = sumDuration.plus(duration);
+                notNull = true;
+            }
+        }
+        if (notNull) {
+            return sumDuration;
+        }
+        return null;
+    }
+
+    private LocalDateTime getMaxEndTime(List<Subtask> subtaskList) {
+        if (subtaskList.isEmpty()) {
+            return null;
+        }
+
+        Subtask subtask = Collections.max(subtaskList, Comparator.comparing(Task::getEndTime,
+                Comparator.nullsFirst(Comparator.naturalOrder())));
+        if (subtask != null) {
+            return subtask.getEndTime();
+        }
+        return null;
+    }
+
+    private LocalDateTime getMinStartTime(List<Subtask> subtaskList) {
+        if (subtaskList.isEmpty()) {
+            return null;
+        }
+
+        Subtask subtask = Collections.min(subtaskList,Comparator.comparing(Task::getStartTime,
+                Comparator.nullsLast(Comparator.naturalOrder())));
+        if (subtask != null) {
+            return subtask.getStartTime();
+        }
+        return null;
     }
 
     @Override

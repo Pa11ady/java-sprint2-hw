@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 public class Epic extends Task {
+    private LocalDateTime endTime;
     private final Set<Long> subtaskSet = new HashSet<>();
 
     public Epic(String name, String description) {
@@ -23,6 +24,17 @@ public class Epic extends Task {
         super(id, name, description, taskStatus);
     }
 
+    public Epic(String name, String description, Duration duration, LocalDateTime startTime) {
+        super(name, description, TaskStatus.NEW, duration, startTime);
+    }
+
+    public Epic(Long id, String name, String description, Duration duration, LocalDateTime startTime) {
+        super(id, name, description, TaskStatus.NEW, duration, startTime);
+    }
+
+
+
+
     public Epic(String name, String description, TaskStatus status, Duration duration, LocalDateTime startTime) {
         super(name, description, status, duration, startTime);
     }
@@ -32,10 +44,20 @@ public class Epic extends Task {
         super(id, name, description, status, duration, startTime);
     }
 
+
     public Epic(Epic epic) {
         this(epic.getId(), epic.getName(), epic.getDescription(), epic.getStatus(), epic.getDuration(),
                 epic.getStartTime());
         subtaskSet.addAll(epic.subtaskSet);
+    }
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
     }
 
     public void addSubtask(Long id) {
