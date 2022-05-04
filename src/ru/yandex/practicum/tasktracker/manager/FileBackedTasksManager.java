@@ -1,14 +1,15 @@
 package ru.yandex.practicum.tasktracker.manager;
 
+import ru.yandex.practicum.tasktracker.enums.TaskType;
+import ru.yandex.practicum.tasktracker.enums.TaskStatus;
 import ru.yandex.practicum.tasktracker.exception.ManagerSaveException;
-import ru.yandex.practicum.tasktracker.task.*;
+import ru.yandex.practicum.tasktracker.model.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +96,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         String name = split[2];
         TaskStatus status = TaskStatus.valueOf(split[3]);
         String description = split[4];
-        Duration duration = split[5].isBlank() ? null : Duration.parse(split[5]);
+        Integer duration = split[5].isBlank() ? null : Integer.parseInt(split[5]);
         LocalDateTime startTime = split[6].isBlank() ? null : LocalDateTime.parse(split[6]);
         switch (type) {
             case TASK:

@@ -1,9 +1,10 @@
 package ru.yandex.practicum.tasktracker.manager;
 
+import ru.yandex.practicum.tasktracker.enums.TaskType;
+import ru.yandex.practicum.tasktracker.enums.TaskStatus;
 import ru.yandex.practicum.tasktracker.exception.ManagerTaskValidationException;
-import ru.yandex.practicum.tasktracker.task.*;
+import ru.yandex.practicum.tasktracker.model.*;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -403,16 +404,16 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    private Duration getSumDuration(List<Subtask> subtaskList) {
+    private Integer getSumDuration(List<Subtask> subtaskList) {
         if (subtaskList.isEmpty()) {
             return null;
         }
         boolean notNull = false;
-        Duration sumDuration = Duration.ofMinutes(0);
+        Integer sumDuration = 0;
         for (Subtask subtask : subtaskList) {
-            Duration duration = subtask.getDuration();
+            Integer duration = subtask.getDuration();
             if (duration != null) {
-                sumDuration = sumDuration.plus(duration);
+                sumDuration += duration;
                 notNull = true;
             }
         }
@@ -449,8 +450,8 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Collection <Task> getPrioritizedTasks() {
-        return prioritizedTasks;
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
     }
 
     private void removePrioritizedTasks(Map<Long, ? extends Task> map) {
@@ -466,7 +467,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (task.getStartTime() == null) {
             return;
         }
-        Collection<Task> tasks = getPrioritizedTasks();
+        List<Task> tasks = getPrioritizedTasks();
         for (Task element : tasks) {
             LocalDateTime startDate = task.getStartTime();
             LocalDateTime endDate = task.getEndTime();

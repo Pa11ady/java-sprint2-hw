@@ -1,8 +1,8 @@
 package ru.yandex.practicum.tasktracker.manager;
 
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.tasktracker.task.Task;
-import ru.yandex.practicum.tasktracker.task.TaskStatus;
+import ru.yandex.practicum.tasktracker.model.Task;
+import ru.yandex.practicum.tasktracker.enums.TaskStatus;
 
 import java.util.List;
 

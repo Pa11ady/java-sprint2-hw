@@ -2,9 +2,9 @@ package ru.yandex.practicum.tasktracker.manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.yandex.practicum.tasktracker.task.Epic;
-import ru.yandex.practicum.tasktracker.task.Subtask;
-import ru.yandex.practicum.tasktracker.task.Task;
+import ru.yandex.practicum.tasktracker.model.Epic;
+import ru.yandex.practicum.tasktracker.model.Subtask;
+import ru.yandex.practicum.tasktracker.model.Task;
 
 import java.io.File;
 import java.util.Comparator;

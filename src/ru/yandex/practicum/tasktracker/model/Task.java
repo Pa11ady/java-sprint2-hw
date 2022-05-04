@@ -1,4 +1,7 @@
-package ru.yandex.practicum.tasktracker.task;
+package ru.yandex.practicum.tasktracker.model;
+
+import ru.yandex.practicum.tasktracker.enums.TaskStatus;
+import ru.yandex.practicum.tasktracker.enums.TaskType;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -11,7 +14,7 @@ public class Task {
     private String description;
     private TaskStatus status;
 
-    private Duration duration;
+    private Integer duration;   //Минуты
     private LocalDateTime startTime;
 
     public Task(String name, String description, TaskStatus status) {
@@ -22,11 +25,11 @@ public class Task {
         this(id, name, description, status, null, null);
     }
 
-    public Task(String name, String description, TaskStatus status, Duration duration, LocalDateTime startTime) {
+    public Task(String name, String description, TaskStatus status, Integer duration, LocalDateTime startTime) {
         this(null, name, description, status, duration, startTime);
     }
 
-    public Task(Long id, String name, String description, TaskStatus status, Duration duration, LocalDateTime startTime) {
+    public Task(Long id, String name, String description, TaskStatus status, Integer duration, LocalDateTime startTime) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -75,11 +78,11 @@ public class Task {
         return TaskType.TASK;
     }
 
-    public Duration getDuration() {
+    public Integer getDuration() {
         return duration;
     }
 
-    public void setDuration(Duration duration) {
+    public void setDuration(Integer duration) {
         this.duration = duration;
     }
 
@@ -96,7 +99,7 @@ public class Task {
             return  null;
         }
 
-        return startTime.plus(duration);
+        return startTime.plusMinutes(duration);
     }
 
     public String toStringCSV() {

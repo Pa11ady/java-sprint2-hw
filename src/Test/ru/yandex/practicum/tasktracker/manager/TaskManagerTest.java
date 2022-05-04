@@ -3,12 +3,11 @@ package ru.yandex.practicum.tasktracker.manager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.tasktracker.exception.ManagerTaskValidationException;
-import ru.yandex.practicum.tasktracker.task.Epic;
-import ru.yandex.practicum.tasktracker.task.Subtask;
-import ru.yandex.practicum.tasktracker.task.Task;
-import ru.yandex.practicum.tasktracker.task.TaskStatus;
+import ru.yandex.practicum.tasktracker.model.Epic;
+import ru.yandex.practicum.tasktracker.model.Subtask;
+import ru.yandex.practicum.tasktracker.model.Task;
+import ru.yandex.practicum.tasktracker.enums.TaskStatus;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -35,13 +34,13 @@ abstract  class TaskManagerTest <T extends TaskManager> {
     protected final LocalDateTime subtaskDate2 = LocalDateTime.of(2021, 3, 3, 11, 0);
     protected final LocalDateTime subtaskDate3 = LocalDateTime.of(2021, 3, 3, 3, 0);
 
-    protected final Duration taskDuration2 = Duration.ofHours(3);
-    protected final Duration taskDuration3 = Duration.ofMinutes(50);
+    protected final Integer taskDuration2 = 3 * 60;
+    protected final Integer taskDuration3 = 50;
 
-    protected final Duration subtaskDuration2 = Duration.ofHours(3);
-    protected final Duration subtaskDuration3 = Duration.ofMinutes(50);
+    protected final Integer subtaskDuration2 = 60 * 3;
+    protected final Integer subtaskDuration3 = 50;
 
-    protected final Duration epicDuration2 = Duration.ofMinutes(50 + 3 * 60);
+    protected final Integer epicDuration2 = 50 + 3 * 60;
 
     protected final Task task1 = new Task(TASK_ID1, "задача коробки", "Найти коробки", TaskStatus.NEW);
     protected final Task task2 = new Task(TASK_ID2, "задача вещи", "Собрать вещи", TaskStatus.DONE,
@@ -181,7 +180,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         assertEquals(3, tasks.size(), "Неверное количество задач");
 
         final LocalDateTime taskDate4 = LocalDateTime.of(2020, 3, 3, 11, 0);
-        final Duration taskDuration4 = Duration.ofHours(1);
+        final Integer taskDuration4 = 60;
         final Task task4 = new Task("Задача 4", "Задача 4", TaskStatus.NEW, taskDuration4, taskDate4);
         assertThrows(ManagerTaskValidationException.class, () -> taskManager.createTask(task4));
     }
@@ -215,7 +214,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         taskManager.createTask(task2);
         taskManager.createTask(task3);
         final LocalDateTime taskDate4 =  LocalDateTime.of(2020, 3, 3, 3, 1);
-        final Duration taskDuration4 = Duration.ofHours(1);
+        final Integer taskDuration4 = 60;
         final Task task4 = new Task(TASK_ID1,"Задача 4", "Задача 4", TaskStatus.NEW, taskDuration4, taskDate4);
         assertThrows(ManagerTaskValidationException.class, () -> taskManager.updateTask(task4));
     }
@@ -687,7 +686,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         taskManager.createTask(task2);
         taskManager.createTask(task3);
 
-        Collection<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+        List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
         assertEquals(9, prioritizedTasks.size());
         List<Long> expectedKeys = List.of(30L, 20L, 50L, 3000L, 200L, 10L, 40L, 60L, 100L);
         List<Long> actualKeys = new ArrayList<>();

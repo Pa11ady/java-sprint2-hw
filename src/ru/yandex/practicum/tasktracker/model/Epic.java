@@ -1,7 +1,9 @@
-package ru.yandex.practicum.tasktracker.task;
+package ru.yandex.practicum.tasktracker.model;
 
 
-import java.time.Duration;
+import ru.yandex.practicum.tasktracker.enums.TaskStatus;
+import ru.yandex.practicum.tasktracker.enums.TaskType;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -24,22 +26,19 @@ public class Epic extends Task {
         super(id, name, description, taskStatus);
     }
 
-    public Epic(String name, String description, Duration duration, LocalDateTime startTime) {
+    public Epic(String name, String description, Integer duration, LocalDateTime startTime) {
         super(name, description, TaskStatus.NEW, duration, startTime);
     }
 
-    public Epic(Long id, String name, String description, Duration duration, LocalDateTime startTime) {
+    public Epic(Long id, String name, String description, Integer duration, LocalDateTime startTime) {
         super(id, name, description, TaskStatus.NEW, duration, startTime);
     }
 
-
-
-
-    public Epic(String name, String description, TaskStatus status, Duration duration, LocalDateTime startTime) {
+    public Epic(String name, String description, TaskStatus status, Integer duration, LocalDateTime startTime) {
         super(name, description, status, duration, startTime);
     }
 
-    public Epic(Long id, String name, String description, TaskStatus status, Duration duration,
+    public Epic(Long id, String name, String description, TaskStatus status, Integer duration,
                 LocalDateTime startTime) {
         super(id, name, description, status, duration, startTime);
     }

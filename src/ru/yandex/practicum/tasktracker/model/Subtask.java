@@ -1,6 +1,8 @@
-package ru.yandex.practicum.tasktracker.task;
+package ru.yandex.practicum.tasktracker.model;
 
-import java.time.Duration;
+import ru.yandex.practicum.tasktracker.enums.TaskStatus;
+import ru.yandex.practicum.tasktracker.enums.TaskType;
+
 import java.time.LocalDateTime;
 
 public class Subtask extends Task {
@@ -16,18 +18,18 @@ public class Subtask extends Task {
         this.parentId = parentId;
     }
 
-    public Subtask(String name, String description, TaskStatus status, Long parentId, Duration duration,
+    public Subtask(String name, String description, TaskStatus status, Long parentId, Integer duration,
                    LocalDateTime startTime) {
         super(name, description, status, duration, startTime);
         this.parentId = parentId;
     }
 
-//Duration duration, LocalDateTime startTime
-public Subtask(Long id, String name, String description, TaskStatus status, Long parentId, Duration duration,
+    public Subtask(Long id, String name, String description, TaskStatus status, Long parentId, Integer duration,
                LocalDateTime startTime) {
-    super(id, name, description, status, duration, startTime);
-    this.parentId = parentId;
-}
+        super(id, name, description, status, duration, startTime);
+        this.parentId = parentId;
+    }
+
     public Subtask(Subtask subtask) {
         this(subtask.getId(), subtask.getName(), subtask.getDescription(), subtask.getStatus(), subtask.parentId,
                 subtask.getDuration(), subtask.getStartTime());
