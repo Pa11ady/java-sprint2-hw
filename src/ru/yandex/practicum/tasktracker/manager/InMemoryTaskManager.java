@@ -131,6 +131,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void removeAllEpic() {
         removePrioritizedTasks(epicMap);
+        removePrioritizedTasks(subtaskMap);
         removeHistory(epicMap);
         epicMap.clear();
         removeHistory(subtaskMap);
@@ -233,9 +234,9 @@ public class InMemoryTaskManager implements TaskManager {
 
         List<Long> listSubtaskId = epic.getListSubtaskId();
         for (Long subtaskId : listSubtaskId) {
-            Task task = getTaskLocal(id);
-            if (task != null) {
-                prioritizedTasks.remove(task);
+            Subtask subtask = getSubtaskLocal(subtaskId);
+            if (subtask != null) {
+                prioritizedTasks.remove(subtask);
             }
             historyManager.remove(subtaskId);
             subtaskMap.remove(subtaskId);
@@ -473,15 +474,22 @@ public class InMemoryTaskManager implements TaskManager {
             LocalDateTime endDate = task.getEndTime();
             LocalDateTime elementStartDate = element.getStartTime();
             LocalDateTime elementEndDate = element.getEndTime();
-            if (elementStartDate == null || elementEndDate == null || element.getType() == TaskType.EPIC) {
+            if (elementStartDate == null || elementEndDate == null || element.getType() == TaskType.EPIC ||
+                    task.equals(element)) {
                 continue; // Игнорируем если незакрытый интервал или Эпик
             }
 
+            if (startDate.equals(elementStartDate) && endDate.equals(elementEndDate)) {
+                throw new ManagerTaskValidationException("Даты начала и конца пересекаются");
+            }
             if (startDate.isAfter(elementStartDate) && startDate.isBefore(elementEndDate)) {
                 throw new ManagerTaskValidationException("Дата начала пересекается");
             }
             if (endDate.isAfter(elementStartDate) && endDate.isBefore(elementEndDate)) {
                 throw new ManagerTaskValidationException("Дата окончания пересекается");
+            }
+            if (startDate.isBefore(elementStartDate) && endDate.isAfter(elementEndDate)) {
+                throw new ManagerTaskValidationException("Даты пересекаются");
             }
         }
     }

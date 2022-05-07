@@ -128,7 +128,9 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         taskManager.createTask(task3);
         taskManager.removeAllTask();
         tasks = taskManager.getListTask();
+        List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
         assertTrue(tasks.isEmpty(), "Список задач должен быть пустой");
+        assertTrue(prioritizedTasks.isEmpty(), "Список упорядоченных задач должен быть пустой");
     }
 
     @Test
@@ -232,12 +234,16 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         taskManager.createTask(task1);
         taskManager.createTask(task2);
         taskManager.createTask(task3);
-        taskManager.removeTask(TASK_ID2);
+        assertTrue(taskManager.removeTask(TASK_ID2));
         tasks = taskManager.getListTask();
         assertEquals(2, tasks.size(), "Неверное количество задач");
         assertNull(taskManager.getTask(TASK_ID2));
         assertEquals(task1, taskManager.getTask(TASK_ID1));
         assertEquals(task3,  taskManager.getTask(TASK_ID3));
+        assertTrue(taskManager.removeTask(TASK_ID1));
+        assertTrue(taskManager.removeTask(TASK_ID3));
+        List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+        assertTrue(prioritizedTasks.isEmpty(), "Список упорядоченных задач должен быть пустой");
 
         //Неверные значения
         assertFalse(taskManager.removeTask(null));
@@ -277,9 +283,16 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
         taskManager.createEpic(epic3);
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask3);
         taskManager.removeAllEpic();
         epics = taskManager.getListEpic();
+        List<Subtask> subtasks = taskManager.getListSubtask();
         assertTrue(epics.isEmpty(), "Список эпиков должен быть пустой");
+        assertTrue(subtasks.isEmpty(), "Список упорядоченных задач должен быть пустой");
+        List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+        assertTrue(prioritizedTasks.isEmpty(), "Список упорядоченных задач должен быть пустой");
     }
 
     @Test
@@ -388,12 +401,23 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
         taskManager.createEpic(epic3);
-        taskManager.removeEpic(EPIC_ID2);
+        taskManager.createSubtask(subtask1);
+        assertTrue(taskManager.removeEpic(EPIC_ID2));
         epics = taskManager.getListEpic();
         assertEquals(2, epics.size(), "Неверное количество задач");
         assertNull(taskManager.getEpic(EPIC_ID2));
         assertEquals(epic1, taskManager.getEpic(EPIC_ID1));
         assertEquals(epic3,  taskManager.getEpic(EPIC_ID3));
+        assertTrue(taskManager.removeEpic(EPIC_ID1));
+        assertTrue(taskManager.removeEpic(EPIC_ID3));
+        epics = taskManager.getListEpic();
+        assertTrue(epics.isEmpty(), "Список  должен быть пустой");
+        List<Subtask> subtasks = taskManager.getListSubtask();
+        assertTrue(subtasks.isEmpty(), "Список задач должен быть пустой");
+
+
+        List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+        assertTrue(prioritizedTasks.isEmpty(), "Список упорядоченных задач должен быть пустой");
 
         //Неверные значения
         assertFalse(taskManager.removeEpic(null));
@@ -578,6 +602,10 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         List<Long> idSubtasks = taskManager.getEpic(EPIC_ID1).getListSubtaskId();
         assertTrue(idSubtasks.isEmpty(), "Список  должен быть пустой");
 
+        taskManager.removeAllEpic();
+        List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+        assertTrue(prioritizedTasks.isEmpty(), "Список упорядоченных задач должен быть пустой");
+
         //Неверные значения
         assertFalse(taskManager.removeSubtask(null));
         assertFalse(taskManager.removeSubtask(SUBTASK_ID1));
@@ -704,4 +732,60 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         expectedKeys = List.of(20L, 50L, 3000L, 200L, 10L, 40L, 60L, 100L);
         assertEquals(expectedKeys, actualKeys, "Ключи не совпадают!");
     }
+
+    @Test
+    void testValidationTask() {
+
+        long  ID = 100;
+        final LocalDateTime taskDate1 = LocalDateTime.of(2021, 1, 1, 10, 0);
+        final LocalDateTime taskDate2 = LocalDateTime.of(2021, 1, 1, 15, 0);
+        final LocalDateTime taskDate3 = LocalDateTime.of(2021, 1, 1, 20, 0);
+
+        final Task task1 = new Task("t1", "t1", TaskStatus.NEW, 120, taskDate1);  //10.00-12.00
+        final Task task2 = new Task("t2", "t2", TaskStatus.NEW, 180, taskDate2);  //15.00-18.00
+        final Task task3 = new Task("t3", "t3", TaskStatus.NEW, 60, taskDate3);   //20.00-21.00
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+        taskManager.createTask(task3);
+
+        //полностью совпадает c t1
+        Task testTask = new Task("t", "t", TaskStatus.NEW, 120, taskDate1);
+        assertThrows(ManagerTaskValidationException.class, () -> taskManager.createTask(testTask));
+
+        //внутри т2
+        LocalDateTime testDate = LocalDateTime.of(2021, 1, 1, 16, 00);
+        Task testTask1 = new Task("t", "t", TaskStatus.NEW, 60, testDate);
+        assertThrows(ManagerTaskValidationException.class, () -> taskManager.createTask(testTask1));
+
+        //внутри т3
+        testDate =  LocalDateTime.of(2021, 1, 1, 20, 0);
+        Task testTask3 = new Task("t", "t", TaskStatus.NEW, 30, testDate);
+        assertThrows(ManagerTaskValidationException.class, () -> taskManager.createTask(testTask3));
+
+        //перекрывает несколько зон
+        testDate =  LocalDateTime.of(2021, 1, 1, 13, 0);
+        Task testTask3_ = new Task("t", "t", TaskStatus.NEW, 6 * 60, testDate);
+        assertThrows(ManagerTaskValidationException.class, () -> taskManager.createTask(testTask3_));
+
+        //без исключений
+        testDate = LocalDateTime.of(2021, 1, 1, 9, 0);
+        Task testTask4 = new Task(ID, "t", "t", TaskStatus.NEW, 60, testDate);
+        assertDoesNotThrow(() -> taskManager.createTask(testTask4));
+
+        taskManager.removeTask(ID);
+        testDate = LocalDateTime.of(2021, 1, 1, 13, 0);
+        Task testTask5 = new Task(ID, "t", "t", TaskStatus.NEW, 60, testDate);
+        assertDoesNotThrow(() -> taskManager.createTask(testTask5));
+
+        taskManager.removeTask(ID);
+        testDate =  LocalDateTime.of(2021, 1, 1, 18, 0);
+        Task testTask6 = new Task(ID, "t", "t", TaskStatus.NEW, 120, testDate);
+        assertDoesNotThrow(() -> taskManager.createTask(testTask6));
+
+        taskManager.removeTask(ID);
+        testDate =  LocalDateTime.of(2021, 1, 1, 21, 00);
+        Task testTask7 = new Task(ID, "t", "t", TaskStatus.NEW, 60, testDate);
+        assertDoesNotThrow(() -> taskManager.createTask(testTask7));
+    }
+
 }
