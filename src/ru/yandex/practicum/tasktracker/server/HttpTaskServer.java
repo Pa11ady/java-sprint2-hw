@@ -11,7 +11,6 @@ import ru.yandex.practicum.tasktracker.model.Task;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
@@ -54,7 +53,7 @@ public class HttpTaskServer {
         httpExchange.getResponseBody().write(response);
     }
 
-    private Long readId(HttpExchange httpExchange) throws IOException {
+    private Long readId(HttpExchange httpExchange) {
         String query = httpExchange.getRequestURI().getQuery();
         if (query == null || !query.startsWith("id=")) {
             return null;
@@ -80,7 +79,7 @@ public class HttpTaskServer {
     }
 
     private void handleTasksTask(HttpExchange httpExchange) throws IOException {
-        System.out.println("handleTasksTask");
+        System.out.println("Задачи");
         Long id;
 
         try {
@@ -177,15 +176,16 @@ public class HttpTaskServer {
     }
 
     private void handleTasksHistory(HttpExchange httpExchange) throws IOException {
-        String response = "handleTasksHistory";
-
-        Headers headers = httpExchange.getResponseHeaders();
-        headers.set("Content-Type", "text/html; charset=" + DEFAULT_CHARSET);
-        httpExchange.sendResponseHeaders(200, 0);
-
-        try (OutputStream os = httpExchange.getResponseBody()) {
-            os.write(response.getBytes(DEFAULT_CHARSET));
-        }
+       List<Task> tasks = taskManager.getHistory();
+       try {
+           if (tasks.isEmpty()) {
+               httpExchange.sendResponseHeaders(404, 0);
+               return;
+           }
+           sendText(httpExchange, gson.toJson(tasks));
+       } finally {
+           httpExchange.close();
+       }
     }
 
     private void handleTasks(HttpExchange httpExchange) throws IOException {
