@@ -7,6 +7,7 @@ import com.sun.net.httpserver.HttpServer;
 import ru.yandex.practicum.tasktracker.manager.FileBackedTasksManager;
 import ru.yandex.practicum.tasktracker.manager.Managers;
 import ru.yandex.practicum.tasktracker.manager.TaskManager;
+import ru.yandex.practicum.tasktracker.model.Epic;
 import ru.yandex.practicum.tasktracker.model.Subtask;
 import ru.yandex.practicum.tasktracker.model.Task;
 
@@ -200,6 +201,63 @@ public class HttpTaskServer {
     }
 
     private void handleTasksEpic(HttpExchange httpExchange) throws IOException {
+        System.out.println("Эпики");
+        Long id;
+
+        try {
+            switch (httpExchange.getRequestMethod()) {
+                case "GET":
+                    id = readId(httpExchange);
+                    if (id != null) {
+                        Epic epic = taskManager.getEpic(id);
+                        if (epic == null) {
+                            httpExchange.sendResponseHeaders(404, 0);
+                            return;
+                        }
+                        sendText(httpExchange, gson.toJson(epic));
+                    } else {
+                        List<Epic> epics = taskManager.getListEpic();
+                        if (epics.isEmpty()) {
+                            httpExchange.sendResponseHeaders(404, 0);
+                            return;
+                        }
+                        sendText(httpExchange, gson.toJson(epics));
+                    }
+                    break;
+                case "POST":
+                    String body = readText(httpExchange);
+                    if (body.isEmpty()) {
+                        System.out.println("Пустое тело запроса");
+                        httpExchange.sendResponseHeaders(400, 0);
+                        return;
+                    }
+                    Epic epic = gson.fromJson(body, Epic.class);
+                    if (taskManager.createEpic(epic)) {
+                        httpExchange.sendResponseHeaders(200, 0);
+                    } else if (taskManager.updateEpic(epic)) {
+                        httpExchange.sendResponseHeaders(200, 0);
+                    } else {
+                        httpExchange.sendResponseHeaders(400, 0);
+                    }
+                    break;
+                case "DELETE":
+                    id = readId(httpExchange);
+                    if (id != null) {
+                        if(!taskManager.removeEpic(id)) {
+                            httpExchange.sendResponseHeaders(404, 0);
+                            return;
+                        }
+                    } else {
+                        taskManager.removeAllEpic();
+                    }
+                    httpExchange.sendResponseHeaders(200, 0);
+                    break;
+                default:
+                    httpExchange.sendResponseHeaders(405, 0);
+            }
+        } finally {
+            httpExchange.close();
+        }
 
     }
 
