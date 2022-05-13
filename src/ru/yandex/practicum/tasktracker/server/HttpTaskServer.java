@@ -43,11 +43,27 @@ public class HttpTaskServer {
         httpServer.start();
     }
 
+    private String readText(HttpExchange httpExchange) throws IOException {
+        return new String(httpExchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
+    }
+
     private void sendText(HttpExchange httpExchange, String text) throws IOException {
         byte[] response = text.getBytes(DEFAULT_CHARSET);
         httpExchange.getResponseHeaders().add("Content-Type", "application/json");
         httpExchange.sendResponseHeaders(200, response.length);
         httpExchange.getResponseBody().write(response);
+    }
+
+    private Long readId(HttpExchange httpExchange) throws IOException {
+        String query = httpExchange.getRequestURI().getQuery();
+        if (query == null || !query.startsWith("id=")) {
+            return null;
+        }
+        String id = query.substring("id=".length());
+        if (id.isBlank()) {
+            return null;
+        }
+        return Long.parseLong(id);
     }
 
     private void handleTest(HttpExchange httpExchange) throws IOException {
@@ -65,35 +81,31 @@ public class HttpTaskServer {
 
     private void handleTasksTask(HttpExchange httpExchange) throws IOException {
         System.out.println("handleTasksTask");
+        Long id;
 
         try {
-            String query = httpExchange.getRequestURI().getQuery();
-            Long id = null;
-            if (query != null) {
-                id = Long.parseLong(query.substring("id=".length()));
-            }
             switch (httpExchange.getRequestMethod()) {
                 case "GET":
+                    id = readId(httpExchange);
                     if (id != null) {
                         Task task = taskManager.getTask(id);
                         if (task == null) {
                             httpExchange.sendResponseHeaders(404, 0);
                             return;
                         }
-                        sendText(httpExchange,  gson.toJson(task));
+                        sendText(httpExchange, gson.toJson(task));
                     } else {
                         List<Task> tasks = taskManager.getListTask();
                         if (tasks.isEmpty()) {
                             httpExchange.sendResponseHeaders(404, 0);
                             return;
                         }
-                        sendText(httpExchange,  gson.toJson(tasks));
+                        sendText(httpExchange, gson.toJson(tasks));
                     }
                     break;
                 case "POST":
-                    InputStream inputStream = httpExchange.getRequestBody();
-                    String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
-                    if (body == null || body.isBlank()) {
+                    String body = readText(httpExchange);
+                    if (body.isEmpty()) {
                         System.out.println("Пустое тело запроса");
                         httpExchange.sendResponseHeaders(400, 0);
                         return;
@@ -108,6 +120,7 @@ public class HttpTaskServer {
                     }
                     break;
                 case "DELETE":
+                    id = readId(httpExchange);
                     if (id != null) {
                         if(!taskManager.removeTask(id)) {
                             httpExchange.sendResponseHeaders(404, 0);

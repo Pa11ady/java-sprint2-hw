@@ -15,8 +15,7 @@ public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         new HttpTaskServer().start();
-
-        getAllTasks();
+        //getAllTasks();
     }
 
     private static void getAllTasks() throws IOException, InterruptedException {
