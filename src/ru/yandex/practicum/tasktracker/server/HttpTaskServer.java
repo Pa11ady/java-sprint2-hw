@@ -262,11 +262,34 @@ public class HttpTaskServer {
     }
 
     private void handleTasksSubtaskEpic(HttpExchange httpExchange) throws IOException {
-     /////
+        System.out.println("Подзадачи из эпика");
+        try {
+            if (!httpExchange.getRequestMethod().equals("GET")) {
+                httpExchange.sendResponseHeaders(405, 0);
+                return;
+            }
+            Long id = readId(httpExchange);
+            if (id == null) {
+                System.out.println("Неверные параметры запроса");
+                httpExchange.sendResponseHeaders(400, 0);
+            }
+            List<Subtask> subtasks = taskManager.getListSubtaskFromEpic(id);
+            if (subtasks.isEmpty()) {
+                httpExchange.sendResponseHeaders(404, 0);
+                return;
+            }
+            sendText(httpExchange, gson.toJson(subtasks));
+        } finally {
+            httpExchange.close();
+        }
     }
 
     private void sendTasks(HttpExchange httpExchange, List<Task> tasks) throws IOException {
         try {
+            if (!httpExchange.getRequestMethod().equals("GET")) {
+                httpExchange.sendResponseHeaders(405, 0);
+                return;
+            }
             if (tasks.isEmpty()) {
                 httpExchange.sendResponseHeaders(404, 0);
                 return;
