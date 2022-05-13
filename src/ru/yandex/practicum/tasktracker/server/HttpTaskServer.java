@@ -175,29 +175,24 @@ public class HttpTaskServer {
         }
     }
 
+    private void sendTasks(HttpExchange httpExchange, List<Task> tasks) throws IOException {
+        try {
+            if (tasks.isEmpty()) {
+                httpExchange.sendResponseHeaders(404, 0);
+                return;
+            }
+            sendText(httpExchange, gson.toJson(tasks));
+        } finally {
+            httpExchange.close();
+        }
+    }
+
     private void handleTasksHistory(HttpExchange httpExchange) throws IOException {
-       List<Task> tasks = taskManager.getHistory();
-       try {
-           if (tasks.isEmpty()) {
-               httpExchange.sendResponseHeaders(404, 0);
-               return;
-           }
-           sendText(httpExchange, gson.toJson(tasks));
-       } finally {
-           httpExchange.close();
-       }
+        sendTasks(httpExchange, taskManager.getHistory());
     }
 
     private void handleTasks(HttpExchange httpExchange) throws IOException {
-        String response = "handleTasks";
-
-        Headers headers = httpExchange.getResponseHeaders();
-        headers.set("Content-Type", "text/html; charset=" + DEFAULT_CHARSET);
-        httpExchange.sendResponseHeaders(200, 0);
-
-        try (OutputStream os = httpExchange.getResponseBody()) {
-            os.write(response.getBytes(DEFAULT_CHARSET));
-        }
+        sendTasks(httpExchange, taskManager.getPrioritizedTasks());
     }
 }
 
