@@ -7,6 +7,7 @@ import com.sun.net.httpserver.HttpServer;
 import ru.yandex.practicum.tasktracker.manager.FileBackedTasksManager;
 import ru.yandex.practicum.tasktracker.manager.Managers;
 import ru.yandex.practicum.tasktracker.manager.TaskManager;
+import ru.yandex.practicum.tasktracker.model.Subtask;
 import ru.yandex.practicum.tasktracker.model.Task;
 
 import java.io.File;
@@ -136,43 +137,74 @@ public class HttpTaskServer {
         } finally {
             httpExchange.close();
         }
-
     }
 
     private void handleTasksSubtask(HttpExchange httpExchange) throws IOException {
-        String response = "handleTasksSubtask";
+        System.out.println("Подзадачи");
+        Long id;
 
-        Headers headers = httpExchange.getResponseHeaders();
-        headers.set("Content-Type", "text/html; charset=" + DEFAULT_CHARSET);
-        httpExchange.sendResponseHeaders(200, 0);
-
-        try (OutputStream os = httpExchange.getResponseBody()) {
-            os.write(response.getBytes(DEFAULT_CHARSET));
+        try {
+            switch (httpExchange.getRequestMethod()) {
+                case "GET":
+                    id = readId(httpExchange);
+                    if (id != null) {
+                        Subtask subtask = taskManager.getSubtask(id);
+                        if (subtask == null) {
+                            httpExchange.sendResponseHeaders(404, 0);
+                            return;
+                        }
+                        sendText(httpExchange, gson.toJson(subtask));
+                    } else {
+                        List<Subtask> subtasks = taskManager.getListSubtask();
+                        if (subtasks.isEmpty()) {
+                            httpExchange.sendResponseHeaders(404, 0);
+                            return;
+                        }
+                        sendText(httpExchange, gson.toJson(subtasks));
+                    }
+                    break;
+                case "POST":
+                    String body = readText(httpExchange);
+                    if (body.isEmpty()) {
+                        System.out.println("Пустое тело запроса");
+                        httpExchange.sendResponseHeaders(400, 0);
+                        return;
+                    }
+                    Subtask subtask = gson.fromJson(body, Subtask.class);
+                    if (taskManager.createSubtask(subtask)) {
+                        httpExchange.sendResponseHeaders(200, 0);
+                    } else if (taskManager.updateSubtask(subtask)) {
+                        httpExchange.sendResponseHeaders(200, 0);
+                    } else {
+                        httpExchange.sendResponseHeaders(400, 0);
+                    }
+                    break;
+                case "DELETE":
+                    id = readId(httpExchange);
+                    if (id != null) {
+                        if(!taskManager.removeSubtask(id)) {
+                            httpExchange.sendResponseHeaders(404, 0);
+                            return;
+                        }
+                    } else {
+                        taskManager.removeAllSubtask();
+                    }
+                    httpExchange.sendResponseHeaders(200, 0);
+                    break;
+                default:
+                    httpExchange.sendResponseHeaders(405, 0);
+            }
+        } finally {
+            httpExchange.close();
         }
     }
 
     private void handleTasksEpic(HttpExchange httpExchange) throws IOException {
-        String response = "handleTasksEpic";
 
-        Headers headers = httpExchange.getResponseHeaders();
-        headers.set("Content-Type", "text/html; charset=" + DEFAULT_CHARSET);
-        httpExchange.sendResponseHeaders(200, 0);
-
-        try (OutputStream os = httpExchange.getResponseBody()) {
-            os.write(response.getBytes(DEFAULT_CHARSET));
-        }
     }
 
     private void handleTasksSubtaskEpic(HttpExchange httpExchange) throws IOException {
-        String response = "handleTasksSubtaskEpic";
-
-        Headers headers = httpExchange.getResponseHeaders();
-        headers.set("Content-Type", "text/html; charset=" + DEFAULT_CHARSET);
-        httpExchange.sendResponseHeaders(200, 0);
-
-        try (OutputStream os = httpExchange.getResponseBody()) {
-            os.write(response.getBytes(DEFAULT_CHARSET));
-        }
+     /////
     }
 
     private void sendTasks(HttpExchange httpExchange, List<Task> tasks) throws IOException {
