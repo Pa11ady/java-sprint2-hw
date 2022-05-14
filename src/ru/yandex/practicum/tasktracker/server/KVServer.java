@@ -11,18 +11,18 @@ import java.util.Map;
 
 public class KVServer {
     public static final int PORT = 8078;
-    private final String API_TOKEN;
+    private final String apiToken;
     private final HttpServer server;
     private final Map<String, String> data = new HashMap<>();
 
     public KVServer() throws IOException {
-        API_TOKEN = generateApiKey();
+        apiToken = generateApiKey();
         server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         server.createContext("/register", (h) -> {
             try {
                 System.out.println("\n/register");
                 if ("GET".equals(h.getRequestMethod())) {
-                    sendText(h, API_TOKEN);
+                    sendText(h, apiToken);
                 } else {
                     System.out.println("/register ждёт GET-запрос, а получил " + h.getRequestMethod());
                     h.sendResponseHeaders(405, 0);
@@ -104,7 +104,7 @@ public class KVServer {
     public void start() {
         System.out.println("Запускаем сервер на порту " + PORT);
         System.out.println("Открой в браузере http://localhost:" + PORT + "/");
-        System.out.println("API_TOKEN: " + API_TOKEN);
+        System.out.println("API_TOKEN: " + apiToken);
         server.start();
     }
 
@@ -119,7 +119,7 @@ public class KVServer {
 
     protected boolean hasAuth(HttpExchange h) {
         String rawQuery = h.getRequestURI().getRawQuery();
-        return rawQuery != null && (rawQuery.contains("API_TOKEN=" + API_TOKEN) || rawQuery.contains("API_TOKEN=DEBUG"));
+        return rawQuery != null && (rawQuery.contains("API_TOKEN=" + apiToken) || rawQuery.contains("API_TOKEN=DEBUG"));
     }
 
     protected String readText(HttpExchange h) throws IOException {

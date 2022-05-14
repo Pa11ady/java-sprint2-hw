@@ -1,6 +1,8 @@
 package ru.yandex.practicum.tasktracker.mainapp;
 
 import com.google.gson.Gson;
+import ru.yandex.practicum.tasktracker.client.KVTaskClient;
+import ru.yandex.practicum.tasktracker.enums.TaskStatus;
 import ru.yandex.practicum.tasktracker.model.Task;
 import ru.yandex.practicum.tasktracker.server.HttpTaskServer;
 import ru.yandex.practicum.tasktracker.server.KVServer;
@@ -16,6 +18,13 @@ public class Main {
     public static void main(String[] args) throws IOException, InterruptedException {
         new HttpTaskServer().start();
         new KVServer().start();
+        KVTaskClient kvTaskClient = new KVTaskClient();
+        Gson gson = new Gson();
+
+        Task task = new Task(100L, "task100", "task100", TaskStatus.NEW);
+        kvTaskClient.put("123", gson.toJson(task));
+        String taskJson = kvTaskClient.load("123");
+        System.out.println(taskJson);
         /*createTask(new Task(100L, "task100", "task100", TaskStatus.NEW));
         createTask(new Task(200L, "tas200", "task200", TaskStatus.NEW));
         createTask(new Task(200L, "tas300", "task300", TaskStatus.NEW));
