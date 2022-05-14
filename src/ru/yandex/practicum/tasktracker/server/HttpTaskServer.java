@@ -286,7 +286,7 @@ public class HttpTaskServer {
 
     private void sendTasks(HttpExchange httpExchange, List<Task> tasks) throws IOException {
         try {
-            if (!httpExchange.getRequestMethod().equals("GET")) {
+            if (!"GET".equals(httpExchange.getRequestMethod())) {
                 httpExchange.sendResponseHeaders(405, 0);
                 return;
             }

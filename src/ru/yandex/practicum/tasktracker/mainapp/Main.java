@@ -1,28 +1,27 @@
 package ru.yandex.practicum.tasktracker.mainapp;
 
 import com.google.gson.Gson;
-import ru.yandex.practicum.tasktracker.enums.TaskStatus;
 import ru.yandex.practicum.tasktracker.model.Task;
 import ru.yandex.practicum.tasktracker.server.HttpTaskServer;
+import ru.yandex.practicum.tasktracker.server.KVServer;
 
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) throws IOException, InterruptedException {
         new HttpTaskServer().start();
-        createTask(new Task(100L, "task100", "task100", TaskStatus.NEW));
+        new KVServer().start();
+        /*createTask(new Task(100L, "task100", "task100", TaskStatus.NEW));
         createTask(new Task(200L, "tas200", "task200", TaskStatus.NEW));
         createTask(new Task(200L, "tas300", "task300", TaskStatus.NEW));
         getAllTasks();
         System.out.println("********");
-        getTask(100L);
+        getTask(100L);*/
     }
 
     private static void getAllTasks() throws IOException, InterruptedException {
