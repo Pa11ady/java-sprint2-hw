@@ -57,7 +57,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager {
         return fileBackedTasksManager;
     }
 
-    private void save() {
+    protected void save() {
         final String header = "id,type,name,status,description,duration,epic,startTime";
         Path path = file.toPath();
         List<String> lines = new ArrayList<>();

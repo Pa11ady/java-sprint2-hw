@@ -13,10 +13,6 @@ public class KVTaskClient {
     private final String apiToken;
     private final HttpClient httpClient;
 
-    public  KVTaskClient() throws IOException, InterruptedException {
-        this("http://localhost:8078");
-    }
-
     public KVTaskClient(String URL) throws IOException, InterruptedException {
         this.URL = URL;
         httpClient = HttpClient.newHttpClient();

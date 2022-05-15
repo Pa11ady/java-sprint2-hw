@@ -44,6 +44,11 @@ public class HttpTaskServer {
         httpServer.start();
     }
 
+    public void stop() {
+        System.out.println("Останавливаем сервер на порту " + PORT);
+        httpServer.stop(0);
+    }
+
     private String readText(HttpExchange httpExchange) throws IOException {
         return new String(httpExchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
     }

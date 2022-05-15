@@ -3,6 +3,7 @@ package ru.yandex.practicum.tasktracker.mainapp;
 import com.google.gson.Gson;
 import ru.yandex.practicum.tasktracker.client.KVTaskClient;
 import ru.yandex.practicum.tasktracker.enums.TaskStatus;
+import ru.yandex.practicum.tasktracker.manager.HttpTaskManager;
 import ru.yandex.practicum.tasktracker.model.Task;
 import ru.yandex.practicum.tasktracker.server.HttpTaskServer;
 import ru.yandex.practicum.tasktracker.server.KVServer;
@@ -14,23 +15,47 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class Main {
+    private static final String KV_URL = "http://localhost:8078";
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        new HttpTaskServer().start();
-        new KVServer().start();
-        KVTaskClient kvTaskClient = new KVTaskClient();
+        //testKvServ();
+        //testHttp1();
+        testHttpTaskManager();
+
+    }
+
+    private static void testHttpTaskManager() throws IOException, InterruptedException {
+        KVServer kvServer = new KVServer();
+        kvServer.start();
+        HttpTaskManager httpTaskManager = new HttpTaskManager(KV_URL);
+        HttpTaskManager.loadFromFile(null);
+        kvServer.stop();
+
+    }
+    private static void testKvServ() throws IOException, InterruptedException {
+        KVServer kvServer = new KVServer();
+        kvServer.start();
+        KVTaskClient kvTaskClient = new KVTaskClient(KV_URL);
         Gson gson = new Gson();
 
         Task task = new Task(100L, "task100", "task100", TaskStatus.NEW);
         kvTaskClient.put("123", gson.toJson(task));
         String taskJson = kvTaskClient.load("123");
         System.out.println(taskJson);
-        /*createTask(new Task(100L, "task100", "task100", TaskStatus.NEW));
+        kvServer.stop();
+    }
+
+    private static void testHttp1() throws IOException, InterruptedException {
+        HttpTaskServer httpTaskServer = new HttpTaskServer();
+        httpTaskServer.start();
+        createTask(new Task(100L, "task100", "task100", TaskStatus.NEW));
         createTask(new Task(200L, "tas200", "task200", TaskStatus.NEW));
         createTask(new Task(200L, "tas300", "task300", TaskStatus.NEW));
         getAllTasks();
         System.out.println("********");
-        getTask(100L);*/
+        getTask(100L);
+        httpTaskServer.stop();
+
     }
 
     private static void getAllTasks() throws IOException, InterruptedException {

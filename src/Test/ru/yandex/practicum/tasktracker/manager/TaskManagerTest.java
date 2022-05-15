@@ -8,6 +8,7 @@ import ru.yandex.practicum.tasktracker.model.Subtask;
 import ru.yandex.practicum.tasktracker.model.Task;
 import ru.yandex.practicum.tasktracker.enums.TaskStatus;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -67,7 +68,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
     }
 
     @BeforeEach
-    void setUp() {
+    void setUp() throws IOException {
     }
 
     protected void testAllFieldsTask(Task taskA, Task taskB) {
