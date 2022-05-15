@@ -58,6 +58,9 @@ public class Subtask extends Task {
                 ", name='" + getName() + '\'' +
                 ", description='" + getDescription() + '\'' +
                 ", status=" + getStatus() +
+                ", Durations=" + getDuration() +
+                ", startDate=" + getStartTime() +
+                ", startEnd =" + getEndTime() +
                 '}';
     }
 }

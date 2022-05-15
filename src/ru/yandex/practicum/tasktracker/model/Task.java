@@ -125,12 +125,13 @@ public class Task {
 
     @Override
     public String toString() {
-        return  getType() +
-                "{" +
+        return "Task{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", status=" + status +
+                ", duration=" + duration +
+                ", startTime=" + startTime +
                 '}';
     }
 }

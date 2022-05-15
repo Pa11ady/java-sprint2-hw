@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import ru.yandex.practicum.tasktracker.client.KVTaskClient;
 import ru.yandex.practicum.tasktracker.enums.TaskStatus;
 import ru.yandex.practicum.tasktracker.manager.HttpTaskManager;
+import ru.yandex.practicum.tasktracker.model.Epic;
+import ru.yandex.practicum.tasktracker.model.Subtask;
 import ru.yandex.practicum.tasktracker.model.Task;
 import ru.yandex.practicum.tasktracker.server.HttpTaskServer;
 import ru.yandex.practicum.tasktracker.server.KVServer;
@@ -13,6 +15,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.LocalDateTime;
+import java.util.List;
 
 public class Main {
     private static final String KV_URL = "http://localhost:8078";
@@ -27,8 +31,52 @@ public class Main {
     private static void testHttpTaskManager() throws IOException, InterruptedException {
         KVServer kvServer = new KVServer();
         kvServer.start();
-        HttpTaskManager httpTaskManager = new HttpTaskManager(KV_URL);
-        HttpTaskManager.loadFromFile(null);
+        HttpTaskManager taskManager = new HttpTaskManager(KV_URL);
+
+        final LocalDateTime taskDate1 = LocalDateTime.of(2021, 1, 1, 10, 0);
+        final LocalDateTime taskDate2 = LocalDateTime.of(2021, 1, 1, 15, 0);
+        final LocalDateTime taskDate3 = LocalDateTime.of(2021, 1, 1, 20, 0);
+
+        final LocalDateTime subtaskDate3 = LocalDateTime.of(2021, 3, 3, 10, 0);
+        final Integer subtaskDuration3 = 120;
+
+        final long EPIC_ID1 = 40L;
+        final long EPIC_ID2 = 50L;
+        final long EPIC_ID3 = 60L;
+
+        final Task task1 = new Task("t1", "t1", TaskStatus.NEW, 120, taskDate1);  //10.00-12.00
+        final Task task2 = new Task("t2", "t2", TaskStatus.NEW, 180, taskDate2);  //15.00-18.00
+        final Task task3 = new Task("t3", "t3", TaskStatus.NEW, 60, taskDate3);   //20.00-21.00
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+        taskManager.createTask(task3);
+
+        final Epic epic1 = new Epic(EPIC_ID1, "Эпик1", "Эпик 1 описание");
+        final Epic epic2 = new Epic(EPIC_ID2, "Эпик2", "Эпик 2 описание");
+        final Epic epic3 = new Epic(EPIC_ID3, "Эпик3", "Эпик 3 описание");
+
+        final Subtask subtask1 = new Subtask("Подзадача 1.1", "описание 1", TaskStatus.NEW, EPIC_ID1);
+        final Subtask subtask2 = new Subtask("Подзадача 2.1", "описание 2.1",
+                TaskStatus.NEW, EPIC_ID2);
+        final Subtask subtask3 = new Subtask( "Подзадача 2.2", "просто 2.2", TaskStatus.NEW, EPIC_ID2,
+                subtaskDuration3, subtaskDate3);
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        taskManager.createEpic(epic3);
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask3);
+
+        taskManager.getEpic(EPIC_ID1);
+        taskManager.getEpic(EPIC_ID3);
+
+        HttpTaskManager httpTaskLoad = HttpTaskManager.loadFromUrl(KV_URL);
+        printTask(httpTaskLoad.getListTask());
+        printTask(httpTaskLoad.getListEpic());
+        printTask(httpTaskLoad.getListSubtask());
+        printTask(httpTaskLoad.getHistory());
+        System.out.println("*************************");
+        printTask(httpTaskLoad.getPrioritizedTasks());
         kvServer.stop();
 
     }
@@ -55,7 +103,6 @@ public class Main {
         System.out.println("********");
         getTask(100L);
         httpTaskServer.stop();
-
     }
 
     private static void getAllTasks() throws IOException, InterruptedException {
@@ -91,5 +138,13 @@ public class Main {
         Gson gson = new Gson();
         Task task = gson.fromJson(response.body(), Task.class);
         System.out.println(task);
+    }
+
+    private static void printTask(List<? extends Task> tasks) {
+        System.out.println("==========");
+        for (var el : tasks) {
+            System.out.println(el);
+        }
+        System.out.println("==========");
     }
 }
