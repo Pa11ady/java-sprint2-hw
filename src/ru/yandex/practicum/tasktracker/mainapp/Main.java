@@ -22,13 +22,12 @@ public class Main {
     private static final String KV_URL = "http://localhost:8078";
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        //testKvServ();
-        //testHttp1();
+        testKvServ();
+        testHttp1();
         testHttpTaskManager();
-
     }
 
-    private static void testHttpTaskManager() throws IOException, InterruptedException {
+    private static void testHttpTaskManager() throws IOException {
         KVServer kvServer = new KVServer();
         kvServer.start();
         HttpTaskManager taskManager = new HttpTaskManager(KV_URL);
@@ -117,6 +116,8 @@ public class Main {
     }
 
     private static void testHttp1() throws IOException, InterruptedException {
+        KVServer kvServer = new KVServer();
+        kvServer.start();
         HttpTaskServer httpTaskServer = new HttpTaskServer();
         httpTaskServer.start();
         createTask(new Task(100L, "task100", "task100", TaskStatus.NEW));
@@ -126,6 +127,7 @@ public class Main {
         System.out.println("********");
         getTask(100L);
         httpTaskServer.stop();
+        kvServer.stop();
     }
 
     private static void getAllTasks() throws IOException, InterruptedException {

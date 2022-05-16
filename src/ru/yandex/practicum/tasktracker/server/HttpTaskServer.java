@@ -20,12 +20,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class HttpTaskServer {
-    final static  String PATH = "resources" + File.separator + "tasks_tmp.csv";
     private static final int PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private final HttpServer httpServer;
-    //private final TaskManager taskManager = Managers.getDefault(); !!!!!
-    private final TaskManager taskManager = FileBackedTasksManager.loadFromFile(new File(PATH));
+    private final TaskManager taskManager = Managers.getDefault();
     private final Gson gson = new Gson();
 
     public HttpTaskServer() throws IOException {

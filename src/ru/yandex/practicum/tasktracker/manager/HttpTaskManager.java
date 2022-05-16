@@ -2,6 +2,7 @@ package ru.yandex.practicum.tasktracker.manager;
 
 import com.google.gson.Gson;
 import ru.yandex.practicum.tasktracker.client.KVTaskClient;
+import ru.yandex.practicum.tasktracker.exception.HttpManagerLoadException;
 import ru.yandex.practicum.tasktracker.exception.HttpManagerSaveException;
 import ru.yandex.practicum.tasktracker.model.Epic;
 import ru.yandex.practicum.tasktracker.model.Subtask;
@@ -20,9 +21,13 @@ public class HttpTaskManager extends FileBackedTasksManager {
 
     private final KVTaskClient kvTaskClient;
     private final Gson gson = new Gson();
-    public HttpTaskManager(String url) throws IOException, InterruptedException {
+    public HttpTaskManager(String url) {
         super(null);
-        kvTaskClient = new KVTaskClient(url);
+        try {
+            kvTaskClient = new KVTaskClient(url);
+        } catch (IOException | InterruptedException e) {
+            throw new HttpManagerLoadException("Не удалось загрузить токен для HttpTaskManager");
+        }
     }
 
     @Override
@@ -47,19 +52,29 @@ public class HttpTaskManager extends FileBackedTasksManager {
             kvTaskClient.put(SUB_KEY, gson.toJson(subtasks));
             kvTaskClient.put(HISTORY_KEY, gson.toJson(historyKeys));
         } catch (IOException | InterruptedException e) {
-            throw new HttpManagerSaveException("Невозможно сохранить HttpTaskManager");
+            throw new HttpManagerSaveException("Не удалось сохранить HttpTaskManager");
         }
     }
 
-    public static HttpTaskManager loadFromUrl(String url) throws IOException, InterruptedException {
-        final KVTaskClient kvTaskClient = new KVTaskClient(url);
-        final HttpTaskManager httpTaskManager = new HttpTaskManager(url);
+    public static HttpTaskManager loadFromUrl(String url) {
         final Gson gson = new Gson();
+        final KVTaskClient kvTaskClient;
+        final HttpTaskManager httpTaskManager;
+        final String tasksJson;
+        final String epicJson;
+        final String subtaskJson;
+        final String historyJson;
 
-        String tasksJson = kvTaskClient.load(TASK_KEY);
-        String epicJson = kvTaskClient.load(EPIC_KEY);
-        String subtaskJson = kvTaskClient.load(SUB_KEY);
-        String historyJson = kvTaskClient.load(HISTORY_KEY);
+        try {
+            kvTaskClient = new KVTaskClient(url);
+            httpTaskManager = new HttpTaskManager(url);
+            tasksJson = kvTaskClient.load(TASK_KEY);
+            epicJson = kvTaskClient.load(EPIC_KEY);
+            subtaskJson = kvTaskClient.load(SUB_KEY);
+            historyJson = kvTaskClient.load(HISTORY_KEY);
+        } catch (IOException | InterruptedException e) {
+            throw new HttpManagerLoadException("Не удалось загрузить HttpTaskManager");
+        }
 
         Task[] tasks = tasksJson.isEmpty() ? new Task[0] : gson.fromJson(tasksJson, Task[].class);
         Epic[] epics = epicJson.isEmpty() ? new Epic[0] : gson.fromJson(epicJson, Epic[].class);

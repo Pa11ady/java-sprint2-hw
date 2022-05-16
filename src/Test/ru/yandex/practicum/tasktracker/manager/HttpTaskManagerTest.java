@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
     final static String KV_URL = "http://localhost:8078";
-    public HttpTaskManagerTest() throws IOException, InterruptedException {
+    public HttpTaskManagerTest() {
         super(new HttpTaskManager(KV_URL));
     }
 
@@ -32,7 +32,7 @@ class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
     }
 
     @Test
-    void loadFromUrl() throws IOException, InterruptedException {
+    void loadFromUrl() {
         HttpTaskManager readHttpTaskManager;
         List<Task> tasks;
         List<Epic> epics;
