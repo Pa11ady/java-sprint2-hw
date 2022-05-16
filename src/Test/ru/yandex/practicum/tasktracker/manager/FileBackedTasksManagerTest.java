@@ -12,7 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>  {
+class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager> {
     final static String PATH = "resources" + File.separator + "tasks_tmp.csv";
 
     public FileBackedTasksManagerTest() {
