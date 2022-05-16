@@ -54,7 +54,7 @@ public class KVServer {
                             return;
                         }
                         data.put(key, value);
-                        System.out.println("Значение для ключа " + key + " успешно обновлено!");
+                        //System.out.println("Значение для ключа " + key + " успешно обновлено!");
                         h.sendResponseHeaders(200, 0);
                         break;
                     default:
@@ -127,7 +127,6 @@ public class KVServer {
     }
 
     protected void sendText(HttpExchange h, String text) throws IOException {
-        //byte[] resp = jackson.writeValueAsBytes(obj);
         byte[] resp = text.getBytes(StandardCharsets.UTF_8);
         h.getResponseHeaders().add("Content-Type", "application/json");
         h.sendResponseHeaders(200, resp.length);

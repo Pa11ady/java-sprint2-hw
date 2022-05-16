@@ -74,9 +74,32 @@ public class Main {
         printTask(httpTaskLoad.getListTask());
         printTask(httpTaskLoad.getListEpic());
         printTask(httpTaskLoad.getListSubtask());
+        System.out.println("История");
         printTask(httpTaskLoad.getHistory());
         System.out.println("*************************");
         printTask(httpTaskLoad.getPrioritizedTasks());
+
+
+        taskManager.removeEpic(EPIC_ID1);
+        taskManager.removeEpic(EPIC_ID2);
+        taskManager.removeEpic(100500L);
+        httpTaskLoad = HttpTaskManager.loadFromUrl(KV_URL);
+        System.out.println("=======УДАЛЕНИЕ!!!===========");
+        printTask(httpTaskLoad.getListTask());
+        printTask(httpTaskLoad.getListEpic());
+        printTask(httpTaskLoad.getListSubtask());
+        System.out.println("История");
+        printTask(httpTaskLoad.getHistory());
+        System.out.println("=======Всё чистим!!!===========");
+        taskManager.removeAllTask();
+        taskManager.removeAllEpic();
+        httpTaskLoad = HttpTaskManager.loadFromUrl(KV_URL);
+        printTask(httpTaskLoad.getListTask());
+        printTask(httpTaskLoad.getListEpic());
+        printTask(httpTaskLoad.getListSubtask());
+        printTask(httpTaskLoad.getHistory());
+        printTask(httpTaskLoad.getPrioritizedTasks());
+
         kvServer.stop();
 
     }

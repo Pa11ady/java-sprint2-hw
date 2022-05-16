@@ -42,18 +42,10 @@ public class HttpTaskManager extends FileBackedTasksManager {
         }
 
         try {
-            if (tasks.length > 0) {
-                kvTaskClient.put(TASK_KEY, gson.toJson(tasks));
-            }
-            if (epics.length > 0) {
-                kvTaskClient.put(EPIC_KEY, gson.toJson(epics));
-            }
-            if (subtasks.length > 0) {
-                kvTaskClient.put(SUB_KEY, gson.toJson(subtasks));
-            }
-            if (historyKeys.length > 0) {
-                kvTaskClient.put(HISTORY_KEY, gson.toJson(historyKeys));
-            }
+            kvTaskClient.put(TASK_KEY, gson.toJson(tasks));
+            kvTaskClient.put(EPIC_KEY, gson.toJson(epics));
+            kvTaskClient.put(SUB_KEY, gson.toJson(subtasks));
+            kvTaskClient.put(HISTORY_KEY, gson.toJson(historyKeys));
         } catch (IOException | InterruptedException e) {
             throw new HttpManagerSaveException("Невозможно сохранить HttpTaskManager");
         }
