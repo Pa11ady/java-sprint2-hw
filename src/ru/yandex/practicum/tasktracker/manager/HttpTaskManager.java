@@ -95,4 +95,5 @@ public class HttpTaskManager extends FileBackedTasksManager {
     public static HttpTaskManager loadFromFile(File file) {
         throw new UnsupportedOperationException("Загрузка из файла для HttpTaskManager не поддерживается.");
     }
+
 }

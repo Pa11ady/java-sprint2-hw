@@ -730,7 +730,6 @@ abstract  class TaskManagerTest <T extends TaskManager> {
 
     @Test
     void testValidationTask() {
-
         long  ID = 100;
         final LocalDateTime taskDate1 = LocalDateTime.of(2021, 1, 1, 10, 0);
         final LocalDateTime taskDate2 = LocalDateTime.of(2021, 1, 1, 15, 0);
@@ -781,6 +780,35 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         testDate =  LocalDateTime.of(2021, 1, 1, 21, 0);
         Task testTask7 = new Task(ID, "t", "t", TaskStatus.NEW, 60, testDate);
         assertDoesNotThrow(() -> taskManager.createTask(testTask7));
+    }
+
+    protected void createSampleStandard() {
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+        taskManager.createTask(task3);
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        taskManager.createEpic(epic3);
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask3);
+        //заполняем историю
+        taskManager.getTask(task1.getId());
+        taskManager.getEpic(epic1.getId());
+        taskManager.getEpic(epic3.getId());
+        taskManager.getSubtask(subtask1.getId());
+    }
+
+    protected void createSampleWithoutHistory() {
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+        taskManager.createTask(task3);
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        taskManager.createEpic(epic3);
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        taskManager.createSubtask(subtask3);
     }
 
 }

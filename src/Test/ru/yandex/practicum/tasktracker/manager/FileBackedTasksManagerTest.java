@@ -70,35 +70,6 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
         testSampleWithoutHistory(readFileBackedTasksManager);
     }
 
-    private void createSampleStandard() {
-        taskManager.createTask(task1);
-        taskManager.createTask(task2);
-        taskManager.createTask(task3);
-        taskManager.createEpic(epic1);
-        taskManager.createEpic(epic2);
-        taskManager.createEpic(epic3);
-        taskManager.createSubtask(subtask1);
-        taskManager.createSubtask(subtask2);
-        taskManager.createSubtask(subtask3);
-        //заполняем историю
-        taskManager.getTask(task1.getId());
-        taskManager.getEpic(epic1.getId());
-        taskManager.getEpic(epic3.getId());
-        taskManager.getSubtask(subtask1.getId());
-    }
-
-    private void createSampleWithoutHistory() {
-        taskManager.createTask(task1);
-        taskManager.createTask(task2);
-        taskManager.createTask(task3);
-        taskManager.createEpic(epic1);
-        taskManager.createEpic(epic2);
-        taskManager.createEpic(epic3);
-        taskManager.createSubtask(subtask1);
-        taskManager.createSubtask(subtask2);
-        taskManager.createSubtask(subtask3);
-    }
-
     private void testSampleStandard(FileBackedTasksManager readFileBackedTasksManager) {
         List<Task> tasks = readFileBackedTasksManager.getListTask();
         assertEquals(3, tasks.size(), "Неверное количество задач");
@@ -193,4 +164,6 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
         tasks = readFileBackedTasksManager.getHistory();
         assertTrue(tasks.isEmpty(), "История  должна быть пустой");
     }
+
+
 }
