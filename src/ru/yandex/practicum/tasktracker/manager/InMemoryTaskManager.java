@@ -130,7 +130,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void removeAllEpic() {
-        removePrioritizedTasks(epicMap);
         removePrioritizedTasks(subtaskMap);
         removeHistory(epicMap);
         epicMap.clear();
@@ -171,7 +170,6 @@ public class InMemoryTaskManager implements TaskManager {
         epic.removeAllSubtask();
         //Т. З. если у эпика нет подзадач или все они имеют статус NEW, то статус должен быть NEW
         epic.setStatus(TaskStatus.NEW);
-        prioritizedTasks.add(epic);
         epicMap.put(epic.getId(), epic);
         return true;
     }
@@ -187,8 +185,6 @@ public class InMemoryTaskManager implements TaskManager {
            return false;
        }
        epic = new Epic(epic);
-       prioritizedTasks.remove(oldEpic);
-       prioritizedTasks.add(epic);
        epicMap.put(epic.getId(), epic);
        return  true;
    }
@@ -219,8 +215,6 @@ public class InMemoryTaskManager implements TaskManager {
         } else {
             epic.setStatus(TaskStatus.IN_PROGRESS);
         }
-        prioritizedTasks.remove(oldEpic);
-        prioritizedTasks.add(epic);
         epicMap.put(epic.getId(), epic);
         return  true;
     }
@@ -242,7 +236,6 @@ public class InMemoryTaskManager implements TaskManager {
             subtaskMap.remove(subtaskId);
 
         }
-        prioritizedTasks.remove(epic);
         historyManager.remove(id);
         return epicMap.remove(id) != null;
     }
@@ -474,7 +467,7 @@ public class InMemoryTaskManager implements TaskManager {
             LocalDateTime endDate = task.getEndTime();
             LocalDateTime elementStartDate = element.getStartTime();
             LocalDateTime elementEndDate = element.getEndTime();
-            if (elementStartDate == null || elementEndDate == null || element.getType() == TaskType.EPIC ||
+            if (elementStartDate == null || elementEndDate == null ||
                     task.equals(element)) {
                 continue; // Игнорируем если незакрытый интервал или Эпик
             }

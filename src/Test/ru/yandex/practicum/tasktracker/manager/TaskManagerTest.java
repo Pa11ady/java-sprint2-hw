@@ -1,6 +1,5 @@
 package ru.yandex.practicum.tasktracker.manager;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.tasktracker.exception.ManagerTaskValidationException;
 import ru.yandex.practicum.tasktracker.model.Epic;
@@ -8,7 +7,6 @@ import ru.yandex.practicum.tasktracker.model.Subtask;
 import ru.yandex.practicum.tasktracker.model.Task;
 import ru.yandex.practicum.tasktracker.enums.TaskStatus;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -65,10 +63,6 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         epic1.addSubtask(SUBTASK_ID1);
         epic2.addSubtask(SUBTASK_ID2);
         epic2.addSubtask(SUBTASK_ID3);
-    }
-
-    @BeforeEach
-    void setUp() throws IOException {
     }
 
     protected void testAllFieldsTask(Task taskA, Task taskB) {
@@ -716,8 +710,8 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         taskManager.createTask(task3);
 
         List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
-        assertEquals(9, prioritizedTasks.size());
-        List<Long> expectedKeys = List.of(30L, 20L, 50L, 3000L, 200L, 10L, 40L, 60L, 100L);
+        assertEquals(6, prioritizedTasks.size());
+        List<Long> expectedKeys = List.of(30L, 20L, 3000L, 200L, 10L, 100L);
         List<Long> actualKeys = new ArrayList<>();
         for (Task task : prioritizedTasks) {
             actualKeys.add(task.getId());
@@ -730,7 +724,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         for (Task task : prioritizedTasks) {
             actualKeys.add(task.getId());
         }
-        expectedKeys = List.of(20L, 50L, 3000L, 200L, 10L, 40L, 60L, 100L);
+        expectedKeys = List.of(20L, 3000L, 200L, 10L, 100L);
         assertEquals(expectedKeys, actualKeys, "Ключи не совпадают!");
     }
 
@@ -749,12 +743,12 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         taskManager.createTask(task2);
         taskManager.createTask(task3);
 
-        //полностью совпадает c t1
+        //полностью совпадает с t1
         Task testTask = new Task("t", "t", TaskStatus.NEW, 120, taskDate1);
         assertThrows(ManagerTaskValidationException.class, () -> taskManager.createTask(testTask));
 
         //внутри т2
-        LocalDateTime testDate = LocalDateTime.of(2021, 1, 1, 16, 00);
+        LocalDateTime testDate = LocalDateTime.of(2021, 1, 1, 16, 0);
         Task testTask1 = new Task("t", "t", TaskStatus.NEW, 60, testDate);
         assertThrows(ManagerTaskValidationException.class, () -> taskManager.createTask(testTask1));
 
@@ -784,7 +778,7 @@ abstract  class TaskManagerTest <T extends TaskManager> {
         assertDoesNotThrow(() -> taskManager.createTask(testTask6));
 
         taskManager.removeTask(ID);
-        testDate =  LocalDateTime.of(2021, 1, 1, 21, 00);
+        testDate =  LocalDateTime.of(2021, 1, 1, 21, 0);
         Task testTask7 = new Task(ID, "t", "t", TaskStatus.NEW, 60, testDate);
         assertDoesNotThrow(() -> taskManager.createTask(testTask7));
     }

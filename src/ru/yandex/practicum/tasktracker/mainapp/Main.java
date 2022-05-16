@@ -33,20 +33,20 @@ public class Main {
         kvServer.start();
         HttpTaskManager taskManager = new HttpTaskManager(KV_URL);
 
-        final LocalDateTime taskDate1 = LocalDateTime.of(2021, 1, 1, 10, 0);
-        final LocalDateTime taskDate2 = LocalDateTime.of(2021, 1, 1, 15, 0);
-        final LocalDateTime taskDate3 = LocalDateTime.of(2021, 1, 1, 20, 0);
+        final LocalDateTime taskDate1 = LocalDateTime.of(2021, 2, 20, 10, 0);
+        final LocalDateTime taskDate2 = LocalDateTime.of(2021, 2, 5, 15, 0);
+        final LocalDateTime taskDate3 = LocalDateTime.of(2021, 2, 10, 15, 0);
 
-        final LocalDateTime subtaskDate3 = LocalDateTime.of(2021, 3, 3, 10, 0);
+        final LocalDateTime subtaskDate3 = LocalDateTime.of(2021, 1, 3, 10, 0);
         final Integer subtaskDuration3 = 120;
 
         final long EPIC_ID1 = 40L;
         final long EPIC_ID2 = 50L;
         final long EPIC_ID3 = 60L;
 
-        final Task task1 = new Task("t1", "t1", TaskStatus.NEW, 120, taskDate1);  //10.00-12.00
-        final Task task2 = new Task("t2", "t2", TaskStatus.NEW, 180, taskDate2);  //15.00-18.00
-        final Task task3 = new Task("t3", "t3", TaskStatus.NEW, 60, taskDate3);   //20.00-21.00
+        final Task task1 = new Task("t1", "t1", TaskStatus.NEW, 120, taskDate1);
+        final Task task2 = new Task("t2", "t2", TaskStatus.NEW);
+        final Task task3 = new Task("t3", "t3", TaskStatus.NEW, 60, taskDate3);
         taskManager.createTask(task1);
         taskManager.createTask(task2);
         taskManager.createTask(task3);
