@@ -110,11 +110,17 @@ public class HttpClientTestTaskManager implements TaskManager {
 
     @Override
     public boolean createTask(Task task) {
+        if (task == null || getTask(task.getId()) != null) {
+            return false;
+        }
         return "CREATE".equals(addTask(task));
     }
 
     @Override
     public boolean updateTask(Task task) {
+        if (task == null || getTask(task.getId()) == null) {
+            return false;
+        }
         return "UPDATE".equals(addTask(task));
     }
 

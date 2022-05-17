@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 abstract public class TaskManagerTest <T extends TaskManager> {
     protected T taskManager;
@@ -123,9 +124,9 @@ abstract public class TaskManagerTest <T extends TaskManager> {
         taskManager.createTask(task3);
         taskManager.removeAllTask();
         tasks = taskManager.getListTask();
-        List<Task> prioritizedTasks = taskManager.getPrioritizedTasks();
+        List<Task> prioritizedTasks = taskManager.getPrioritizedTasks(); //todo
         //assertTrue(tasks.isEmpty(), "Список задач должен быть пустой");
-        //ssertTrue(prioritizedTasks.isEmpty(), "Список упорядоченных задач должен быть пустой");
+        //assertTrue(prioritizedTasks.isEmpty(), "Список упорядоченных задач должен быть пустой");
     }
 
     @Test
@@ -175,11 +176,6 @@ abstract public class TaskManagerTest <T extends TaskManager> {
         assertFalse(taskManager.createTask(null));
         tasks = taskManager.getListTask();
         assertEquals(3, tasks.size(), "Неверное количество задач");
-
-        final LocalDateTime taskDate4 = LocalDateTime.of(2020, 3, 3, 11, 0);
-        final Integer taskDuration4 = 60;
-        final Task task4 = new Task("Задача 4", "Задача 4", TaskStatus.NEW, taskDuration4, taskDate4);
-        //assertThrows(ManagerTaskValidationException.class, () -> taskManager.createTask(task4));
     }
 
     @Test
@@ -204,16 +200,6 @@ abstract public class TaskManagerTest <T extends TaskManager> {
         //Неверные значения
         assertFalse(taskManager.updateTask(null));
         assertFalse(taskManager.updateTask(task3));
-
-        //Проверка валидации
-        taskManager.removeAllTask();
-        taskManager.createTask(task1);
-        taskManager.createTask(task2);
-        taskManager.createTask(task3);
-        final LocalDateTime taskDate4 =  LocalDateTime.of(2020, 3, 3, 3, 1);
-        final Integer taskDuration4 = 60;
-        final Task task4 = new Task(TASK_ID1,"Задача 4", "Задача 4", TaskStatus.NEW, taskDuration4, taskDate4);
-        assertThrows(ManagerTaskValidationException.class, () -> taskManager.updateTask(task4));
     }
 
     @Test
@@ -730,11 +716,8 @@ abstract public class TaskManagerTest <T extends TaskManager> {
 
     @Test
     void testValidationTask() {
-        //Небольшой чит чтобы тест не падал для HttpClientTestTaskManager, так как технически невозможно отловить исключения
-        //за пределами Http сервера
-        if ("HttpClientTestTaskManager".equals(taskManager.getClass().getSimpleName())) {
-            return;
-        }
+        //Пропускаем для HttpClientTestTaskManager, так серверное исключение не дойдёт до клиента
+        assumeFalse("HttpClientTestTaskManager".equals(taskManager.getClass().getSimpleName()));
 
         long  ID = 100;
         final LocalDateTime taskDate1 = LocalDateTime.of(2021, 1, 1, 10, 0);

@@ -10,12 +10,17 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class KVServer {
-    public static final int PORT = 8078;
+    public final int PORT;
     private final String apiToken;
     private final HttpServer server;
     private final Map<String, String> data = new HashMap<>();
 
     public KVServer() throws IOException {
+        this(8078);
+    }
+
+    public KVServer(int port) throws IOException {
+        PORT = port;
         apiToken = generateApiKey();
         server = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         server.createContext("/register", (h) -> {

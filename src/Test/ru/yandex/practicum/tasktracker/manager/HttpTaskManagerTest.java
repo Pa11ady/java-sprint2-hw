@@ -1,5 +1,6 @@
 package ru.yandex.practicum.tasktracker.manager;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,14 +16,15 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
-    final static String KV_URL = "http://localhost:8078";
+    static final int PORT = 8070;
+    final static String KV_URL = "http://localhost:" + PORT;
     public HttpTaskManagerTest() {
         super(new HttpTaskManager(KV_URL));
     }
 
    @BeforeAll
    static void startKVServer() throws IOException {
-       new KVServer().start();
+       new KVServer(PORT).start();
    }
 
     @BeforeEach
