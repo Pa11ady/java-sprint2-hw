@@ -40,7 +40,7 @@ public class Main {
         taskManager.createTask(new Task(100L, "task100", "task100", TaskStatus.NEW));
         taskManager.createTask(new Task(200L, "tas200", "task200", TaskStatus.NEW));
         taskManager.createTask(new Task(300L, "tas300", "task300", TaskStatus.NEW));
-        taskManager.removeAllTask();
+        //taskManager.removeAllTask();
         System.out.println("********");
         printTask(taskManager.getListTask());
         System.out.println("********");

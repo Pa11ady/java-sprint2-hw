@@ -88,10 +88,9 @@ public class HttpClientTestTaskManager implements TaskManager {
         return gson.fromJson(response.body(), Task.class);
     }
 
-    @Override
-    public boolean createTask(Task task) {
+    private String addTask(Task task) {
         if (task == null) {
-            return false;
+            return  "";
         }
         URI url = URI.create(URL + TASK_H);
         String json = gson.toJson(task);
@@ -103,12 +102,20 @@ public class HttpClientTestTaskManager implements TaskManager {
         } catch (IOException | InterruptedException e) {
             throw new HttpClientTestTaskManagerException("Не удалось создать/обновить задачу");
         }
-        return response.statusCode() == 0;
+        if (response.statusCode() != 200 ) {
+            return "";
+        }
+        return  response.body();
+    }
+
+    @Override
+    public boolean createTask(Task task) {
+        return "CREATE".equals(addTask(task));
     }
 
     @Override
     public boolean updateTask(Task task) {
-        return createTask(task);
+        return "UPDATE".equals(addTask(task));
     }
 
     @Override

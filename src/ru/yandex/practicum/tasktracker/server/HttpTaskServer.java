@@ -114,9 +114,11 @@ public class HttpTaskServer {
                     }
                     Task task = gson.fromJson(body, Task.class);
                     if (taskManager.createTask(task)) {
-                        httpExchange.sendResponseHeaders(200, 0);
+                        //httpExchange.sendResponseHeaders(200, 0);
+                        sendText(httpExchange, "CREATE");
                     } else if (taskManager.updateTask(task)) {
-                        httpExchange.sendResponseHeaders(200, 0);
+                        //httpExchange.sendResponseHeaders(200, 0);
+                        sendText(httpExchange,"UPDATE");
                     } else {
                         httpExchange.sendResponseHeaders(400, 0);
                     }
