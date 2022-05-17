@@ -31,6 +31,26 @@ public class HttpClientTestTaskManager implements TaskManager {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final Gson gson = new Gson();
 
+    List<Task> restoreTypeTasks(List<Task> tasks) {
+        if(tasks.isEmpty()) {
+            return tasks;
+        }
+        List<Task> resultTasks = new ArrayList<>();
+        for (var task : tasks) {
+            switch (task.getType()) {
+                case TASK:
+                    resultTasks.add(getTask(task.getId()));
+                    break;
+                case EPIC:
+                    resultTasks.add(getEpic(task.getId()));
+                    break;
+                case SUBTASK:
+                    resultTasks.add(getSubtask(task.getId()));
+            }
+        }
+        return resultTasks;
+    }
+
     private boolean addData(String strUrl, String text) {
         URI url = URI.create(strUrl);
         HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(text);
@@ -249,6 +269,6 @@ public class HttpClientTestTaskManager implements TaskManager {
 
     @Override
     public List<Task> getHistory() {
-        return getListTask(URL + HISTORY_H);
+        return restoreTypeTasks(getListTask(URL + HISTORY_H));
     }
 }

@@ -24,9 +24,9 @@ public class Main {
     private static final String KV_URL = "http://localhost:8078";
 
     public static void main(String[] args) throws IOException, InterruptedException {
-        //testKvServ();
-        //testHttp1();
-        //testHttpTaskManager();
+        testKvServ();
+        testHttp1();
+        testHttpTaskManager();
         HttpClientTestTaskManagerTest();
     }
 
@@ -40,14 +40,17 @@ public class Main {
         taskManager.createTask(new Task(100L, "task100", "task100", TaskStatus.NEW));
         taskManager.createTask(new Task(200L, "tas200", "task200", TaskStatus.NEW));
         taskManager.createTask(new Task(300L, "tas300", "task300", TaskStatus.NEW));
-        //taskManager.removeAllTask();
+        taskManager.createEpic(new Epic(400L, "epic400", "epic400", TaskStatus.NEW));
+        Subtask sub1 = new Subtask(500L, "Подзадача 1.1", "описание 1", TaskStatus.NEW, 400L);
+        taskManager.createSubtask(sub1);
         System.out.println("********");
         printTask(taskManager.getListTask());
         System.out.println("********");
         System.out.println("Task = "+ taskManager.getTask(100L));
-        System.out.println("!!!!!!Hist");
-        printTask(taskManager.getHistory());
-
+        taskManager.getSubtask(500L);
+        System.out.println("History");
+        List<Task> tmp =taskManager.getHistory();
+        printTask(tmp);
 
         httpTaskServer.stop();
         kvServer.stop();
@@ -133,7 +136,6 @@ public class Main {
         kvServer.start();
         KVTaskClient kvTaskClient = new KVTaskClient(KV_URL);
         Gson gson = new Gson();
-
         Task task = new Task(100L, "task100", "task100", TaskStatus.NEW);
         kvTaskClient.put("123", gson.toJson(task));
         String taskJson = kvTaskClient.load("123");
