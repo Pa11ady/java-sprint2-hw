@@ -45,6 +45,9 @@ public class Main {
         printTask(taskManager.getListTask());
         System.out.println("********");
         System.out.println("Task = "+ taskManager.getTask(100L));
+        System.out.println("!!!!!!Hist");
+        printTask(taskManager.getHistory());
+
 
         httpTaskServer.stop();
         kvServer.stop();

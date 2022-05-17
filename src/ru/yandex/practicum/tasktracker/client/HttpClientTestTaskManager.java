@@ -39,7 +39,7 @@ public class HttpClientTestTaskManager implements TaskManager {
         try {
             response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            throw new HttpClientTestTaskManagerException("Не удалось создать/обновить ");
+            throw new HttpClientTestTaskManagerException("Не удалось создать/обновить по " + strUrl);
         }
         return response.statusCode() == 200;
     }
@@ -72,14 +72,18 @@ public class HttpClientTestTaskManager implements TaskManager {
         return response.body();
     }
 
-    @Override
-    public List<Task> getListTask() {
-        String json = getData(URL + TASK_H);
+    private List<Task> getListTask(String strURL) {
+        String json = getData(strURL);
         if (json.isEmpty()) {
             return new ArrayList<>();
         }
         Task[] tasks = gson.fromJson(json, Task[].class);
         return new ArrayList<>(Arrays.asList(tasks));
+    }
+
+    @Override
+    public List<Task> getListTask() {
+        return getListTask(URL + TASK_H);
     }
 
     @Override
@@ -176,12 +180,20 @@ public class HttpClientTestTaskManager implements TaskManager {
 
     @Override
     public List<Subtask> getListSubtaskFromEpic(Long id) {
-        return null;
+        if (id == null) {
+            return new ArrayList<>();
+        }
+        String json = getData(URL + SUB_IN_EPIC_H + ID + id);
+        if (json.isEmpty()) {
+            return new ArrayList<>();
+        }
+        Subtask[] subtasks = gson.fromJson(json, Subtask[].class);
+        return new ArrayList<>(Arrays.asList(subtasks));
     }
 
     @Override
     public List<Subtask> getListSubtask() {
-        String json = getData(URL + SUB_IN_EPIC_H);
+        String json = getData(URL + SUBTASK_H);
         if (json.isEmpty()) {
             return new ArrayList<>();
         }
@@ -191,36 +203,52 @@ public class HttpClientTestTaskManager implements TaskManager {
 
     @Override
     public void removeAllSubtask() {
-
+        removeData((URL + SUBTASK_H));
     }
 
     @Override
     public Subtask getSubtask(Long id) {
-        return null;
+        if (id == null) {
+            return null;
+        }
+        String json = getData(URL + SUBTASK_H + ID + id);
+        if (json.isEmpty()) {
+            return null;
+        }
+        return gson.fromJson(json, Subtask.class);
     }
 
     @Override
     public boolean createSubtask(Subtask subtask) {
-        return false;
+        if (subtask == null || getSubtask(subtask.getId()) != null) {
+            return false;
+        }
+        return addData(URL + SUBTASK_H, gson.toJson(subtask));
     }
 
     @Override
     public boolean updateSubtask(Subtask subtask) {
-        return false;
+        if (subtask == null || getSubtask(subtask.getId()) == null) {
+            return false;
+        }
+        return addData(URL + SUBTASK_H, gson.toJson(subtask));
     }
 
     @Override
     public boolean removeSubtask(Long id) {
-        return false;
+        if (id == null) {
+            return false;
+        }
+        return removeData(URL + SUBTASK_H + ID + id);
     }
 
     @Override
     public List<Task> getPrioritizedTasks() {
-        return null;
+        return getListTask(URL + PRIORITY_H);
     }
 
     @Override
     public List<Task> getHistory() {
-        return null;
+        return getListTask(URL + HISTORY_H);
     }
 }
