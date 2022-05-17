@@ -6,6 +6,8 @@ import ru.yandex.practicum.tasktracker.enums.TaskType;
 import java.time.LocalDateTime;
 
 public class Subtask extends Task {
+    {type = TaskType.SUBTASK;}
+
     private final Long parentId;
 
     public Subtask(String name, String description, TaskStatus status, Long parentId) {
@@ -41,7 +43,7 @@ public class Subtask extends Task {
 
     @Override
     public TaskType getType() {
-        return TaskType.SUBTASK;
+        return type;
     }
 
     @Override

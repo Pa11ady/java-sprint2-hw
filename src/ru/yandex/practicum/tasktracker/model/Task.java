@@ -9,6 +9,7 @@ import java.util.Objects;
 
 //Решил максимально сузить область видимости, чтобы наследование не нарушало инкапсуляцию
 public class Task {
+    protected TaskType type = TaskType.TASK;
     private Long id;
     private String name;
     private String description;
@@ -75,7 +76,7 @@ public class Task {
     }
 
     public TaskType getType() {
-        return TaskType.TASK;
+        return type;
     }
 
     public Integer getDuration() {

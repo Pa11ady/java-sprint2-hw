@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Set;
 
 public class Epic extends Task {
+    {type = TaskType.EPIC;}
+
     private LocalDateTime endTime;
     private final Set<Long> subtaskSet = new HashSet<>();
 
@@ -78,7 +80,7 @@ public class Epic extends Task {
 
     @Override
     public TaskType getType() {
-        return TaskType.EPIC;
+        return type;
     }
 
     @Override
