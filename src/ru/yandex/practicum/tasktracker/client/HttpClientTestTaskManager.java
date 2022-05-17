@@ -14,7 +14,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 //Web клиент для облегчения тестирования эндпоинтов класса HttpTaskServer
@@ -32,35 +31,54 @@ public class HttpClientTestTaskManager implements TaskManager {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final Gson gson = new Gson();
 
-    private boolean removeData(String urlStr) {
-        URI url = URI.create(urlStr);
+    private boolean addData(String strUrl, String text) {
+        URI url = URI.create(strUrl);
+        HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(text);
+        HttpRequest request = HttpRequest.newBuilder().uri(url).POST(body).build();
+        HttpResponse<String> response;
+        try {
+            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        } catch (IOException | InterruptedException e) {
+            throw new HttpClientTestTaskManagerException("Не удалось создать/обновить ");
+        }
+        return response.statusCode() == 200;
+    }
+
+    private boolean removeData(String strUrl) {
+        URI url = URI.create(strUrl);
         HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
         HttpResponse<String> response;
         try {
             response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            throw new HttpClientTestTaskManagerException("Не удалось удалить данные");
+            throw new HttpClientTestTaskManagerException("Не удалось удалить данные по" + strUrl);
         }
         return response.statusCode() == 200;
     }
 
-    @Override
-    public List<Task> getListTask() {
-        URI url = URI.create(URL + TASK_H);
+    private String getData(String strURL) {
+        URI url = URI.create(strURL);
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response;
         try {
             response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         } catch (IOException | InterruptedException e) {
-            throw new HttpClientTestTaskManagerException("Не удалось получить список задач");
+            throw new HttpClientTestTaskManagerException("Не удалось получить данные по" + strURL);
         }
 
-        int statusCode = response.statusCode();
-        String body = response.body();
-        if (statusCode != 200 || body.isEmpty()) {
+        if (response.statusCode() != 200) {
+            return "";
+        }
+        return response.body();
+    }
+
+    @Override
+    public List<Task> getListTask() {
+        String json = getData(URL + TASK_H);
+        if (json.isEmpty()) {
             return new ArrayList<>();
         }
-        Task[] tasks = gson.fromJson(response.body(), Task[].class);
+        Task[] tasks = gson.fromJson(json, Task[].class);
         return new ArrayList<>(Arrays.asList(tasks));
     }
 
@@ -71,41 +89,14 @@ public class HttpClientTestTaskManager implements TaskManager {
 
     @Override
     public Task getTask(Long id) {
-        URI url = URI.create(URL + TASK_H + ID + id);
-        HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
-        HttpResponse<String> response;
-        try {
-            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            throw new HttpClientTestTaskManagerException("Не удалось получить задачу");
-        }
-
-        int statusCode = response.statusCode();
-        String body = response.body();
-        if (statusCode != 200 || body.isEmpty()) {
+        if (id == null) {
             return null;
         }
-        return gson.fromJson(response.body(), Task.class);
-    }
-
-    private String addTask(Task task) {
-        if (task == null) {
-            return  "";
+        String json = getData(URL + TASK_H + ID + id);
+        if (json.isEmpty()) {
+            return null;
         }
-        URI url = URI.create(URL + TASK_H);
-        String json = gson.toJson(task);
-        HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
-        HttpRequest request = HttpRequest.newBuilder().uri(url).POST(body).build();
-        HttpResponse<String> response;
-        try {
-            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (IOException | InterruptedException e) {
-            throw new HttpClientTestTaskManagerException("Не удалось создать/обновить задачу");
-        }
-        if (response.statusCode() != 200 ) {
-            return "";
-        }
-        return  response.body();
+        return gson.fromJson(json, Task.class);
     }
 
     @Override
@@ -113,7 +104,7 @@ public class HttpClientTestTaskManager implements TaskManager {
         if (task == null || getTask(task.getId()) != null) {
             return false;
         }
-        return "CREATE".equals(addTask(task));
+        return addData(URL + TASK_H, gson.toJson(task));
     }
 
     @Override
@@ -121,7 +112,7 @@ public class HttpClientTestTaskManager implements TaskManager {
         if (task == null || getTask(task.getId()) == null) {
             return false;
         }
-        return "UPDATE".equals(addTask(task));
+        return addData(URL + TASK_H, gson.toJson(task));
     }
 
     @Override
