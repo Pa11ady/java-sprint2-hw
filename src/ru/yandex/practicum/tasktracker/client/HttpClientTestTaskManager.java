@@ -125,32 +125,53 @@ public class HttpClientTestTaskManager implements TaskManager {
 
     @Override
     public List<Epic> getListEpic() {
-        return null;
+        String json = getData(URL + EPIC_H);
+        if (json.isEmpty()) {
+            return new ArrayList<>();
+        }
+        Epic[] epics = gson.fromJson(json, Epic[].class);
+        return new ArrayList<>(Arrays.asList(epics));
     }
 
     @Override
     public void removeAllEpic() {
-
+        removeData((URL + EPIC_H));
     }
 
     @Override
     public Epic getEpic(Long id) {
-        return null;
+        if (id == null) {
+            return null;
+        }
+        String json = getData(URL + EPIC_H + ID + id);
+        if (json.isEmpty()) {
+            return null;
+        }
+        return gson.fromJson(json, Epic.class);
     }
 
     @Override
     public boolean createEpic(Epic epic) {
-        return false;
+        if (epic == null || getEpic(epic.getId()) != null) {
+            return false;
+        }
+        return addData(URL + EPIC_H, gson.toJson(epic));
     }
 
     @Override
     public boolean updateEpic(Epic epic) {
-        return false;
+        if (epic == null || getEpic(epic.getId()) == null) {
+            return false;
+        }
+        return addData(URL + EPIC_H, gson.toJson(epic));
     }
 
     @Override
     public boolean removeEpic(Long id) {
-        return false;
+        if (id == null) {
+            return false;
+        }
+        return removeData(URL + EPIC_H + ID + id);
     }
 
     @Override
@@ -160,7 +181,12 @@ public class HttpClientTestTaskManager implements TaskManager {
 
     @Override
     public List<Subtask> getListSubtask() {
-        return null;
+        String json = getData(URL + SUB_IN_EPIC_H);
+        if (json.isEmpty()) {
+            return new ArrayList<>();
+        }
+        Subtask[] subtasks = gson.fromJson(json, Subtask[].class);
+        return new ArrayList<>(Arrays.asList(subtasks));
     }
 
     @Override
