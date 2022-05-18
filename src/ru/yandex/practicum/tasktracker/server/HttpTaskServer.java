@@ -26,7 +26,6 @@ public class HttpTaskServer {
 
     public HttpTaskServer() throws IOException {
         httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
-        httpServer.createContext("/test", this::handleTest);
         httpServer.createContext("/tasks/task", this::handleTasksTask);
         httpServer.createContext("/tasks/subtask", this::handleTasksSubtask);
         httpServer.createContext("/tasks/epic", this::handleTasksEpic);
@@ -66,19 +65,6 @@ public class HttpTaskServer {
             return null;
         }
         return Long.parseLong(id);
-    }
-
-    private void handleTest(HttpExchange httpExchange) throws IOException {
-        System.out.println("handleTest");
-        String response = "Привет, тестовый метод референс работает!";
-
-        Headers headers = httpExchange.getResponseHeaders();
-        headers.set("Content-Type", "text/html; charset=" + DEFAULT_CHARSET);
-        httpExchange.sendResponseHeaders(200, 0);
-
-        try (OutputStream os = httpExchange.getResponseBody()) {
-            os.write(response.getBytes(DEFAULT_CHARSET));
-        }
     }
 
     private void handleTasksTask(HttpExchange httpExchange) throws IOException {

@@ -1,5 +1,7 @@
 package ru.yandex.practicum.tasktracker.manager;
 
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.tasktracker.exception.ManagerTaskValidationException;
 import ru.yandex.practicum.tasktracker.model.Epic;
@@ -11,7 +13,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assumptions.assumeFalse;
 
 abstract public class TaskManagerTest <T extends TaskManager> {
     protected T taskManager;
@@ -60,13 +61,10 @@ abstract public class TaskManagerTest <T extends TaskManager> {
 
     public TaskManagerTest(T taskManager) {
         this.taskManager = taskManager;
-
-        epic1.addSubtask(SUBTASK_ID1);
-        epic2.addSubtask(SUBTASK_ID2);
-        epic2.addSubtask(SUBTASK_ID3);
     }
 
-    protected void testAllFieldsTask(Task taskA, Task taskB) {
+    //Это не тест, а утилитарный метод, который используют тесты
+    protected void checkAllFieldsTask(Task taskA, Task taskB) {
         String message = taskA.getClass().getSimpleName() + " не совпадают";
         assertEquals(taskA, taskB, message); //быстрая проверка
         assertAll(
@@ -89,6 +87,13 @@ abstract public class TaskManagerTest <T extends TaskManager> {
         }
     }
 
+    @BeforeEach
+    void init()  {
+        epic1.addSubtask(SUBTASK_ID1);
+        epic2.addSubtask(SUBTASK_ID2);
+        epic2.addSubtask(SUBTASK_ID3);
+    }
+
     @Test
     void getListTask() {
         List<Task> tasks;
@@ -104,9 +109,9 @@ abstract public class TaskManagerTest <T extends TaskManager> {
         tasks = taskManager.getListTask();
         assertEquals(3, tasks.size(), "Неверное количество задач");
         tasks.sort(Comparator.comparing(Task::getId));
-        testAllFieldsTask(task1, tasks.get(0));
-        testAllFieldsTask(task2, tasks.get(1));
-        testAllFieldsTask(task3, tasks.get(2));
+        checkAllFieldsTask(task1, tasks.get(0));
+        checkAllFieldsTask(task2, tasks.get(1));
+        checkAllFieldsTask(task3, tasks.get(2));
     }
 
     @Test
@@ -137,8 +142,8 @@ abstract public class TaskManagerTest <T extends TaskManager> {
         //Стандартное поведение
         taskManager.createTask(task1);
         taskManager.createTask(task2);
-        testAllFieldsTask(task1, taskManager.getTask(TASK_ID1));
-        testAllFieldsTask(task2, taskManager.getTask(TASK_ID2));
+        checkAllFieldsTask(task1, taskManager.getTask(TASK_ID1));
+        checkAllFieldsTask(task2, taskManager.getTask(TASK_ID2));
 
         //Неверные значения
         assertNull(taskManager.getTask(100500L));
@@ -157,9 +162,9 @@ abstract public class TaskManagerTest <T extends TaskManager> {
         assertTrue(taskManager.createTask(task3));
         tasks = taskManager.getListTask();
         assertEquals(3, tasks.size(), "Неверное количество задач");
-        testAllFieldsTask(task1, taskManager.getTask(TASK_ID1));
-        testAllFieldsTask(task2, taskManager.getTask(TASK_ID2));
-        testAllFieldsTask(task3, taskManager.getTask(TASK_ID3));
+        checkAllFieldsTask(task1, taskManager.getTask(TASK_ID1));
+        checkAllFieldsTask(task2, taskManager.getTask(TASK_ID2));
+        checkAllFieldsTask(task3, taskManager.getTask(TASK_ID3));
 
         LocalDateTime endDate2 = LocalDateTime.of(2020, 3, 3, 14, 0);
         LocalDateTime endDate3 = LocalDateTime.of(2020, 3, 3, 3, 50);
@@ -194,8 +199,8 @@ abstract public class TaskManagerTest <T extends TaskManager> {
         assertTrue(taskManager.updateTask(task1_1));
         tasks = taskManager.getListTask();
         assertEquals(2, tasks.size(), "Неверное количество задач");
-        testAllFieldsTask(task1_1, taskManager.getTask(TASK_ID1));
-        testAllFieldsTask(task2, taskManager.getTask(TASK_ID2));
+        checkAllFieldsTask(task1_1, taskManager.getTask(TASK_ID1));
+        checkAllFieldsTask(task2, taskManager.getTask(TASK_ID2));
 
         //Неверные значения
         assertFalse(taskManager.updateTask(null));
@@ -308,9 +313,9 @@ abstract public class TaskManagerTest <T extends TaskManager> {
         taskManager.createSubtask(subtask3);
         epics = taskManager.getListEpic();
         assertEquals(3, epics.size(), "Неверное количество эпиков");
-        testAllFieldsTask(epic1, taskManager.getEpic(EPIC_ID1));
-        testAllFieldsTask(epic2, taskManager.getEpic(EPIC_ID2));
-        testAllFieldsTask(epic3, taskManager.getEpic(EPIC_ID3));
+        checkAllFieldsTask(epic1, taskManager.getEpic(EPIC_ID1));
+        checkAllFieldsTask(epic2, taskManager.getEpic(EPIC_ID2));
+        checkAllFieldsTask(epic3, taskManager.getEpic(EPIC_ID3));
 
         List<Subtask> subtasks =  taskManager.getListSubtaskFromEpic(EPIC_ID1);
         assertEquals(1, subtasks.size(), "Неверное количество подзадач");
@@ -361,8 +366,8 @@ abstract public class TaskManagerTest <T extends TaskManager> {
         assertTrue(taskManager.updateEpic(epic1_1));
         epics = taskManager.getListEpic();
         assertEquals(2, epics.size(), "Неверное количество");
-        testAllFieldsTask(epic1_1, taskManager.getEpic(EPIC_ID1));
-        testAllFieldsTask(epic3, taskManager.getEpic(EPIC_ID3));
+        checkAllFieldsTask(epic1_1, taskManager.getEpic(EPIC_ID1));
+        checkAllFieldsTask(epic3, taskManager.getEpic(EPIC_ID3));
 
         //Неверные значения
         assertFalse(taskManager.updateEpic(null));
@@ -515,9 +520,9 @@ abstract public class TaskManagerTest <T extends TaskManager> {
 
         subtasks = taskManager.getListSubtask();
         assertEquals(3, subtasks.size(), "Неверное количество Подзадач");
-        testAllFieldsTask(subtask1, taskManager.getSubtask(SUBTASK_ID1));
-        testAllFieldsTask(subtask2, taskManager.getSubtask(SUBTASK_ID2));
-        testAllFieldsTask(subtask3, taskManager.getSubtask(SUBTASK_ID3));
+        checkAllFieldsTask(subtask1, taskManager.getSubtask(SUBTASK_ID1));
+        checkAllFieldsTask(subtask2, taskManager.getSubtask(SUBTASK_ID2));
+        checkAllFieldsTask(subtask3, taskManager.getSubtask(SUBTASK_ID3));
 
         subtasks =  taskManager.getListSubtaskFromEpic(EPIC_ID1);
         assertEquals(1, subtasks.size(), "Неверное количество подзадач");
@@ -556,7 +561,7 @@ abstract public class TaskManagerTest <T extends TaskManager> {
         assertTrue(taskManager.updateSubtask(subtask1_1));
         subtasks = taskManager.getListSubtask();
         assertEquals(1, subtasks.size(), "Неверное количество");
-        testAllFieldsTask(subtask1_1, taskManager.getSubtask(SUBTASK_ID1));
+        checkAllFieldsTask(subtask1_1, taskManager.getSubtask(SUBTASK_ID1));
         assertEquals(TaskStatus.DONE, taskManager.getEpic(EPIC_ID1).getStatus());
 
         //Неверные значения
@@ -716,9 +721,6 @@ abstract public class TaskManagerTest <T extends TaskManager> {
 
     @Test
     void testValidationTask() {
-        //Пропускаем для HttpClientTestTaskManager, так серверное исключение не дойдёт до клиента
-        assumeFalse("HttpClientTestTaskManager".equals(taskManager.getClass().getSimpleName()));
-
         long  ID = 100;
         final LocalDateTime taskDate1 = LocalDateTime.of(2021, 1, 1, 10, 0);
         final LocalDateTime taskDate2 = LocalDateTime.of(2021, 1, 1, 15, 0);
@@ -788,6 +790,7 @@ abstract public class TaskManagerTest <T extends TaskManager> {
         taskManager.getSubtask(subtask1.getId());
     }
 
+    //HttpTaskManagerTest и  FileBackedTasksManagerTest используют
     protected void createSampleWithoutHistory() {
         taskManager.createTask(task1);
         taskManager.createTask(task2);

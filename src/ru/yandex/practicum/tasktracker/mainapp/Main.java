@@ -1,11 +1,10 @@
 package ru.yandex.practicum.tasktracker.mainapp;
 
 import com.google.gson.Gson;
-import ru.yandex.practicum.tasktracker.client.HttpClientTestTaskManager;
 import ru.yandex.practicum.tasktracker.client.KVTaskClient;
 import ru.yandex.practicum.tasktracker.enums.TaskStatus;
 import ru.yandex.practicum.tasktracker.manager.HttpTaskManager;
-import ru.yandex.practicum.tasktracker.manager.TaskManager;
+
 import ru.yandex.practicum.tasktracker.model.Epic;
 import ru.yandex.practicum.tasktracker.model.Subtask;
 import ru.yandex.practicum.tasktracker.model.Task;
@@ -27,33 +26,6 @@ public class Main {
         testKvServ();
         testHttp1();
         testHttpTaskManager();
-        HttpClientTestTaskManagerTest();
-    }
-
-    private static void HttpClientTestTaskManagerTest() throws IOException, InterruptedException {
-        KVServer kvServer = new KVServer();
-        kvServer.start();
-        HttpTaskServer httpTaskServer = new HttpTaskServer();
-        httpTaskServer.start();
-
-        TaskManager taskManager = new HttpClientTestTaskManager();
-        taskManager.createTask(new Task(100L, "task100", "task100", TaskStatus.NEW));
-        taskManager.createTask(new Task(200L, "tas200", "task200", TaskStatus.NEW));
-        taskManager.createTask(new Task(300L, "tas300", "task300", TaskStatus.NEW));
-        taskManager.createEpic(new Epic(400L, "epic400", "epic400", TaskStatus.NEW));
-        Subtask sub1 = new Subtask(500L, "Подзадача 1.1", "описание 1", TaskStatus.NEW, 400L);
-        taskManager.createSubtask(sub1);
-        System.out.println("********");
-        printTask(taskManager.getListTask());
-        System.out.println("********");
-        System.out.println("Task = "+ taskManager.getTask(100L));
-        taskManager.getSubtask(500L);
-        System.out.println("History");
-        List<Task> tmp =taskManager.getHistory();
-        printTask(tmp);
-
-        httpTaskServer.stop();
-        kvServer.stop();
     }
 
     private static void testHttpTaskManager() throws IOException {

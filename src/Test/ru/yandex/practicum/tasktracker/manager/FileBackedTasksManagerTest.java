@@ -74,16 +74,16 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
         List<Task> tasks = readFileBackedTasksManager.getListTask();
         assertEquals(3, tasks.size(), "Неверное количество задач");
         tasks.sort(Comparator.comparing(Task::getId));
-        testAllFieldsTask(task1, tasks.get(0));
-        testAllFieldsTask(task2, tasks.get(1));
-        testAllFieldsTask(task3, tasks.get(2));
+        checkAllFieldsTask(task1, tasks.get(0));
+        checkAllFieldsTask(task2, tasks.get(1));
+        checkAllFieldsTask(task3, tasks.get(2));
 
         List<Epic> epics = readFileBackedTasksManager.getListEpic();
         epics.sort(Comparator.comparing(Epic::getId));
         assertEquals(3, epics.size(), "Неверное количество эпиков");
-        testAllFieldsTask(epic1, epics.get(0));
-        testAllFieldsTask(epic2, epics.get(1));
-        testAllFieldsTask(epic3, epics.get(2));
+        checkAllFieldsTask(epic1, epics.get(0));
+        checkAllFieldsTask(epic2, epics.get(1));
+        checkAllFieldsTask(epic3, epics.get(2));
 
         List<Subtask> subtasks =  readFileBackedTasksManager.getListSubtaskFromEpic(epic1.getId());
         assertEquals(1, subtasks.size(), "Неверное количество подзадач");
@@ -101,9 +101,9 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
         subtasks = readFileBackedTasksManager.getListSubtask();
         assertEquals(3, subtasks.size(), "Неверное количество Подзадач");
         subtasks.sort(Comparator.comparing(Subtask::getId));
-        testAllFieldsTask(subtask1, subtasks.get(0));
-        testAllFieldsTask(subtask2, subtasks.get(1));
-        testAllFieldsTask(subtask3, subtasks.get(2));
+        checkAllFieldsTask(subtask1, subtasks.get(0));
+        checkAllFieldsTask(subtask2, subtasks.get(1));
+        checkAllFieldsTask(subtask3, subtasks.get(2));
 
         tasks = readFileBackedTasksManager.getHistory();
         List<Task> expectedTasks = List.of(task1, epic1, epic3, subtask1);
@@ -115,7 +115,7 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
     private void testEpicWithoutSubtasks(FileBackedTasksManager readFileBackedTasksManager) {
         List<Epic> epics = readFileBackedTasksManager.getListEpic();
         assertEquals(1, epics.size(), "Неверное количество эпиков");
-        testAllFieldsTask(epic3, epics.get(0));
+        checkAllFieldsTask(epic3, epics.get(0));
 
         List<Subtask>subtasks = readFileBackedTasksManager.getListSubtaskFromEpic(epic3.getId());
         assertTrue(subtasks.isEmpty(), "Список Подзадач должен быть пустой");
@@ -129,16 +129,16 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
         List<Task> tasks = readFileBackedTasksManager.getListTask();
         assertEquals(3, tasks.size(), "Неверное количество задач");
         tasks.sort(Comparator.comparing(Task::getId));
-        testAllFieldsTask(task1, tasks.get(0));
-        testAllFieldsTask(task2, tasks.get(1));
-        testAllFieldsTask(task3, tasks.get(2));
+        checkAllFieldsTask(task1, tasks.get(0));
+        checkAllFieldsTask(task2, tasks.get(1));
+        checkAllFieldsTask(task3, tasks.get(2));
 
         List<Epic> epics = readFileBackedTasksManager.getListEpic();
         epics.sort(Comparator.comparing(Epic::getId));
         assertEquals(3, epics.size(), "Неверное количество эпиков");
-        testAllFieldsTask(epic1, epics.get(0));
-        testAllFieldsTask(epic2, epics.get(1));
-        testAllFieldsTask(epic3, epics.get(2));
+        checkAllFieldsTask(epic1, epics.get(0));
+        checkAllFieldsTask(epic2, epics.get(1));
+        checkAllFieldsTask(epic3, epics.get(2));
 
         List<Subtask> subtasks =  readFileBackedTasksManager.getListSubtaskFromEpic(epic1.getId());
         assertEquals(1, subtasks.size(), "Неверное количество подзадач");
@@ -156,9 +156,9 @@ class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksManager>
         subtasks = readFileBackedTasksManager.getListSubtask();
         assertEquals(3, subtasks.size(), "Неверное количество Подзадач");
         subtasks.sort(Comparator.comparing(Subtask::getId));
-        testAllFieldsTask(subtask1, subtasks.get(0));
-        testAllFieldsTask(subtask2, subtasks.get(1));
-        testAllFieldsTask(subtask3, subtasks.get(2));
+        checkAllFieldsTask(subtask1, subtasks.get(0));
+        checkAllFieldsTask(subtask2, subtasks.get(1));
+        checkAllFieldsTask(subtask3, subtasks.get(2));
 
         //Пустая история
         tasks = readFileBackedTasksManager.getHistory();
