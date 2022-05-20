@@ -1,9 +1,13 @@
 package ru.yandex.practicum.tasktracker.server;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.tasktracker.enums.TaskType;
 import ru.yandex.practicum.tasktracker.exception.HttpClientTestTaskManagerException;
 import ru.yandex.practicum.tasktracker.manager.TaskManager;
 import ru.yandex.practicum.tasktracker.manager.TaskManagerTest;
@@ -67,24 +71,30 @@ class HttpClientTestTaskManager implements TaskManager {
     private final HttpClient httpClient = HttpClient.newHttpClient();
     private final Gson gson = new Gson();
 
-    List<Task> restoreTypeTasks(List<Task> tasks) {
-        if(tasks.isEmpty()) {
-            return tasks;
-        }
-        List<Task> resultTasks = new ArrayList<>();
-        for (var task : tasks) {
-            switch (task.getType()) {
+    private List<Task> parseJson(String json) {
+        List<Task> tasks = new ArrayList<>();
+        JsonElement jsonElement = JsonParser.parseString(json);
+        JsonArray jsonArray = jsonElement.getAsJsonArray();
+        for (var element : jsonArray) {
+            Task task = null;
+            System.out.println(element.toString());
+            String type = element.getAsJsonObject().get("type").getAsString();
+            switch (TaskType.valueOf(type)) {
                 case TASK:
-                    resultTasks.add(getTask(task.getId()));
-                    break;
-                case EPIC:
-                    resultTasks.add(getEpic(task.getId()));
+                    task = gson.fromJson(element, Task.class);
                     break;
                 case SUBTASK:
-                    resultTasks.add(getSubtask(task.getId()));
+                    task = gson.fromJson(element, Subtask.class);
+                    break;
+                case EPIC:
+                    task = gson.fromJson(element, Epic.class);
+                    break;
+            }
+            if (task != null) {
+                tasks.add(task);
             }
         }
-        return resultTasks;
+        return tasks;
     }
 
     private boolean addData(String strUrl, String text) {
@@ -133,8 +143,7 @@ class HttpClientTestTaskManager implements TaskManager {
         if (json.isEmpty()) {
             return new ArrayList<>();
         }
-        Task[] tasks = gson.fromJson(json, Task[].class);
-        return new ArrayList<>(Arrays.asList(tasks));
+        return parseJson(json);
     }
 
     @Override
@@ -305,6 +314,6 @@ class HttpClientTestTaskManager implements TaskManager {
 
     @Override
     public List<Task> getHistory() {
-        return restoreTypeTasks(getListTask(URL + HISTORY_H));
+        return getListTask(URL + HISTORY_H);
     }
 }
